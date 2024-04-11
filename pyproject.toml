@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "rag-box"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.110.1"
+python-dotenv = "^1.0.0"
+llama-index = "0.10.15"
+llama-index-core = "0.10.15"
+llama-index-agent-openai = "0.1.5"
+uvicorn = { version = "^0.23.2", extras = [ "standard" ] }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

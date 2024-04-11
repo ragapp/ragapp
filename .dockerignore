@@ -1,0 +1,18 @@
+**/.git
+**/.cache
+*Dockerfile*
+**/.env
+
+# Python
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+*,cover
+*.log
+.git*
+
+
+# Node
+**/.results
+**/node_modules
