@@ -6,8 +6,10 @@ RUN apk add --no-cache make
 
 WORKDIR /app
 
-COPY . .
+COPY Makefile .
+COPY create_llama/frontend ./create_llama/frontend
 
+# Build static files for the Chat UI
 RUN make build-frontend
 
 # ======= RELEASE ==========
@@ -29,11 +31,12 @@ COPY --from=build /app/create_llama/frontend/out /app/static
 
 # Copy current code to the container
 # and remove the frontend folder
-COPY . .
-RUN rm -rf create_llama/frontend
-
+COPY poetry.lock pyproject.toml ./
 # Install dependencies
 RUN poetry install --no-root --no-cache --only main
+
+COPY . .
+RUN rm -rf create_llama/frontend
 
 # Todo: Replace this step once the Admin UI is ready
 # Prepare the example .env

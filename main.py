@@ -1,17 +1,21 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 import logging
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, RedirectResponse
-from fastapi.middleware.cors import CORSMiddleware
-
+from create_llama.backend.app.settings import init_settings
 from create_llama.backend.app.api.routers.chat import chat_router
+from src.routers.management.config import config_router
 
 app = FastAPI()
+init_settings()
 
 # Add chat router from create_llama/backend
 app.include_router(chat_router, prefix="/api/chat")
+app.include_router(config_router, prefix="/api/management/config")
 
 # Mount the frontend static files
 app.mount("", StaticFiles(directory="static", html=True), name="static")
