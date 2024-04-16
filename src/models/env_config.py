@@ -11,9 +11,10 @@ class EnvConfig(BaseSettings):
     """
 
     openai_api_key: str | None = Field(
-        description="The OpenAI API key to use.", env="OPENAI_API_KEY"
+        default=None, description="The OpenAI API key to use.", env="OPENAI_API_KEY"
     )
     model: str | None = Field(
+        default=None,
         description="The model to use for the LLM.",
         env="MODEL",
     )

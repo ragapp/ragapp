@@ -8,9 +8,10 @@ WORKDIR /app
 
 COPY Makefile .
 COPY create_llama/frontend ./create_llama/frontend
+COPY admin ./admin
 
 # Build static files for the Chat UI
-RUN make build-frontend
+RUN make build-frontends
 
 # ======= RELEASE ==========
 FROM python:3.11
@@ -26,8 +27,9 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python
     ln -s /opt/poetry/bin/poetry && \
     poetry config virtualenvs.create false
 
-# Copy static files from the front-end build 
+# Copy static files from the build stage 
 COPY --from=build /app/create_llama/frontend/out /app/static
+COPY --from=build /app/admin/out /app/static/admin
 
 # Copy current code to the container
 # and remove the frontend folder
