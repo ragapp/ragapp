@@ -40,7 +40,6 @@ RUN poetry install --no-root --no-cache --only main
 COPY . .
 RUN rm -rf create_llama/frontend
 
-# Todo: Replace this step once the Admin UI is ready
 # Prepare the example .env
 RUN mv default.env .env
 

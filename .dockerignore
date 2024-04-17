@@ -16,3 +16,5 @@
 # Node
 **/.results
 **/node_modules
+
+./static

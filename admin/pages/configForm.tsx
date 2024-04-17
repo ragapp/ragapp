@@ -6,6 +6,7 @@ import {
     FormLabel,
     FormControl,
     FormMessage,
+    FormDescription,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
@@ -117,6 +118,9 @@ const ConfigForm = () => {
                                 <FormControl>
                                     <Input placeholder={(defaultValues as any)?.openai_api_key ?? "sk-xxx"} {...field} />
                                 </FormControl>
+                                <FormDescription>
+                                    Get your API key from <a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a>
+                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}

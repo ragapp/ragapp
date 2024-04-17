@@ -1,8 +1,20 @@
-import { Toaster } from "@/components/ui/toaster";
+import { useRouter } from 'next/router';
 import ConfigForm from "./configForm";
+import { Toaster } from "@/components/ui/toaster";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useEffect, useState } from 'react';
 
 
 export default function Home() {
+  const router = useRouter();
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    if (router.asPath.split('#')[1] === 'new') {
+      setShowWelcome(true);
+    }
+  }, []);
+
   return (
     <main
       className={`flex min-h-screen flex-col items-center p-24`}
@@ -19,6 +31,14 @@ export default function Home() {
         <ConfigForm />
       </div>
       <Toaster />
+      <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
+        <DialogContent>
+          <DialogTitle className='text-green-500'>Congratulations 🎉</DialogTitle>
+          <DialogDescription>
+            You have successfully started RagBox. Now, let's go ahead and configure the app.
+          </DialogDescription>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
