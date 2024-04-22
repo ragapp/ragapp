@@ -4,3 +4,5 @@ storage/
 **/__pycache__/
 
 **/.env
+
+data/

@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from create_llama.backend.app.settings import init_settings
 from create_llama.backend.app.api.routers.chat import chat_router
 from src.routers.management.config import config_router
+from src.routers.management.files import files_router
 
 app = FastAPI()
 init_settings()
@@ -18,6 +19,7 @@ init_settings()
 # Add chat router from create_llama/backend
 app.include_router(chat_router, prefix="/api/chat")
 app.include_router(config_router, prefix="/api/management/config")
+app.include_router(files_router, prefix="/api/management/files")
 
 
 @app.get("/")
