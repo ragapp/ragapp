@@ -46,24 +46,6 @@ const Knowledge = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  async function handleFetchFiles() {
-    setLoading(true);
-    try {
-      const files = (await fetchFiles()) as File[];
-      setFiles(files);
-    } catch (error) {
-      console.error(error);
-      // Show a error toast
-      toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-        ),
-        title: "Failed to load uploaded files!",
-      });
-    }
-    setLoading(false);
-  }
-
   async function handleRemoveFile(file: File) {
     setFiles((prevFiles) => {
       const updatedFiles = prevFiles.map((f) => {
@@ -144,8 +126,26 @@ const Knowledge = () => {
   }
 
   useEffect(() => {
+    async function handleFetchFiles() {
+      setLoading(true);
+      try {
+        const files = (await fetchFiles()) as File[];
+        setFiles(files);
+      } catch (error) {
+        console.error(error);
+        // Show a error toast
+        toast({
+          className: cn(
+            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
+          ),
+          title: "Failed to load uploaded files!",
+        });
+      }
+      setLoading(false);
+    }
+
     handleFetchFiles();
-  }, []);
+  }, [toast]);
 
   return (
     <ExpandableSection
@@ -172,7 +172,7 @@ const ListFiles = ({
       {files.map(
         (file, index) =>
           file.status !== "failed" && (
-            <TooltipProvider>
+            <TooltipProvider key={index}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div

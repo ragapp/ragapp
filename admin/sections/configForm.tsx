@@ -16,6 +16,14 @@ import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 async function fetchConfig() {
   const res = await fetch("/api/management/config");
@@ -23,8 +31,9 @@ async function fetchConfig() {
     const error = await res.text();
     console.error(error);
     return {
-      openai_api_key: "",
-      model: "",
+      openai_api_key: null,
+      model: null,
+      system_prompt: null,
     };
   }
   const data = await res.json();
@@ -46,7 +55,8 @@ const ConfigFormSchema = z.object({
   openai_api_key: z.string({
     required_error: "OpenAI API is required",
   }),
-  model: z.string().optional(),
+  model: z.string().nullable().optional(),
+  system_prompt: z.string().nullable().optional(),
 });
 
 const ConfigForm = () => {
@@ -56,6 +66,7 @@ const ConfigForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [defaultValues, setDefaultValues] = useState(null);
+  const supportedModels = ["gpt-3.5-turbo", "gpt-4"];
 
   async function onSubmit(data: any) {
     setIsSubmitting(true);
@@ -98,7 +109,7 @@ const ConfigForm = () => {
     if (defaultValues) {
       form.reset(defaultValues);
     }
-  }, [defaultValues]);
+  }, [defaultValues, form]);
 
   if (!defaultValues) {
     return <div>Loading...</div>;
@@ -143,9 +154,56 @@ const ConfigForm = () => {
               <FormItem>
                 <FormLabel>Model</FormLabel>
                 <FormControl>
-                  <Input placeholder="gpt-3.5-turbo-0125" {...field} />
+                  <Select
+                    defaultValue={
+                      (defaultValues as any)?.model ?? supportedModels[0]
+                    }
+                    onValueChange={field.onChange}
+                    {...field}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={supportedModels[0]} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {supportedModels?.map((model: string) => (
+                        <SelectItem key={model} value={model}>
+                          {model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
-                <FormMessage />
+                <FormDescription>
+                  Select a model to chat with. If you are not sure, leave it as
+                  default.
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="system_prompt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Custom Prompt</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={`We have provided context information below.\n---------------------\n$\{context_str\}\n---------------------\nGiven this information, please answer the question: $\{query_str\}`}
+                    rows={5}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Specify your own custom prompt to chat with. Learn more about
+                  the prompt template at:{" "}
+                  <a
+                    href="https://docs.llamaindex.ai/en/stable/module_guides/models/prompts/"
+                    style={{ textDecoration: "underline" }}
+                  >
+                    Prompt guide
+                  </a>
+                </FormDescription>
               </FormItem>
             )}
           />

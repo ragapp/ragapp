@@ -18,7 +18,7 @@ export default function Home() {
     if (router.asPath.split("#")[1] === "new") {
       setShowWelcome(true);
     }
-  }, []);
+  }, [router.asPath]);
 
   function handleDialogState(isOpen: boolean) {
     setShowWelcome(isOpen);
@@ -49,7 +49,7 @@ export default function Home() {
             Congratulations 🎉
           </DialogTitle>
           <DialogDescription>
-            You have successfully started RagBox. Now, let's go ahead and
+            You have successfully started RagBox. Now, let&apos;s go ahead and
             configure the app.
           </DialogDescription>
         </DialogContent>

@@ -1,7 +1,14 @@
 import os
 import dotenv
 from typing import Optional, Annotated
-from pydantic import BaseModel, Field, SecretStr, PlainSerializer, BeforeValidator
+from pydantic import (
+    BaseModel,
+    Field,
+    SecretStr,
+    PlainSerializer,
+    BeforeValidator,
+    validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +25,19 @@ class EnvConfig(BaseSettings):
         description="The model to use for the LLM.",
         env="MODEL",
     )
+    system_prompt: str | None = Field(
+        default=None,
+        description="The system prompt to use for the LLM.",
+        env="SYSTEM_PROMPT",
+        preprocess=True,
+    )
+
+    # To convert empty string prompt to None automatically
+    @validator("system_prompt", pre=True)
+    def preprocess_system_prompt(cls, value):
+        if value == "":
+            return None
+        return value
 
     def to_runtime_env(self):
         """
@@ -37,6 +57,8 @@ class EnvConfig(BaseSettings):
             value = getattr(self, field_name)
             if value is not None:
                 dotenv.set_key(dotenv_file, field_info.json_schema_extra.get("env"), value)  # type: ignore
+            else:
+                dotenv.unset_key(dotenv_file, field_info.json_schema_extra.get("env"))
 
 
 def get_config() -> EnvConfig:
