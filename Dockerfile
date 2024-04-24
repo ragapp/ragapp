@@ -41,7 +41,7 @@ COPY . .
 RUN rm -rf create_llama/frontend
 
 # Prepare the example .env
-RUN mv default.env .env
+RUN mv default.env config/.env
 # Create an empty data folder
 RUN mkdir -p data
 

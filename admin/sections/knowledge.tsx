@@ -19,13 +19,13 @@ type File = {
 };
 
 async function fetchFiles() {
-  const res = await fetch("http://localhost:8000/api/management/files");
+  const res = await fetch("/api/management/files");
   console.log(res);
   return res.json();
 }
 
 async function uploadFile(formData: any) {
-  return await fetch("http://localhost:8000/api/management/files", {
+  return await fetch("/api/management/files", {
     method: "POST",
     body: formData,
   });
@@ -33,12 +33,9 @@ async function uploadFile(formData: any) {
 
 async function removeFile(fileName: string) {
   const encodedFileName = encodeURIComponent(fileName);
-  return await fetch(
-    `http://localhost:8000/api/management/files/${encodedFileName}`,
-    {
-      method: "DELETE",
-    },
-  );
+  return await fetch(`/api/management/files/${encodedFileName}`, {
+    method: "DELETE",
+  });
 }
 
 const Knowledge = () => {

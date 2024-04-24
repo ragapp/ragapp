@@ -10,6 +10,7 @@ from pydantic import (
     validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from src.constants import ENV_FILE_PATH
 
 
 class EnvConfig(BaseSettings):
@@ -52,7 +53,7 @@ class EnvConfig(BaseSettings):
         """
         Write the current values to a dot env file.
         """
-        dotenv_file = dotenv.find_dotenv()
+        dotenv_file = dotenv.find_dotenv(filename=ENV_FILE_PATH)
         for field_name, field_info in self.__fields__.items():
             value = getattr(self, field_name)
             if value is not None:
