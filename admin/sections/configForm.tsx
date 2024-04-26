@@ -119,7 +119,7 @@ const ConfigForm = () => {
     <ExpandableSection
       title={"Config"}
       description="Config the OpenAI API Key and more"
-      open={false}
+      open={true}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -139,7 +139,10 @@ const ConfigForm = () => {
                 </FormControl>
                 <FormDescription>
                   Get your API key from{" "}
-                  <a href="https://platform.openai.com/api-keys">
+                  <a
+                    href="https://platform.openai.com/api-keys"
+                    target="_blank"
+                  >
                     https://platform.openai.com/api-keys
                   </a>
                 </FormDescription>

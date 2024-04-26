@@ -1,18 +1,12 @@
 # RagBox
 
-## Start with docker locally:
-1. Build a docker image:
+## Start with docker:
+1. Start a docker container with our image:
 ```shell
-docker build -t schiesser-it/rag-box .
+docker run -p 8000:8000 --name ragbox ghcr.io/marcusschiesser/ragbox
 ```
 
-2. Start an app container with the image:
-```shell
-OPENAI_API_KEY=<your_openai_api_key> && \
-docker run \
-  --rm \
-  -p 8000:8000 \
-  -e OPENAI_API_KEY=$OPENAI_API_KEY \
-  schiesser-it/rag-box
-```
-
+2. Access Web UI to chat or config the app:
+- Admin UI: http://localhost:8000/admin
+- Chat UI: http://localhost:8000  
+  *Note: The Chat UI is only functional after the API key has been configured in Admin UI.
