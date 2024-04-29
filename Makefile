@@ -1,7 +1,9 @@
 export PYTHONPATH := ${PYTHONPATH}:./create_llama/backend
 
+patch-chat:
+	cp -r ./patch/* ./create_llama/
 
-build-chat:
+build-chat: patch-chat
 	@echo "\nBuilding Chat UI..."
 	cd ./create_llama/frontend && npm install && npm run build
 	@echo "\nCopying Chat UI to static folder..."
