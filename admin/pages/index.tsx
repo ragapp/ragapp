@@ -48,8 +48,8 @@ export default function Home() {
             Congratulations 🎉
           </DialogTitle>
           <DialogDescription>
-            You have successfully started RagBox. Now, let&apos;s go ahead and
-            configure the app.
+            You have successfully installed RAGapp. Now, let&apos;s go ahead and
+            configure it.
           </DialogDescription>
         </DialogContent>
       </Dialog>
