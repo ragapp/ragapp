@@ -39,7 +39,7 @@ jobs:
             ragapp/ragapp:${{ steps.tag.outputs.TAG }}
             ragapp/ragapp:latest
 
-  release_latest_image:
+  release_dev_image:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:

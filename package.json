@@ -1,0 +1,9 @@
+{
+  "name": "ragbox",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {},
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1"
+  }
+}

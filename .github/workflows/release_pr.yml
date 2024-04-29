@@ -1,0 +1,43 @@
+name: Create Release PR
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Get changeset status
+        id: get-changeset-status
+        run: |
+          pnpm changeset status --output .changeset/status.json
+          new_version=$(jq -r '.releases[0].newVersion' < .changeset/status.json)
+          rm -v .changeset/status.json
+          echo "new-version=${new_version}" >> "$GITHUB_OUTPUT"
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          commit: Release ${{ steps.get-changeset-status.outputs.new-version }}
+          title: Release ${{ steps.get-changeset-status.outputs.new-version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
