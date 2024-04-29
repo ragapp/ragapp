@@ -2,12 +2,12 @@ const Footer = () => {
   return (
     <div className="p-4 text-center bg-gray-200">
       <p>
-        Questions? Please feel free to contact me on&nbsp;
+        Questions, feature requests or found a bug? Open an issue on&nbsp;
         <a
-          href="https://www.linkedin.com/in/marcusschiesser/"
+          href="https://github.com/ragapp/ragapp/issues/"
           className="text-blue-800"
         >
-          LinkedIn
+          GitHub
         </a>
         .
       </p>
