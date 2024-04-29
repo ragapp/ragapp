@@ -9,6 +9,7 @@ WORKDIR /app
 COPY Makefile .
 COPY create_llama/frontend ./create_llama/frontend
 COPY admin ./admin
+COPY patch/frontend ./patch/frontend
 
 # Build static files for the Chat UI
 RUN make build-frontends
