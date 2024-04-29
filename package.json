@@ -5,5 +5,6 @@
   "scripts": {},
   "devDependencies": {
     "@changesets/cli": "^2.27.1"
-  }
+  },
+  "packageManager": "pnpm@9.0.5"
 }
