@@ -42,5 +42,6 @@ jobs:
         with:
           commit: Release ${{ steps.get-changeset-status.outputs.new-version }}
           title: Release ${{ steps.get-changeset-status.outputs.new-version }}
+          publish: echo "No-op publish. Creates version tag after merge."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
