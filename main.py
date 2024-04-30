@@ -15,9 +15,20 @@ from create_llama.backend.app.settings import init_settings
 from create_llama.backend.app.api.routers.chat import chat_router
 from src.routers.management.config import config_router
 from src.routers.management.files import files_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 init_settings()
+
+environment = os.getenv("ENVIRONMENT")
+if environment == "dev":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Add chat router from create_llama/backend
 app.include_router(chat_router, prefix="/api/chat")
@@ -27,12 +38,15 @@ app.include_router(files_router, prefix="/api/management/files")
 
 @app.get("/")
 async def redirect():
-    if os.environ.get("OPENAI_API_KEY") is None:
-        # system is not configured - redirect to onboarding page
-        return RedirectResponse(url="/admin/#new")
-    else:
+    from models.env_config import get_config
+
+    config = get_config()
+    if config.configured:
         # system is configured - / points to chat UI
         return FileResponse("static/index.html")
+    else:
+        # system is not configured - redirect to onboarding page
+        return RedirectResponse(url="/admin/#new")
 
 
 app.mount("", StaticFiles(directory="static", html=True), name="static")

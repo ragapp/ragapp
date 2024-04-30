@@ -21,3 +21,6 @@ build-frontends: build-chat build-admin
 
 run:
 	poetry run python main.py
+
+dev:
+	ENVIRONMENT=dev poetry run python main.py

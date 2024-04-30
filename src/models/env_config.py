@@ -32,6 +32,11 @@ class EnvConfig(BaseSettings):
         env="SYSTEM_PROMPT",
         preprocess=True,
     )
+    configured: bool = Field(default=False)
+
+    def __init__(self):
+        super().__init__()
+        self.configured = self.openai_api_key is not None
 
     # To convert empty string prompt to None automatically
     @validator("system_prompt", pre=True)

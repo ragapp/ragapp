@@ -6,8 +6,10 @@
 poetry install --no-root
 make build-frontends
 cp default.env config/.env
-make run
+make dev
 ```
+
+# TODO: use npm dev for admin UI by using CORS endpoint
 
 ## Test Build
 
