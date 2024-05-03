@@ -111,6 +111,20 @@ files = [
 frozenlist = ">=1.1.0"
 
 [[package]]
+name = "aiostream"
+version = "0.5.2"
+description = "Generator-based operators for asynchronous iteration"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "aiostream-0.5.2-py3-none-any.whl", hash = "sha256:054660370be9d37f6fe3ece3851009240416bd082e469fd90cc8673d3818cf71"},
+    {file = "aiostream-0.5.2.tar.gz", hash = "sha256:b71b519a2d66c38f0872403ab86417955b77352f08d9ad02ad46fc3926b389f4"},
+]
+
+[package.dependencies]
+typing-extensions = "*"
+
+[[package]]
 name = "annotated-types"
 version = "0.6.0"
 description = "Reusable constraint types to use with typing.Annotated"
@@ -2683,4 +2697,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f6f18879f34067fbd765930a99fe2f02fc7a0374073b9641303a45cc720a50f1"
+content-hash = "d99a69a46eb47c2ad8cc7c5347e7a980a116a7fac189d54f595029860d3040dd"

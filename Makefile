@@ -1,6 +1,23 @@
 export PYTHONPATH := ${PYTHONPATH}:./create_llama/backend
+export CREATE_LLAMA_VERSION=0.1.1
 
-patch-chat:
+create-llama-app:
+	@echo "\nCreating Llama App..."
+	npx -y create-llama@${CREATE_LLAMA_VERSION} \
+		--framework fastapi \
+		--template streaming \
+		--engine context \
+		--frontend \
+		--ui shadcn \
+		--observability none \
+		--open-ai-key none \
+		--tools none \
+		--post-install-action none \
+		--no-llama-parse \
+		--no-files \
+		-- create_llama
+
+patch-chat: create-llama-app
 	cp -r ./patch/* ./create_llama/
 
 build-chat: patch-chat

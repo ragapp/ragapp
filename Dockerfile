@@ -7,7 +7,6 @@ RUN apk add --no-cache make
 WORKDIR /app
 
 COPY Makefile .
-COPY create_llama/frontend ./create_llama/frontend
 COPY admin ./admin
 COPY patch/frontend ./patch/frontend
 
@@ -28,21 +27,22 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python
     ln -s /opt/poetry/bin/poetry && \
     poetry config virtualenvs.create false
 
-# Copy static files from the build stage 
-COPY --from=build /app/create_llama/frontend/out /app/static
-COPY --from=build /app/admin/out /app/static/admin
-
 # Copy current code to the container
 # and remove the frontend folder
 COPY poetry.lock pyproject.toml ./
 # Install dependencies
 RUN poetry install --no-root --no-cache --only main
 
+# Copy static files from the build stage 
+COPY --from=build /app/create_llama/frontend/out /app/static
+COPY --from=build /app/admin/out /app/static/admin
+COPY --from=build /app/create_llama/backend /app/create_llama/backend
 COPY . .
-RUN rm -rf create_llama/frontend
 
 # Prepare the example .env
 RUN mv default.env config/.env
+# The default .env in create_llama/backend is not needed
+RUN rm /app/create_llama/backend/.env
 # Create an empty data folder
 RUN mkdir -p data
 

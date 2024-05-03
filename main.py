@@ -38,7 +38,7 @@ app.include_router(files_router, prefix="/api/management/files")
 
 @app.get("/")
 async def redirect():
-    from models.env_config import get_config
+    from src.models.env_config import get_config
 
     config = get_config()
     if config.configured:
