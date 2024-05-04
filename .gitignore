@@ -8,3 +8,5 @@ storage/
 data/
 node_modules/
 create_llama/
+
+!config/*

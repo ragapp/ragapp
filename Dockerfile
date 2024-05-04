@@ -39,8 +39,6 @@ COPY --from=build /app/admin/out /app/static/admin
 COPY --from=build /app/create_llama/backend /app/create_llama/backend
 COPY . .
 
-# Prepare the example .env
-RUN mv default.env config/.env
 # The default .env in create_llama/backend is not needed
 RUN rm /app/create_llama/backend/.env
 # Create an empty data folder

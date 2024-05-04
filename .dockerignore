@@ -21,3 +21,6 @@
 
 # Ignore development create_llama code
 ./create_llama/
+
+# Do not ignore template config files
+!config/*
