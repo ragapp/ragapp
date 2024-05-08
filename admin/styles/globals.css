@@ -4,11 +4,13 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
+
+    --section: 0 0% 100%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
@@ -72,5 +74,11 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  section {
+    background-color: hsl(var(--section));
+  }
+  iframe {
+    background-color: transparent;
   }
 }

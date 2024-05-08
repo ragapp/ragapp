@@ -1,17 +1,15 @@
-import { Footer } from "@/sections/footer";
 import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col">
         <div className="flex-grow">
           <Main />
           <NextScript />
         </div>
       </body>
-      <Footer />
     </Html>
   );
 }

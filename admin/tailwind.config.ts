@@ -73,6 +73,9 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      scale: {
+        "118": "1.18",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

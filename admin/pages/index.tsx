@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/router";
 import { Toaster } from "@/components/ui/toaster";
 import {
@@ -7,12 +9,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import { Knowledge } from "../sections/knowledge";
-import { ConfigForm } from "../sections/configForm";
+import { Knowledge } from "@/sections/knowledge";
+import { ConfigForm } from "@/sections/configForm";
+import { Footer } from "@/sections/footer";
+import { StatusBar } from "@/sections/statusBar";
+import { DemoChat } from "@/sections/demoChat";
 
 export default function Home() {
   const router = useRouter();
   const [showWelcome, setShowWelcome] = useState(false);
+  const [configured, setConfigured] = useState(false);
 
   useEffect(() => {
     if (router.asPath.split("#")[1] === "new") {
@@ -30,16 +36,16 @@ export default function Home() {
   }
 
   return (
-    <main className={`flex flex-col items-center p-24`}>
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by updating the&nbsp;
-          <code className="font-mono font-bold">OpenAI API Key</code>
-        </p>
-      </div>
-      <div className="mt-10 max-w-5xl w-full">
-        <ConfigForm />
-        <Knowledge />
+    <main className="absolute flex flex-col h-full w-full items-center">
+      <StatusBar configured={configured} />
+      <div
+        className={`flex flex-row w-full h-full ${configured ? "" : "justify-center"}`}
+      >
+        <div className="mt-10 w-1/2 h-full overflow-scroll pb-10 scrollbar-hide">
+          <ConfigForm setConfigured={setConfigured} />
+          {configured && <Knowledge />}
+        </div>
+        {configured && <DemoChat />}
       </div>
       <Toaster />
       <Dialog open={showWelcome} onOpenChange={handleDialogState}>
@@ -53,6 +59,7 @@ export default function Home() {
           </DialogDescription>
         </DialogContent>
       </Dialog>
+      <Footer />
     </main>
   );
 }

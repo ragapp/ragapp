@@ -10,66 +10,40 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
+import {
+  FileStatus,
+  fetchFiles,
+  removeFile,
+  uploadFile,
+  File,
+} from "@/client/files";
 
-type FileStatus = "uploading" | "uploaded" | "failed" | "removing" | "removed";
-
-type File = {
-  name: string;
-  status: FileStatus;
-};
-
-async function fetchFiles() {
-  const res = await fetch("/api/management/files");
-  console.log(res);
-  return res.json();
-}
-
-async function uploadFile(formData: any) {
-  return await fetch("/api/management/files", {
-    method: "POST",
-    body: formData,
-  });
-}
-
-async function removeFile(fileName: string) {
-  const encodedFileName = encodeURIComponent(fileName);
-  return await fetch(`/api/management/files/${encodedFileName}`, {
-    method: "DELETE",
-  });
-}
-
-const Knowledge = () => {
+export const Knowledge = () => {
   const [files, setFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  const updateStatus = (name: string, status: FileStatus) => (f: File) => {
+    if (f.name === name) {
+      return { ...f, status };
+    }
+    return f;
+  };
 
   async function handleRemoveFile(file: File) {
     setFiles((prevFiles) => {
-      const updatedFiles = prevFiles.map((f) => {
-        if (f.name === file.name) {
-          return { ...f, status: "removing" as FileStatus };
-        }
-        return f;
-      });
-      return updatedFiles;
+      return prevFiles.map(updateStatus(file.name, "removing"));
     });
-    const res = await removeFile(file.name);
-    if (res.ok) {
+    try {
+      await removeFile(file.name);
       // Remove the file from the list
       setFiles((prevFiles) => {
         const filteredFiles = prevFiles.filter((f) => f.name !== file.name);
         return filteredFiles;
       });
-    } else {
+    } catch {
       // Update the file status to failed
       setFiles((prevFiles) => {
-        const updatedFiles = prevFiles.map((f) => {
-          if (f.name === file.name) {
-            return { ...f, status: "failed" as FileStatus };
-          }
-          return f;
-        });
-        return updatedFiles;
+        return prevFiles.map(updateStatus(file.name, "failed"));
       });
     }
   }
@@ -85,32 +59,20 @@ const Knowledge = () => {
       // Upload the file to the server
       const formData = new FormData();
       formData.append("file", file);
-      const res = await uploadFile(formData);
-      if (res.ok) {
+      try {
+        await uploadFile(formData);
         setFiles((prevFiles) => {
-          const updatedFiles = prevFiles.map((f) => {
-            if (f.name === fileObj.name) {
-              return { ...f, status: "uploaded" as FileStatus };
-            }
-            return f;
-          });
-          return updatedFiles;
+          return prevFiles.map(updateStatus(fileObj.name, "uploaded"));
         });
-      } else {
+      } catch (err: unknown) {
         setFiles((prevFiles) => {
-          const updatedFiles = prevFiles.map((f) => {
-            if (f.name === fileObj.name) {
-              return { ...f, status: "uploaded" as FileStatus };
-            }
-            return f;
-          });
-          return updatedFiles;
+          return prevFiles.map(updateStatus(fileObj.name, "failed"));
         });
         // Show a error toast
         console.error(
           "Failed to upload the file:",
           file.name,
-          await res.text(),
+          (err as Error)?.message,
         );
         toast({
           className: cn(
@@ -124,9 +86,8 @@ const Knowledge = () => {
 
   useEffect(() => {
     async function handleFetchFiles() {
-      setLoading(true);
       try {
-        const files = (await fetchFiles()) as File[];
+        const files = await fetchFiles();
         setFiles(files);
       } catch (error) {
         console.error(error);
@@ -138,7 +99,6 @@ const Knowledge = () => {
           title: "Failed to load uploaded files!",
         });
       }
-      setLoading(false);
     }
 
     handleFetchFiles();
@@ -220,5 +180,3 @@ const UploadFile = ({ handleAddFiles = async (files: any[]) => {} }) => {
     </div>
   );
 };
-
-export { Knowledge };

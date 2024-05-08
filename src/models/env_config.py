@@ -54,6 +54,8 @@ class EnvConfig(BaseSettings):
             value = getattr(self, field_name)
             if value is not None:
                 os.environ[field_info.json_schema_extra["env"]] = str(value)
+            else:
+                os.environ.pop(field_info.json_schema_extra["env"], None)
 
     def to_env_file(self):
         """
@@ -66,6 +68,15 @@ class EnvConfig(BaseSettings):
                 dotenv.set_key(dotenv_file, field_info.json_schema_extra.get("env"), value)  # type: ignore
             else:
                 dotenv.unset_key(dotenv_file, field_info.json_schema_extra.get("env"))
+
+    def to_api_response(self):
+        """
+        Convert the current values to a dictionary for API response.
+        """
+        result = self.dict()
+        # Add the configured field
+        result["configured"] = self.configured
+        return result
 
 
 def get_config() -> EnvConfig:
