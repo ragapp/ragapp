@@ -31,10 +31,12 @@ jobs:
       - name: Get changeset status
         id: get-changeset-status
         run: |
-          pnpm changeset status --output .changeset/status.json
-          new_version=$(jq -r '.releases[0].newVersion' < .changeset/status.json)
-          rm -v .changeset/status.json
-          echo "new-version=${new_version}" >> "$GITHUB_OUTPUT"
+          pnpm changeset status --output .changeset/status.json || true
+          if [ -f .changeset/status.json ]; then
+            new_version=$(jq -r '.releases[0].newVersion' < .changeset/status.json)
+            rm -v .changeset/status.json
+            echo "new-version=${new_version}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
