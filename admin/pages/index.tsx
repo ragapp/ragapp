@@ -14,6 +14,7 @@ import { ConfigForm } from "@/sections/configForm";
 import { Footer } from "@/sections/footer";
 import { StatusBar } from "@/sections/statusBar";
 import { DemoChat } from "@/sections/demoChat";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const router = useRouter();
@@ -36,17 +37,32 @@ export default function Home() {
   }
 
   return (
-    <main className="absolute flex flex-col h-full w-full items-center">
-      <StatusBar configured={configured} />
-      <div
-        className={`flex flex-row w-full h-full ${configured ? "" : "justify-center"}`}
-      >
-        <div className="mt-10 w-1/2 h-full overflow-scroll pb-10 scrollbar-hide">
-          <ConfigForm setConfigured={setConfigured} />
-          {configured && <Knowledge />}
+    <>
+      <main className="h-screen w-screen">
+        <div className="flex flex-col max-h-full h-full">
+          <div className="w-full shrink-0">
+            <StatusBar configured={configured} />
+          </div>
+          <div className="w-full flex-1 overflow-auto flex">
+            <div
+              className={cn("w-1/2 overflow-y-auto p-4", {
+                "m-auto": !configured,
+              })}
+            >
+              <ConfigForm setConfigured={setConfigured} />
+              {configured && <Knowledge />}
+            </div>
+            {configured && (
+              <div className="flex-1 overflow-y-auto p-4">
+                <DemoChat />
+              </div>
+            )}
+          </div>
+          <div className="w-full shrink-0">
+            <Footer />
+          </div>
         </div>
-        {configured && <DemoChat />}
-      </div>
+      </main>
       <Toaster />
       <Dialog open={showWelcome} onOpenChange={handleDialogState}>
         <DialogContent>
@@ -59,7 +75,6 @@ export default function Home() {
           </DialogDescription>
         </DialogContent>
       </Dialog>
-      <Footer />
-    </main>
+    </>
   );
 }

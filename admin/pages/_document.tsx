@@ -4,11 +4,9 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body className="flex flex-col">
-        <div className="flex-grow">
-          <Main />
-          <NextScript />
-        </div>
+      <body>
+        <Main />
+        <NextScript />
       </body>
     </Html>
   );
