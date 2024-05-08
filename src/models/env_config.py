@@ -28,7 +28,7 @@ class EnvConfig(BaseSettings):
         env="MODEL",
     )
     system_prompt: str | None = Field(
-        default=None,
+        default="You are a helpful assistant who helps users with their questions.",
         description="The system prompt to use for the LLM.",
         env="SYSTEM_PROMPT",
         preprocess=True,

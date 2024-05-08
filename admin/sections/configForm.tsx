@@ -168,21 +168,11 @@ const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
               <FormItem>
                 <FormLabel>Custom Prompt</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder={`We have provided context information below.\n---------------------\n$\{context_str\}\n---------------------\nGiven this information, please answer the question: $\{query_str\}`}
-                    rows={5}
-                    {...field}
-                  />
+                  <Textarea rows={3} {...field} />
                 </FormControl>
                 <FormDescription>
-                  Specify your own custom prompt to chat with. Learn more about
-                  the prompt template at:{" "}
-                  <a
-                    href="https://docs.llamaindex.ai/en/stable/module_guides/models/prompts/"
-                    style={{ textDecoration: "underline" }}
-                  >
-                    Prompt guide
-                  </a>
+                  Use system prompt to define the responsibilities and behaviors
+                  of the assistant.
                 </FormDescription>
               </FormItem>
             )}
