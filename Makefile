@@ -1,5 +1,6 @@
 export PYTHONPATH := ${PYTHONPATH}:./create_llama/backend
 export CREATE_LLAMA_VERSION=0.1.1
+export NEXT_PUBLIC_API_URL=/api/chat
 
 create-llama-app:
 	@echo "\nCreating Llama App..."
@@ -16,6 +17,8 @@ create-llama-app:
 		--no-llama-parse \
 		--no-files \
 		-- create_llama
+	rm -rf create_llama/backend/.env
+	rm -rf create_llama/frontend/.env
 
 patch-chat: create-llama-app
 	cp -r ./patch/* ./create_llama/
