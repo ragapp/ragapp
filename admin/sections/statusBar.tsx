@@ -4,8 +4,16 @@ export const StatusBar = ({ configured }: { configured: boolean }) => {
       <p className="font-mono text-sm">
         {configured ? (
           <>
-            Successfully configured.&nbsp;<b>Add knowledge</b>&nbsp;or&nbsp;
-            <b>chat with the app</b>&nbsp;below.
+            <b>Add knowledge</b>&nbsp;or&nbsp;
+            <b>test the chat</b>&nbsp;below. Once you&apos;re satisfied,&nbsp;
+            <a
+              className="text-blue-500 hover:underline decoration-blue-500"
+              href="/"
+              target="_blank"
+            >
+              start the app
+            </a>
+            .
           </>
         ) : (
           <>
