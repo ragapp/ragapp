@@ -9,7 +9,6 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { cn } from "@/lib/utils";
@@ -30,6 +29,7 @@ import {
   fetchConfig,
   updateConfig,
 } from "@/client/config";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
   const form = useForm({
@@ -112,8 +112,9 @@ const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
               <FormItem>
                 <FormLabel>OpenAI API Key (*)</FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     placeholder={defaultValues.openai_api_key ?? "sk-xxx"}
+                    showCopy
                     {...field}
                   />
                 </FormControl>
