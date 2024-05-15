@@ -43,4 +43,10 @@ run:
 	poetry run python main.py
 
 dev:
-	ENVIRONMENT=dev poetry run python main.py
+# Start the backend and frontend servers
+# Kill both servers if a stop signal is received
+	@export ENVIRONMENT=dev; \
+	trap 'kill 0' SIGINT; \
+	poetry run python main.py & \
+	npm run dev --prefix ./admin & \
+	wait
