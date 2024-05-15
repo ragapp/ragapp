@@ -1,9 +1,10 @@
 export PYTHONPATH := ${PYTHONPATH}:./create_llama/backend
-export CREATE_LLAMA_VERSION=0.1.1
+export CREATE_LLAMA_VERSION=0.1.4
 export NEXT_PUBLIC_API_URL=/api/chat
 
 create-llama-app:
 	@echo "\nCreating Llama App..."
+	rm -rf create_llama
 	npx -y create-llama@${CREATE_LLAMA_VERSION} \
 		--framework fastapi \
 		--template streaming \
@@ -15,8 +16,11 @@ create-llama-app:
 		--tools none \
 		--post-install-action none \
 		--no-llama-parse \
-		--no-files \
+		--example-file \
+		--vector-db chroma \
 		-- create_llama
+	# We don't need the example data and default .env files
+	rm -rf create_llama/backend/data/*
 	rm -rf create_llama/backend/.env
 	rm -rf create_llama/frontend/.env
 
