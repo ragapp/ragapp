@@ -18,6 +18,8 @@ class FileHandler:
         """
         Construct the list files by all the files in the data folder.
         """
+        if not os.path.exists("data"):
+            return []
         # Get all files in the data folder
         file_names = os.listdir("data")
         # Construct list[File]

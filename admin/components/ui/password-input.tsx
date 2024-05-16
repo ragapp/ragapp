@@ -1,12 +1,11 @@
 "use client";
 
-import { forwardRef, useState } from "react";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, InputProps } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { useCopyToClipboard } from "@/lib/use-copy-to-clipboard";
-import { Check, Copy } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Check, Copy, EyeIcon, EyeOffIcon } from "lucide-react";
+import { forwardRef, useState } from "react";
 
 const PasswordInput = forwardRef<
   HTMLInputElement,

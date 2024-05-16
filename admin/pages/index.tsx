@@ -1,20 +1,20 @@
 "use client";
 
-import { useRouter } from "next/router";
-import { Toaster } from "@/components/ui/toaster";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
-import { Knowledge } from "@/sections/knowledge";
-import { ConfigForm } from "@/sections/configForm";
-import { Footer } from "@/sections/footer";
-import { StatusBar } from "@/sections/statusBar";
-import { DemoChat } from "@/sections/demoChat";
+import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import { ConfigForm } from "@/sections/config/form";
+import { DemoChat } from "@/sections/demoChat";
+import { Footer } from "@/sections/footer";
+import { Knowledge } from "@/sections/knowledge";
+import { StatusBar } from "@/sections/statusBar";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const router = useRouter();

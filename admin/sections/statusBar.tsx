@@ -1,3 +1,5 @@
+import { getBaseURL } from "@/client/utils";
+
 export const StatusBar = ({ configured }: { configured: boolean }) => {
   return (
     <div className="w-full items-center flex justify-center p-4 border-b bg-gray-200">
@@ -8,10 +10,18 @@ export const StatusBar = ({ configured }: { configured: boolean }) => {
             <b>test the chat</b>&nbsp;below. Once you&apos;re satisfied,&nbsp;
             <a
               className="text-blue-500 hover:underline decoration-blue-500"
-              href="/"
+              href={getBaseURL()}
               target="_blank"
             >
               start the app
+            </a>
+            &nbsp;or&nbsp;
+            <a
+              className="text-blue-500 hover:underline decoration-blue-500"
+              href={`${getBaseURL()}/docs`}
+              target="_blank"
+            >
+              use the API
             </a>
             .
           </>

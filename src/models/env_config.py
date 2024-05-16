@@ -19,13 +19,33 @@ class EnvConfig(BaseSettings):
     Inference configuration settings from environment variables.
     """
 
-    openai_api_key: str | None = Field(
-        default=None, description="The OpenAI API key to use.", env="OPENAI_API_KEY"
+    model_provider: str | None = Field(
+        default=None,
+        description="The model provider to use for the LLM.",
+        env="MODEL_PROVIDER",
     )
     model: str | None = Field(
         default=None,
         description="The model to use for the LLM.",
         env="MODEL",
+    )
+    embedding_model: str | None = Field(
+        default=None,
+        description="The embedding model to use for the LLM.",
+        env="EMBEDDING_MODEL",
+    )
+    embedding_dim: int | None = Field(
+        default=None,
+        description="The vector size of the embedding model.",
+        env="EMBEDDING_DIM",
+    )
+    # OpenAI config
+    openai_api_key: str | None = Field(
+        default=None, description="The OpenAI API key to use.", env="OPENAI_API_KEY"
+    )
+    # Gemini config
+    google_api_key: str | None = Field(
+        default=None, description="The Google API key to use.", env="GOOGLE_API_KEY"
     )
     system_prompt: str | None = Field(
         default="You are a helpful assistant who helps users with their questions.",
@@ -37,7 +57,13 @@ class EnvConfig(BaseSettings):
     @computed_field
     @property
     def configured(self) -> bool:
-        return self.openai_api_key is not None
+        if self.model_provider == "openai":
+            return self.openai_api_key is not None
+        elif self.model_provider == "gemini":
+            return self.google_api_key is not None
+        elif self.model_provider == "ollama":
+            return True
+        return False
 
     # To convert empty string prompt to None automatically
     @validator("system_prompt", pre=True)
@@ -65,7 +91,7 @@ class EnvConfig(BaseSettings):
         for field_name, field_info in self.__fields__.items():
             value = getattr(self, field_name)
             if value is not None:
-                dotenv.set_key(dotenv_file, field_info.json_schema_extra.get("env"), value)  # type: ignore
+                dotenv.set_key(dotenv_file, field_info.json_schema_extra.get("env"), str(value))  # type: ignore
             else:
                 dotenv.unset_key(dotenv_file, field_info.json_schema_extra.get("env"))
 

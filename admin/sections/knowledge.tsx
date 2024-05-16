@@ -1,6 +1,13 @@
-import { useEffect, useState } from "react";
-import { Label } from "@/components/ui/label";
+import {
+  File,
+  FileStatus,
+  fetchFiles,
+  removeFile,
+  uploadFile,
+} from "@/client/files";
+import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Tooltip,
   TooltipContent,
@@ -9,14 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { ExpandableSection } from "@/components/ui/custom/expandableSection";
-import {
-  FileStatus,
-  fetchFiles,
-  removeFile,
-  uploadFile,
-  File,
-} from "@/client/files";
+import { useEffect, useState } from "react";
 
 export const Knowledge = () => {
   const [files, setFiles] = useState<File[]>([]);

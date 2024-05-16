@@ -5,9 +5,9 @@
 ```shell
 poetry install --no-root
 make build-frontends
-cp default.env config/.env
 make dev
 ```
+
 Note: To check out the admin UI during development, please go to http://localhost:3000/admin.
 
 ## Test Build

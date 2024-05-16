@@ -21,6 +21,9 @@
 
 # Ignore development create_llama code
 ./create_llama/
+./storage/
+./static/
+./data/
 
 # Do not ignore template config files
 !config/*
