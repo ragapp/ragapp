@@ -1,5 +1,12 @@
 # ragbox
 
+## 0.0.3
+
+### Patch Changes
+
+- 2d00a14: Use ChromaDB vector storage (file based)
+- 2d00a14: Bump create-llama to 0.1.4
+
 ## 0.0.2
 
 ### Patch Changes
