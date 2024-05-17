@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.4
+
+### Patch Changes
+
+- 275a96b: Add support for multiple model providers (starting with Gemini)
+
 ## 0.0.3
 
 ### Patch Changes
