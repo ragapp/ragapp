@@ -9,6 +9,7 @@ import {
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { ConfigForm } from "@/sections/config/form";
+import { ToolConfig } from "@/sections/config/tool";
 import { DemoChat } from "@/sections/demoChat";
 import { Footer } from "@/sections/footer";
 import { Knowledge } from "@/sections/knowledge";
@@ -50,7 +51,12 @@ export default function Home() {
               })}
             >
               <ConfigForm setConfigured={setConfigured} />
-              {configured && <Knowledge />}
+              {configured && (
+                <>
+                  <ToolConfig />
+                  <Knowledge />
+                </>
+              )}
             </div>
             {configured && (
               <div className="flex-1 overflow-y-auto p-4">

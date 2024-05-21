@@ -776,6 +776,26 @@ files = [
 ]
 
 [[package]]
+name = "duckduckgo-search"
+version = "6.1.0"
+description = "Search for words, documents, images, news, maps and text translation using the DuckDuckGo.com search engine."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "duckduckgo_search-6.1.0-py3-none-any.whl", hash = "sha256:0f9ea0cb0d23575d98255931c0d437cf67ac958be8e54459704b833fa903e693"},
+    {file = "duckduckgo_search-6.1.0.tar.gz", hash = "sha256:88e008e46b8c6037559f0617dfd9f034e5dd9b384b2795343a9ef25782ca053d"},
+]
+
+[package.dependencies]
+click = ">=8.1.7"
+orjson = ">=3.10.3"
+pyreqwest-impersonate = ">=0.4.5"
+
+[package.extras]
+dev = ["mypy (>=1.10.0)", "pytest (>=8.2.0)", "pytest-asyncio (>=0.23.6)", "ruff (>=0.4.4)"]
+lxml = ["lxml (>=5.2.2)"]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.2.0"
 description = "Backport of PEP 654 (exception groups)"
@@ -1826,6 +1846,36 @@ files = [
 [package.dependencies]
 llama-index-core = ">=0.10.7,<0.11.0"
 llama-parse = ">=0.4.0,<0.5.0"
+
+[[package]]
+name = "llama-index-tools-duckduckgo"
+version = "0.1.1"
+description = "llama-index tools integrating DuckDuckGo search"
+optional = false
+python-versions = "<4.0,>=3.8.1"
+files = [
+    {file = "llama_index_tools_duckduckgo-0.1.1-py3-none-any.whl", hash = "sha256:07dad94efb29ecdec4af9ded7abc9bfa98d5bd5687b42246dc1822c00795a44c"},
+    {file = "llama_index_tools_duckduckgo-0.1.1.tar.gz", hash = "sha256:0d5388fee6042169b04ba46522794b11400ae1caece77c22a627b2554d7702d8"},
+]
+
+[package.dependencies]
+duckduckgo-search = ">=6.1.0,<7.0.0"
+llama-index = ">=0.10.1,<0.11.0"
+
+[[package]]
+name = "llama-index-tools-wikipedia"
+version = "0.1.3"
+description = "llama-index tools wikipedia integration"
+optional = false
+python-versions = ">=3.8.1,<4.0"
+files = [
+    {file = "llama_index_tools_wikipedia-0.1.3-py3-none-any.whl", hash = "sha256:f0f4bd4c8a9c8bb9760440627a4a90a3a8c51de1b852bb5af6f3f1eef20facdf"},
+    {file = "llama_index_tools_wikipedia-0.1.3.tar.gz", hash = "sha256:91a4566a66946b4dc5b3e909e47d72e1f238f1f8c6cda733f777182da64f8617"},
+]
+
+[package.dependencies]
+llama-index-core = ">=0.10.1,<0.11.0"
+wikipedia = ">=1.4,<2.0"
 
 [[package]]
 name = "llama-index-vector-stores-chroma"
@@ -3321,6 +3371,26 @@ files = [
 ]
 
 [[package]]
+name = "pyreqwest-impersonate"
+version = "0.4.5"
+description = "HTTP client that can impersonate web browsers, mimicking their headers and `TLS/JA3/JA4/HTTP2` fingerprints"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pyreqwest_impersonate-0.4.5-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:d1b2f7a44c907699a8c8a40bcc9b25b5a8db6f37f292f106374314ef4d469f0b"},
+    {file = "pyreqwest_impersonate-0.4.5-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:539d9a14f308a778a9a30afeb308207588703d1d2e74cd9b890cf9f5c4f86bce"},
+    {file = "pyreqwest_impersonate-0.4.5-cp38-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:9012709b52d84d940f193e77d5e73d4b61c782ad60220b6648a54865a372eece"},
+    {file = "pyreqwest_impersonate-0.4.5-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:f0aedda1b8b3d62c627c8a8921a2fc702977108f83c90d675fa1900e68ea8fe5"},
+    {file = "pyreqwest_impersonate-0.4.5-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:910fb19e209a4a49156410226e010dff674c69e8c570817cc3fec9e8d80b6ea5"},
+    {file = "pyreqwest_impersonate-0.4.5-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:482e6254fcc666234cc3a53cdbfa8642991a7e454e45233f040687f9c96ffa88"},
+    {file = "pyreqwest_impersonate-0.4.5-cp38-abi3-win_amd64.whl", hash = "sha256:9ed0e07181a47af12624e50db388b0eb4e6c985be9a276ac5c7494fef492a100"},
+    {file = "pyreqwest_impersonate-0.4.5.tar.gz", hash = "sha256:27db49d0e244d5ff31cce7f66ba3a4fac4a53c33445970e6c7467672d9c5f56f"},
+]
+
+[package.extras]
+dev = ["pytest (>=8.1.1)"]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
@@ -4605,6 +4675,20 @@ files = [
 ]
 
 [[package]]
+name = "wikipedia"
+version = "1.4.0"
+description = "Wikipedia API for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "wikipedia-1.4.0.tar.gz", hash = "sha256:db0fad1829fdd441b1852306e9856398204dc0786d2996dd2e0c8bb8e26133b2"},
+]
+
+[package.dependencies]
+beautifulsoup4 = "*"
+requests = ">=2.0.0,<3.0.0"
+
+[[package]]
 name = "wrapt"
 version = "1.16.0"
 description = "Module for decorators, wrappers and monkey patching."
@@ -4804,4 +4888,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "5184e2ff9e21011c9f3e08137fbf922b50d58187e9b6a1f4c00d50cc2d419343"
+content-hash = "0e3ece7901004c2ba8e55185053e1a60cde0446e2f780b17598143ff4fd34baa"

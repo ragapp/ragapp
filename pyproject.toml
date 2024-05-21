@@ -21,6 +21,8 @@ llama-index-embeddings-gemini = "^0.1.6"
 llama-index-llms-gemini = "^0.1.7"
 llama-index-llms-ollama = "^0.1.3"
 llama-index-embeddings-ollama = "^0.1.2"
+llama-index-tools-wikipedia = "^0.1.3"
+llama-index-tools-duckduckgo = "^0.1.1"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -16,7 +16,7 @@ create-llama-app:
 		--tools none \
 		--post-install-action none \
 		--no-llama-parse \
-		--example-file \
+		--no-files \
 		--vector-db chroma \
 		-- create_llama
 	# We don't need the example data and default .env files
