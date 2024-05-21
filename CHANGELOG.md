@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.5
+
+### Patch Changes
+
+- 56e75d7: Add support for agent and tools (duckduckgo & wikipedia)
+
 ## 0.0.4
 
 ### Patch Changes
