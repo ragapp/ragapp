@@ -1,0 +1,32 @@
+services:
+  ragapp:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config:/app/config
+    networks:
+      - ragapp-network
+    environment:
+      - VECTOR_STORE_PROVIDER=qdrant
+      - QDRANT_HOST=http://qdrant:6333
+      - QDRANT_COLLECTION_NAME=ragapp
+      - QDRANT_API_KEY=""
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: always
+    container_name: qdrant
+    ports:
+      - 6333:6333
+      - 6334:6334
+    expose:
+      - 6333
+      - 6334
+      - 6335
+    networks:
+      - ragapp-network
+  
+networks:
+  ragapp-network:
+
