@@ -47,6 +47,12 @@ class EnvConfig(BaseSettings):
     google_api_key: str | None = Field(
         default=None, description="The Google API key to use.", env="GOOGLE_API_KEY"
     )
+    # Ollama config
+    ollama_base_url: str | None = Field(
+        default=None,
+        description="The base URL for the Ollama API.",
+        env="OLLAMA_BASE_URL",
+    )
     system_prompt: str | None = Field(
         default="You are a helpful assistant who helps users with their questions.",
         description="The system prompt to use for the LLM.",

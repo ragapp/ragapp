@@ -36,7 +36,14 @@ const GeminiConfigSchema = BaseConfigSchema.extend({
       "Google API Key is required",
     ),
 });
-const OllamaConfigSchema = BaseConfigSchema;
+const OllamaConfigSchema = BaseConfigSchema.extend({
+  model_provider: z.literal("ollama").nullable().optional(),
+  ollama_base_url: z
+    .string()
+    .default("http://host.docker.internal:11434")
+    .nullable()
+    .optional(),
+});
 
 // Merge the model config schemes with the Rag config scheme
 export const ConfigFormSchema = z
@@ -69,11 +76,10 @@ export const supportedProviders = [
     name: "Gemini",
     value: "gemini",
   },
-  // Todo: Enable Ollama provider once the docker network issue is resolved
-  // {
-  //   name: "Ollama",
-  //   value: "ollama",
-  // },
+  {
+    name: "Ollama",
+    value: "ollama",
+  },
 ];
 
 export const DEFAULT_OPENAI_CONFIG: z.input<typeof OpenAIConfigSchema> = {
@@ -95,6 +101,7 @@ export const DEFAULT_OLLAMA_CONFIG: z.input<typeof OllamaConfigSchema> = {
   model: "llama3:8b",
   embedding_model: "nomic-embed-text",
   embedding_dim: 768,
+  ollama_base_url: "http://host.docker.internal:11434",
 };
 
 export const DEFAULT_CONFIG: z.input<typeof ConfigFormSchema> = {};
