@@ -39,7 +39,8 @@ const GeminiConfigSchema = BaseConfigSchema.extend({
 const OllamaConfigSchema = BaseConfigSchema.extend({
   model_provider: z.literal("ollama").nullable().optional(),
   ollama_base_url: z
-    .literal("http://host.docker.internal:11434")
+    .string()
+    .default("http://host.docker.internal:11434")
     .nullable()
     .optional(),
 });
