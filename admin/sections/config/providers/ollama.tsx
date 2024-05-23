@@ -14,6 +14,22 @@ import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ModelForm } from "./shared";
 
+const embeddingModels = ["nomic-embed-text"];
+
+const filterOutEmbeddingModels = (models: string[]) => {
+  return models.filter((model) => {
+    const modelName = model.split(":")[0];
+    return !embeddingModels.includes(modelName);
+  });
+};
+
+const hasEmbeddingModel = (models?: string[]) => {
+  return models?.some((model) => {
+    const modelName = model.split(":")[0];
+    return embeddingModels.includes(modelName);
+  });
+};
+
 export const OllamaForm = ({
   form,
   defaultValues,
@@ -62,12 +78,7 @@ export const OllamaForm = ({
           </FormItem>
         )}
       />
-      <ModelForm
-        form={form}
-        defaultValues={defaultValues}
-        supportedModels={models ?? []}
-      />
-      {models?.length === 0 && (
+      {models?.length === 0 ? (
         <FormMessage>
           There is no available model from Ollama. <br />
           To start with Ollama provider, please pull a LLM model and
@@ -76,8 +87,14 @@ export const OllamaForm = ({
             https://ollama.com/library
           </a>
         </FormMessage>
+      ) : (
+        <ModelForm
+          form={form}
+          defaultValues={defaultValues}
+          supportedModels={models ? filterOutEmbeddingModels(models) : []}
+        />
       )}
-      {models?.includes("nomic-embed-text") ? null : (
+      {hasEmbeddingModel(models) ? null : (
         <FormMessage>
           The model <i>nomic-embed-text</i> is required. Please pull the model
           from{" "}
