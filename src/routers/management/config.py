@@ -24,12 +24,13 @@ def update_config(
     # Update config
     new_config.to_runtime_env()
     new_config.to_env_file()
-    # If the new config has a different model provider,
+    # If the new config has a different model provider
+    # Or the AI config has not been configured yet
     # We need to:
     # 1. Reload the llama_index settings
-    # 2. Generate the index again
+    # 2. Reset the index
     init_settings()
-    if new_config.model_provider != config.model_provider:
+    if (new_config.model_provider != config.model_provider) or not config.configured:
         reset_index()
 
     # Response with the updated config
