@@ -80,9 +80,8 @@ export const OllamaForm = ({
       />
       {getLLMModels(models ?? []).length === 0 ? (
         <FormMessage>
-          There is no available model from Ollama. <br />
-          To start with Ollama provider, please pull a LLM model and &nbsp;
-          <b>nomic-embed-text</b> embedding model from &nbsp;
+          There is no LLM model available using Ollama. <br />
+          Please pull a Ollama LLM model from &nbsp;
           <a href="https://ollama.com/library" target="_blank" rel="noreferrer">
             https://ollama.com/library
           </a>
