@@ -25,5 +25,9 @@
 ./static/
 ./data/
 
+# Deployment files
+./Dockerfile
+./docker-compose.yml
+
 # Do not ignore template config files
 !config/*

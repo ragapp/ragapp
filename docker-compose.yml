@@ -11,12 +11,25 @@ services:
     networks:
       - ragapp-network
 
+  setup-qdrant:
+    image: curlimages/curl:latest
+    networks:
+      - ragapp-network
+    volumes:
+      - ./scripts/create_qdrant_collection.sh:/create_qdrant_collection.sh
+    command: /bin/sh -c "chmod +x /create_qdrant_collection.sh && /create_qdrant_collection.sh"
+    depends_on:
+      - qdrant
+
   ollama:
     image: ollama/ollama:latest
     ports:
       - 11434:11434 
     volumes:
       - ./ollama:/root/.ollama
+      - ./scripts/setup_ollama.sh:/setup_ollama.sh
+    entrypoint: /bin/bash
+    command: -c "chmod +x /setup_ollama.sh && /setup_ollama.sh"
     networks:
       - ragapp-network
 
@@ -30,12 +43,15 @@ services:
     environment:
       - VECTOR_STORE_PROVIDER=qdrant
       - QDRANT_URL=http://qdrant:6333
-      - QDRANT_COLLECTION_NAME=ragapp
+      - QDRANT_COLLECTION_NAME=default
       - QDRANT_API_KEY=""
       - MODEL_PROVIDER=ollama
       - OLLAMA_BASE_URL=http://ollama:11434
+      - EMBEDDING_MODEL=nomic-embed-text
+      - EMBEDDING_DIM=768
     depends_on:
-      - qdrant
+      - setup-qdrant
+      - ollama
     networks:
       - ragapp-network
   
