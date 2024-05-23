@@ -16,15 +16,15 @@ import { ModelForm } from "./shared";
 
 const embeddingModels = ["nomic-embed-text"];
 
-const filterOutEmbeddingModels = (models: string[]) => {
+const getLLMModels = (models: string[]) => {
   return models.filter((model) => {
     const modelName = model.split(":")[0];
     return !embeddingModels.includes(modelName);
   });
 };
 
-const hasEmbeddingModel = (models?: string[]) => {
-  return models?.some((model) => {
+const getEmbeddingModels = (models: string[]) => {
+  return models.filter((model) => {
     const modelName = model.split(":")[0];
     return embeddingModels.includes(modelName);
   });
@@ -78,35 +78,41 @@ export const OllamaForm = ({
           </FormItem>
         )}
       />
-      {models?.length === 0 ? (
+      {getLLMModels(models ?? []).length === 0 ? (
         <FormMessage>
           There is no available model from Ollama. <br />
-          To start with Ollama provider, please pull a LLM model and
+          To start with Ollama provider, please pull a LLM model and &nbsp;
           <b>nomic-embed-text</b> embedding model from &nbsp;
           <a href="https://ollama.com/library" target="_blank" rel="noreferrer">
             https://ollama.com/library
           </a>
         </FormMessage>
+      ) : getEmbeddingModels(models ?? []).length == 0 ? (
+        <>
+          <ModelForm
+            form={form}
+            defaultValues={defaultValues}
+            supportedModels={getLLMModels(models ?? [])}
+          />
+          <FormMessage>
+            The model <i>nomic-embed-text</i> is required. Please pull the model
+            from{" "}
+            <a
+              href="https://ollama.com/library/nomic-embed-text"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {" "}
+              https://ollama.com/library/nomic-embed-text
+            </a>
+          </FormMessage>
+        </>
       ) : (
         <ModelForm
           form={form}
           defaultValues={defaultValues}
-          supportedModels={models ? filterOutEmbeddingModels(models) : []}
+          supportedModels={getLLMModels(models ?? [])}
         />
-      )}
-      {hasEmbeddingModel(models) ? null : (
-        <FormMessage>
-          The model <i>nomic-embed-text</i> is required. Please pull the model
-          from{" "}
-          <a
-            href="https://ollama.com/library/nomic-embed-text"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {" "}
-            https://ollama.com/library/nomic-embed-text
-          </a>
-        </FormMessage>
       )}
     </>
   );
