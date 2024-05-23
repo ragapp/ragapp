@@ -94,7 +94,7 @@ export const OllamaForm = ({
             supportedModels={getLLMModels(models ?? [])}
           />
           <FormMessage>
-            The model <i>nomic-embed-text</i> is required. Please pull the model
+            The embedding model <i>nomic-embed-text</i> is required. Please pull it
             from{" "}
             <a
               href="https://ollama.com/library/nomic-embed-text"
