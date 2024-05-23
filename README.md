@@ -16,11 +16,18 @@
 
 ## Get Started
 
-To run, start a docker container with our image:
+- To run, start a docker container with our image:
+  ```shell
+  docker run -p 8000:8000 ragapp/ragapp
+  ```
 
-```shell
-docker run -p 8000:8000 ragapp/ragapp
-```
+- More advanced, try using our docker-compose.yaml to kickstart the RagApp with Qdrant vector store and Ollama provider: 
+  1. Clone the repo or download the `docker-compose.yaml` and the scripts from the `scripts` folder. 
+  2. Go to the cloned/download folder and run: 
+  ```shell
+  MODEL=llama3 docker-compose up 
+  ```
+  It'll take a while for Ollama to download the model. If you don't specify `MODEL=llama3`, the default MODEL is `phi3`.
 
 Then, access the Admin UI at http://localhost:8000/admin to configure your RAGapp.
 
