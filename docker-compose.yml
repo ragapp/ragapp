@@ -11,6 +11,15 @@ services:
     networks:
       - ragapp-network
 
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434 
+    volumes:
+      - ./ollama:/root/.ollama
+    networks:
+      - ragapp-network
+
   ragapp:
     build: .
     ports:
@@ -23,6 +32,8 @@ services:
       - QDRANT_URL=http://qdrant:6333
       - QDRANT_COLLECTION_NAME=ragapp
       - QDRANT_API_KEY=""
+      - MODEL_PROVIDER=ollama
+      - OLLAMA_BASE_URL=http://ollama:11434
     depends_on:
       - qdrant
     networks:
