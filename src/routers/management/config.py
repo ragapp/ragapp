@@ -1,7 +1,8 @@
-from typing import Optional, Annotated
-from fastapi import APIRouter, Depends
+from typing import Optional, Annotated, List
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
 from src.models.env_config import EnvConfig, get_config
+from src.controllers.providers import AIProvider
 from src.tasks.indexing import reset_index
 from create_llama.backend.app.settings import init_settings
 
@@ -39,3 +40,13 @@ def update_config(
             "data": config.to_api_response(),
         }
     )
+
+
+@r.get("/models")
+def get_available_models(
+    provider: Optional[str] = Query(
+        None,
+        description="The provider to fetch the models from. Default is the configured provider.",
+    )
+) -> List[str]:
+    return AIProvider.fetch_available_models(provider)

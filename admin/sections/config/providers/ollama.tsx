@@ -1,3 +1,4 @@
+import { fetchModels } from "@/client/config";
 import {
   FormControl,
   FormDescription,
@@ -7,8 +8,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ModelForm } from "./shared";
+
+const embeddingModels = ["nomic-embed-text"];
+
+const getLLMModels = (models: string[]) => {
+  return models.filter((model) => {
+    const modelName = model.split(":")[0];
+    return !embeddingModels.includes(modelName);
+  });
+};
+
+const getEmbeddingModels = (models: string[]) => {
+  return models.filter((model) => {
+    const modelName = model.split(":")[0];
+    return embeddingModels.includes(modelName);
+  });
+};
 
 export const OllamaForm = ({
   form,
@@ -17,7 +37,25 @@ export const OllamaForm = ({
   form: UseFormReturn;
   defaultValues: any;
 }) => {
-  const defaultModels = ["llama3:8b", "phi3"];
+  const [models, setModels] = useState<string[]>();
+
+  // Fetch models from the api
+  useEffect(() => {
+    fetchModels("ollama")
+      .then((data) => {
+        setModels(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast({
+          className: cn(
+            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
+          ),
+          title: "Failed to fetch Ollama models",
+        });
+      });
+  }, []);
+
   return (
     <>
       <FormField
@@ -40,11 +78,41 @@ export const OllamaForm = ({
           </FormItem>
         )}
       />
-      <ModelForm
-        form={form}
-        defaultValues={defaultValues}
-        supportedModels={defaultModels}
-      />
+      {getLLMModels(models ?? []).length === 0 ? (
+        <FormMessage>
+          There is no LLM model available using Ollama. <br />
+          Please pull a Ollama LLM model from &nbsp;
+          <a href="https://ollama.com/library" target="_blank" rel="noreferrer">
+            https://ollama.com/library
+          </a>
+        </FormMessage>
+      ) : getEmbeddingModels(models ?? []).length == 0 ? (
+        <>
+          <ModelForm
+            form={form}
+            defaultValues={defaultValues}
+            supportedModels={getLLMModels(models ?? [])}
+          />
+          <FormMessage>
+            The embedding model <i>nomic-embed-text</i> is required. Please pull
+            it from{" "}
+            <a
+              href="https://ollama.com/library/nomic-embed-text"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {" "}
+              https://ollama.com/library/nomic-embed-text
+            </a>
+          </FormMessage>
+        </>
+      ) : (
+        <ModelForm
+          form={form}
+          defaultValues={defaultValues}
+          supportedModels={getLLMModels(models ?? [])}
+        />
+      )}
     </>
   );
 };
