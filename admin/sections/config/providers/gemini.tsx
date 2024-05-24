@@ -18,9 +18,11 @@ export const GeminiForm = ({
   defaultValues: any;
 }) => {
   const supportingModels = [
+    "gemini-1.0-pro",
+    "gemini-1.5-flash",
+    "gemini-1.5-flash-latest",
+    "gemini-1.5-pro",
     "gemini-1.5-pro-latest",
-    "gemini-pro",
-    "gemini-pro-vision",
   ];
 
   return (
