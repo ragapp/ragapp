@@ -48,6 +48,10 @@ def get_available_models(
     provider: Optional[str] = Query(
         None,
         description="The provider to fetch the models from. Default is the configured provider.",
-    )
+    ),
+    provider_url: Optional[str] = Query(
+        None,
+        description="The provider URL to fetch the models from. Default is the configured provider URL.",
+    ),
 ) -> List[str]:
-    return AIProvider.fetch_available_models(provider)
+    return AIProvider.fetch_available_models(provider, provider_url)
