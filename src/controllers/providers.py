@@ -4,20 +4,22 @@ from typing import List
 
 class AIProvider:
     @staticmethod
-    def fetch_ollama_models() -> List[str]:
+    def fetch_ollama_models(provider_url: str = None) -> List[str]:
         """
         Fetch all available models from the Ollama provider.
         """
         from ollama import Client
 
-        client = Client(host=os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434"))
+        client = Client(host=provider_url or os.getenv("OLLAMA_BASE_URL"))
         res = client.list()
         models = res.get("models", [])
 
         return [model.get("name") for model in models]
 
     @classmethod
-    def fetch_available_models(cls, provider: str = None) -> List[str]:
+    def fetch_available_models(
+        cls, provider: str = None, provider_url: str = None
+    ) -> List[str]:
         """
         Fetch all available models from the model provider.
         """
@@ -26,6 +28,6 @@ class AIProvider:
 
         match provider:
             case "ollama":
-                return cls.fetch_ollama_models()
+                return cls.fetch_ollama_models(provider_url)
             case _:
                 raise ValueError(f"Unsupported fetch models for provider: {provider}")

@@ -155,9 +155,12 @@ export async function updateConfig(
   return (await res.json()).data as ConfigFormType;
 }
 
-export async function fetchModels(provider: string): Promise<string[]> {
+export async function fetchModels(
+  provider: string,
+  providerUrl: string,
+): Promise<string[]> {
   const res = await fetch(
-    `${getBaseURL()}/api/management/config/models?provider=${provider}`,
+    `${getBaseURL()}/api/management/config/models?provider=${provider}&provider_url=${encodeURIComponent(providerUrl)}`,
   );
   if (!res.ok) {
     const error = await res.text();

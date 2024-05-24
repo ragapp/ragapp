@@ -41,19 +41,23 @@ export const OllamaForm = ({
     data: models,
     isLoading,
     isError,
-  } = useQuery("models", () => fetchModels("ollama"), {
-    staleTime: 300000, // 5 minutes
-    onError: (error: unknown) => {
-      console.error("Failed to fetch Ollama models:", error);
-      toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-        ),
-        title: "Failed to fetch Ollama models",
-        duration: 5000,
-      });
+  } = useQuery(
+    ["models", form.getValues("ollama_base_url")],
+    () => fetchModels("ollama", form.getValues("ollama_base_url")),
+    {
+      staleTime: 300000, // 5 minutes
+      onError: (error: unknown) => {
+        console.error("Failed to fetch Ollama models:", error);
+        toast({
+          className: cn(
+            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
+          ),
+          title: "Failed to fetch Ollama models",
+          duration: 5000,
+        });
+      },
     },
-  });
+  );
 
   return (
     <>
