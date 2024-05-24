@@ -16,10 +16,11 @@
 
 ## Get Started
 
-- To run, start a docker container with our image:
-  ```shell
-  docker run -p 8000:8000 ragapp/ragapp
-  ```
+To run, start a docker container with our image:
+
+```shell
+docker run -p 8000:8000 ragapp/ragapp
+```
 
 Then, access the Admin UI at http://localhost:8000/admin to configure your RAGapp.
 
