@@ -42,8 +42,8 @@ export const OllamaForm = ({
     isLoading,
     isError,
   } = useQuery(
-    "models",
-    () => fetchModels("ollama", form.getValues().ollama_base_url),
+    ["models", form.getValues("ollama_base_url")],
+    () => fetchModels("ollama", form.getValues("ollama_base_url")),
     {
       staleTime: 300000, // 5 minutes
       onError: (error: unknown) => {
