@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.6
+
+### Patch Changes
+
+- f643ee2: Add support for Ollama provider
+
 ## 0.0.5
 
 ### Patch Changes
