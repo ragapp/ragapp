@@ -55,7 +55,8 @@ export const OllamaForm = ({
           title: "Failed to fetch Ollama models",
           duration: 5000,
         });
-      }).finally(() => {
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, []);
