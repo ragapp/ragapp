@@ -21,8 +21,7 @@ services:
     networks:
       - ragapp-network
     volumes:
-      - ./scripts/create_qdrant_collection.sh:/create_qdrant_collection.sh
-      - ./scripts/setup_ollama.sh:/setup_ollama.sh
+      - ./scripts:/ragapp
     environment:
       - MODEL=${MODEL:-phi3}
       - OLLAMA_BASE_URL=http://ollama:11434
@@ -30,7 +29,11 @@ services:
       - COLLECTION_NAME=default
       - DISTANCE_METRIC=Cosine
       - VECTOR_SIZE=768
-    command: /bin/sh -c "chmod +x /create_qdrant_collection.sh /setup_ollama.sh && /create_qdrant_collection.sh && /setup_ollama.sh"
+    command: >
+      /bin/sh -c 
+      "chmod +x /ragapp/create_qdrant_collection.sh /ragapp/setup_ollama.sh &&
+      /ragapp/create_qdrant_collection.sh &&
+      /ragapp/setup_ollama.sh"
     depends_on:
       - qdrant
       - ollama
