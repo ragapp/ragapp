@@ -1,0 +1,66 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - 6333:6333
+      - 6334:6334
+    networks:
+      - ragapp-network
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434 
+    volumes:
+      - ./ollama:/root/.ollama
+    networks:
+      - ragapp-network
+  
+  setup:
+    image: curlimages/curl:latest
+    networks:
+      - ragapp-network
+    volumes:
+      - ./scripts:/ragapp
+    environment:
+      - MODEL=${MODEL:-phi3:latest}
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - QDRANT_URL=http://qdrant:6333
+      - COLLECTION_NAME=default
+      - DISTANCE_METRIC=Cosine
+      - VECTOR_SIZE=768
+    command: >
+      /bin/sh -c 
+      "chmod +x /ragapp/create_qdrant_collection.sh /ragapp/setup_ollama.sh &&
+      /ragapp/create_qdrant_collection.sh &&
+      /ragapp/setup_ollama.sh"
+    depends_on:
+      - qdrant
+      - ollama
+
+  ragapp:
+    build: .
+    image: ragapp/ragapp:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    environment:
+      - VECTOR_STORE_PROVIDER=qdrant
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_COLLECTION=default
+      - QDRANT_API_KEY=""
+      - MODEL_PROVIDER=ollama
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - EMBEDDING_MODEL=nomic-embed-text
+      - EMBEDDING_DIM=768
+      - MODEL=${MODEL:-phi3:latest}
+    depends_on:
+      - setup
+    networks:
+      - ragapp-network
+  
+networks:
+  ragapp-network:
+

@@ -98,7 +98,7 @@ export const DEFAULT_GEMINI_CONFIG: z.input<typeof GeminiConfigSchema> = {
 };
 export const DEFAULT_OLLAMA_CONFIG: z.input<typeof OllamaConfigSchema> = {
   model_provider: "ollama",
-  model: "llama3:8b",
+  model: "phi3:latest",
   embedding_model: "nomic-embed-text",
   embedding_dim: 768,
   ollama_base_url: "http://host.docker.internal:11434",

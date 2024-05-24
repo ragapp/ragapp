@@ -8,5 +8,6 @@ storage/
 data/
 node_modules/
 create_llama/
+ollama/
 
 !config/*

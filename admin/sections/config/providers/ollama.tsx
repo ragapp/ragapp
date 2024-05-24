@@ -10,8 +10,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { useQuery } from "react-query";
 import { ModelForm } from "./shared";
 
 const embeddingModels = ["nomic-embed-text"];
@@ -37,24 +37,23 @@ export const OllamaForm = ({
   form: UseFormReturn;
   defaultValues: any;
 }) => {
-  const [models, setModels] = useState<string[]>();
-
-  // Fetch models from the api
-  useEffect(() => {
-    fetchModels("ollama")
-      .then((data) => {
-        setModels(data);
-      })
-      .catch((err) => {
-        console.error(err);
-        toast({
-          className: cn(
-            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-          ),
-          title: "Failed to fetch Ollama models",
-        });
+  const {
+    data: models,
+    isLoading,
+    isError,
+  } = useQuery("models", () => fetchModels("ollama"), {
+    staleTime: 300000, // 5 minutes
+    onError: (error: unknown) => {
+      console.error("Failed to fetch Ollama models:", error);
+      toast({
+        className: cn(
+          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
+        ),
+        title: "Failed to fetch Ollama models",
+        duration: 5000,
       });
-  }, []);
+    },
+  });
 
   return (
     <>
@@ -78,7 +77,7 @@ export const OllamaForm = ({
           </FormItem>
         )}
       />
-      {getLLMModels(models ?? []).length === 0 ? (
+      {getLLMModels(models ?? []).length === 0 && !isLoading ? (
         <FormMessage>
           There is no LLM model available using Ollama. <br />
           Please pull a Ollama LLM model from &nbsp;
@@ -86,7 +85,7 @@ export const OllamaForm = ({
             https://ollama.com/library
           </a>
         </FormMessage>
-      ) : getEmbeddingModels(models ?? []).length == 0 ? (
+      ) : getEmbeddingModels(models ?? []).length == 0 && !isLoading ? (
         <>
           <ModelForm
             form={form}
