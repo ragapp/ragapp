@@ -9,16 +9,44 @@ logger = logging.getLogger("uvicorn")
 
 def index_all():
     # Just call the generate_datasource from create_llama for now
-    # Todo: update this once we added ingestion pipeline in create_llama
     generate_datasource()
-    return True
 
 
 def reset_index():
-    from chromadb import PersistentClient
+    """
+    Reset the index by removing the vector store data and STORAGE_DIR then re-indexing the data.
+    """
 
-    # Clear all the generated context data and vector store data
-    # and re-index the data again
+    def reset_index_chroma():
+        from chromadb import PersistentClient
+
+        # Todo: Consider using other method to clear the vector store data
+        chroma_path = os.getenv("CHROMA_PATH")
+        collection_name = os.getenv("CHROMA_COLLECTION", "default")
+        chroma_client = PersistentClient(path=chroma_path)
+        if chroma_client.get_or_create_collection(collection_name):
+            logger.info(f"Removing collection {collection_name}")
+            chroma_client.delete_collection(collection_name)
+
+    def reset_index_qdrant():
+        from app.engine.vectordbs.qdrant import get_vector_store
+
+        store = get_vector_store()
+        store.client.delete_collection(
+            store.collection_name,
+        )
+        store._create_collection(
+            collection_name=store.collection_name,
+            vector_size=int(os.getenv("EMBEDDING_DIM", 1536)),
+        )
+
+    vector_store_provider = os.getenv("VECTOR_STORE_PROVIDER", "chroma")
+    if vector_store_provider == "chroma":
+        reset_index_chroma()
+    elif vector_store_provider == "qdrant":
+        reset_index_qdrant()
+    else:
+        raise ValueError(f"Unsupported vector provider: {vector_store_provider}")
 
     # Remove STORAGE_DIR
     storage_context_dir = os.getenv("STORAGE_DIR")
@@ -26,13 +54,5 @@ def reset_index():
     if os.path.exists(storage_context_dir):
         shutil.rmtree(storage_context_dir)
 
-    # Todo: Consider using other method to clear the vector store data
-    chroma_path = os.getenv("CHROMA_PATH")
-    collection_name = os.getenv("CHROMA_COLLECTION", "default")
-    chroma_client = PersistentClient(path=chroma_path)
-    if chroma_client.get_or_create_collection(collection_name):
-        logger.info(f"Removing collection {collection_name}")
-        chroma_client.delete_collection(collection_name)
-
-    # Re-index the data
-    return index_all()
+    # Run the indexing
+    index_all()

@@ -38,6 +38,13 @@ RAGapp doesn't come with any authentication layer by design. Just protect the `/
 
 ## Deployment
 
+### Using Docker Compose
+  ```shell
+  MODEL=llama3 docker-compose up 
+  ```
+  It'll take a while for Ollama to download the model. If you don't specify `MODEL=llama3`, the default MODEL is `phi3`.
+
+### Kubernetes
 It's easy to deploy RAGapp in your own cloud infrastructure. Customized K8S deployment descriptors are coming soon.
 
 ## Development
