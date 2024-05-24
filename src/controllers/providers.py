@@ -17,7 +17,9 @@ class AIProvider:
         return [model.get("name") for model in models]
 
     @classmethod
-    def fetch_available_models(cls, provider: str = None, provider_url: str = None) -> List[str]:
+    def fetch_available_models(
+        cls, provider: str = None, provider_url: str = None
+    ) -> List[str]:
         """
         Fetch all available models from the model provider.
         """
