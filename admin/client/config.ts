@@ -160,7 +160,7 @@ export async function fetchModels(
   providerUrl: string,
 ): Promise<string[]> {
   const res = await fetch(
-    `${getBaseURL()}/api/management/config/models?provider=${provider}&provider_url=${providerUrl}`,
+    `${getBaseURL()}/api/management/config/models?provider=${provider}&provider_url=${encodeURIComponent(providerUrl)}`,
   );
   if (!res.ok) {
     const error = await res.text();
