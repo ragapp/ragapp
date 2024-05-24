@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.7
+
+### Patch Changes
+
+- 856c486: Fix fetching Ollama models from local Ollama
+
 ## 0.0.6
 
 ### Patch Changes
