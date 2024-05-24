@@ -10,7 +10,7 @@ class AIProvider:
         """
         from ollama import Client
 
-        client = Client(host=provider_url or os.getenv("OLLAMA_URL"))
+        client = Client(host=provider_url or os.getenv("OLLAMA_BASE_URL"))
         res = client.list()
         models = res.get("models", [])
 
