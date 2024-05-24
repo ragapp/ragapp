@@ -42,17 +42,28 @@ RAGapp doesn't come with any authentication layer by design. Just protect the `/
 
 ### Using Docker Compose
 
-We provide a [`docker-compose.yml`](./docker-compose.yml) file to make it easy to deploy RAGapp with [Ollama](https://ollama.com/) and [Qdrant](https://qdrant.tech/) in your own infrastructure.
+We provide a `docker-compose.yml` file to make deploying RAGapp with [Ollama](https://ollama.com/) and [Qdrant](https://qdrant.tech/) easy in your own infrastructure.
 
-Using the `MODEL` environment variable, you can specify which Ollama model to use, e.g. `llama3`:
+Using the `MODEL` environment variable, you can specify which model to use, e.g. [`llama3`](https://ollama.com/library/llama3):
 
 ```shell
 MODEL=llama3 docker-compose up
 ```
 
-If you don't specify the `MODEL` variable, the default model used is `phi3`.
+If you don't specify the `MODEL` variable, the default model used is `phi3`, which is less capable than `llama3` but faster to download.
 
-The `setup` container in the `docker-compose.yml` file will download the selected model into the [`ollama`](./ollama/) folder - this will take a few minutes.
+> _Note_: The `setup` container in the `docker-compose.yml` file will download the selected model into the [`ollama`](./ollama/) folder - this will take a few minutes.
+
+Using the `OLLAMA_BASE_URL` environment variables, you can specify which Ollama host to use.
+If you don't specify the `OLLAMA_BASE_URL` variable, the default points to the Ollama instance started by Docker Compose (`http://ollama:11434`).
+
+If you're running a local Ollama instance, you can choose to connect it to RAGapp by setting the `OLLAMA_BASE_URL` variable to `http://host.docker.internal:11434`:
+
+```shell
+MODEL=llama3 OLLAMA_BASE_URL=http://host.docker.internal:11434 docker-compose up
+```
+
+This is necessary if you're running RAGapp on macOS, as Docker for Mac does not support GPU acceleration.
 
 ### Kubernetes
 
