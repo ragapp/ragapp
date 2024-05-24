@@ -44,13 +44,13 @@ RAGapp doesn't come with any authentication layer by design. Just protect the `/
 
 We provide a [`docker-compose.yml`](./docker-compose.yml) file to make it easy to deploy RAGapp with [Ollama](https://ollama.com/) and [Qdrant](https://qdrant.tech/) in your own infrastructure.
 
-Using the `MODEL` environment variable, you can specify which Ollama model to use, e.g. `llama3`:
+Using the `MODEL` and `OLLAMA_BASE_URL` environment variables, you can specify which Ollama host and model to use, e.g. `llama3` and `http://host.docker.internal:11434`:
 
 ```shell
-MODEL=llama3 docker-compose up
+MODEL=llama3 OLLAMA_BASE_URL=http://host.docker.internal:11434 docker-compose up
 ```
 
-If you don't specify the `MODEL` variable, the default model used is `phi3`.
+If you don't specify the `MODEL` variable, the default model used is `phi3` and the `OLLAMA_BASE_URL` is http://ollama:11434 which points to the Ollama started by the docker-compose.
 
 The `setup` container in the `docker-compose.yml` file will download the selected model into the [`ollama`](./ollama/) folder - this will take a few minutes.
 

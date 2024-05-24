@@ -24,7 +24,7 @@ services:
       - ./scripts:/ragapp
     environment:
       - MODEL=${MODEL:-phi3:latest}
-      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
       - QDRANT_URL=http://qdrant:6333
       - COLLECTION_NAME=default
       - DISTANCE_METRIC=Cosine
@@ -52,7 +52,7 @@ services:
       - QDRANT_COLLECTION=default
       - QDRANT_API_KEY=""
       - MODEL_PROVIDER=ollama
-      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
       - EMBEDDING_MODEL=nomic-embed-text
       - EMBEDDING_DIM=768
       - MODEL=${MODEL:-phi3:latest}
