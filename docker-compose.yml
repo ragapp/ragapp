@@ -23,7 +23,7 @@ services:
     volumes:
       - ./scripts:/ragapp
     environment:
-      - MODEL=${MODEL:-phi3}
+      - MODEL=${MODEL:-phi3:latest}
       - OLLAMA_BASE_URL=http://ollama:11434
       - QDRANT_URL=http://qdrant:6333
       - COLLECTION_NAME=default
@@ -55,7 +55,7 @@ services:
       - OLLAMA_BASE_URL=http://ollama:11434
       - EMBEDDING_MODEL=nomic-embed-text
       - EMBEDDING_DIM=768
-      - MODEL=${MODEL:-phi3}
+      - MODEL=${MODEL:-phi3:latest}
     depends_on:
       - setup
     networks:
