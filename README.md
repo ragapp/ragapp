@@ -1,6 +1,6 @@
 <p align="center"><img alt="Logo - RAGapp" src="docs/logo.png"></p>
 
-<p align="center"><strong>The easiest way to use RAG in any enterprise.</strong></p>
+<p align="center"><strong>The easiest way to use Agentic RAG in any enterprise.</strong></p>
 
 <p align="center">As simple to configure as <a href="https://openai.com/index/introducing-gpts" target="_blank">OpenAI's custom GPTs</a>, but deployable in your own cloud infrastructure using Docker. Built using <a href="https://github.com/run-llama/llama_index">LlamaIndex</a>.</p>
 
@@ -24,6 +24,8 @@ docker run -p 8000:8000 ragapp/ragapp
 
 Then, access the Admin UI at http://localhost:8000/admin to configure your RAGapp.
 
+You can use hosted AI models from OpenAI or Gemini, and local models using [Ollama](https://ollama.com/).
+
 ## Endpoints
 
 The docker container exposes the following endpoints:
@@ -39,12 +41,21 @@ RAGapp doesn't come with any authentication layer by design. Just protect the `/
 ## Deployment
 
 ### Using Docker Compose
-  ```shell
-  MODEL=llama3 docker-compose up 
-  ```
-  It'll take a while for Ollama to download the model. If you don't specify `MODEL=llama3`, the default MODEL is `phi3`.
+
+We provide a [`docker-compose.yml`](./docker-compose.yml) file to make it easy to deploy RAGapp with [Ollama](https://ollama.com/) and [Qdrant](https://qdrant.tech/) in your own infrastructure.
+
+Using the `MODEL` environment variable, you can specify which Ollama model to use, e.g. `llama3`:
+
+```shell
+MODEL=llama3 docker-compose up
+```
+
+If you don't specify the `MODEL` variable, the default model used is `phi3`.
+
+The `setup` container in the `docker-compose.yml` file will download the selected model into the [`ollama`](./ollama/) folder - this will take a few minutes.
 
 ### Kubernetes
+
 It's easy to deploy RAGapp in your own cloud infrastructure. Customized K8S deployment descriptors are coming soon.
 
 ## Development
