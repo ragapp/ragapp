@@ -38,6 +38,7 @@ export const OllamaForm = ({
   defaultValues: any;
 }) => {
   const [models, setModels] = useState<string[]>();
+  const [loading, setLoading] = useState(true);
 
   // Fetch models from the api
   useEffect(() => {
@@ -52,7 +53,10 @@ export const OllamaForm = ({
             "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
           ),
           title: "Failed to fetch Ollama models",
+          duration: 5000,
         });
+      }).finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -78,7 +82,7 @@ export const OllamaForm = ({
           </FormItem>
         )}
       />
-      {getLLMModels(models ?? []).length === 0 ? (
+      {getLLMModels(models ?? []).length === 0 && !loading ? (
         <FormMessage>
           There is no LLM model available using Ollama. <br />
           Please pull a Ollama LLM model from &nbsp;
@@ -86,7 +90,7 @@ export const OllamaForm = ({
             https://ollama.com/library
           </a>
         </FormMessage>
-      ) : getEmbeddingModels(models ?? []).length == 0 ? (
+      ) : getEmbeddingModels(models ?? []).length == 0 && !loading ? (
         <>
           <ModelForm
             form={form}
