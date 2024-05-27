@@ -1,0 +1,33 @@
+[tool]
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = [ "Marcus Schiesser <mail@marcusschiesser.de>" ]
+readme = "README.md"
+
+[tool.poetry.scripts]
+generate = "app.engine.generate:generate_datasource"
+
+[tool.poetry.dependencies]
+python = "^3.11,<3.12"
+fastapi = "^0.109.1"
+python-dotenv = "^1.0.0"
+aiostream = "^0.5.2"
+llama-index = "0.10.28"
+llama-index-core = "0.10.28"
+cachetools = "^5.3.3"
+
+[tool.poetry.dependencies.uvicorn]
+extras = [ "standard" ]
+version = "^0.23.2"
+
+[tool.poetry.dependencies.llama-index-vector-stores-chroma]
+version = "^0.1.8"
+
+[tool.poetry.dependencies.llama-index-agent-openai]
+version = "0.2.2"
+
+[build-system]
+requires = [ "poetry-core" ]
+build-backend = "poetry.core.masonry.api"

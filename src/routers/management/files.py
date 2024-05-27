@@ -7,19 +7,19 @@ files_router = r = APIRouter()
 
 
 @r.get("")
-def fetch_files() -> list[File]:
+def fetch_files(user_id: str) -> list[File]:
     """
     Get the current files.
     """
-    return FileHandler.get_current_files()
+    return FileHandler.get_current_files(user_id)
 
 
 @r.post("")
-async def add_file(file: UploadFile):
+async def add_file(user_id: str, file: UploadFile):
     """
     Upload a new file.
     """
-    res = await FileHandler.upload_file(file, str(file.filename))
+    res = await FileHandler.upload_file(user_id, file, str(file.filename))
     if isinstance(res, UnsupportedFileExtensionError):
         # Return 400 response with message if the file extension is not supported
         return JSONResponse(
@@ -33,12 +33,12 @@ async def add_file(file: UploadFile):
 
 
 @r.delete("/{file_name}")
-def remove_file(file_name: str):
+def remove_file(user_id: str, file_name: str):
     """
     Remove a file.
     """
     try:
-        FileHandler.remove_file(file_name)
+        FileHandler.remove_file(user_id, file_name)
     except FileNotFoundError:
         return JSONResponse(
             status_code=404,

@@ -10,6 +10,7 @@ COPY Makefile .
 COPY admin ./admin
 COPY patch/frontend ./patch/frontend
 COPY patch/backend ./patch/backend
+COPY create_llama_local ./create_llama_local
 
 # Build static files for the Chat UI
 RUN make build-frontends

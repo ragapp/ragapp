@@ -18,10 +18,11 @@ from src.routers.management.files import files_router
 from src.routers.management.tools import tools_router
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI(reload=True)
 init_settings()
 
 environment = os.getenv("ENVIRONMENT")
+print(environment)
 if environment == "dev":
     app.add_middleware(
         CORSMiddleware,

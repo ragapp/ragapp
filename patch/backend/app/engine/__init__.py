@@ -5,11 +5,11 @@ from app.engine.tools import ToolFactory
 from app.engine.index import get_index
 
 
-def get_chat_engine():
+def get_chat_engine(user_id: str):
     top_k = int(os.getenv("TOP_K", "3"))
     system_prompt = os.getenv("SYSTEM_PROMPT")
 
-    index = get_index()
+    index = get_index(user_id)
     if index is None:
         raise RuntimeError("Index is not found")
 

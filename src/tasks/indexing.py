@@ -7,12 +7,12 @@ from create_llama.backend.app.engine.generate import generate_datasource
 logger = logging.getLogger("uvicorn")
 
 
-def index_all():
+def index_all(user_id: str):
     # Just call the generate_datasource from create_llama for now
-    generate_datasource()
+   generate_datasource(user_id)
 
 
-def reset_index():
+def reset_index(user_id: str):
     """
     Reset the index by removing the vector store data and STORAGE_DIR then re-indexing the data.
     """
@@ -22,7 +22,7 @@ def reset_index():
 
         # Todo: Consider using other method to clear the vector store data
         chroma_path = os.getenv("CHROMA_PATH")
-        collection_name = os.getenv("CHROMA_COLLECTION", "default")
+        collection_name = f"{os.getenv('CHROMA_COLLECTION', 'default')}_{user_id}"
         chroma_client = PersistentClient(path=chroma_path)
         if chroma_client.get_or_create_collection(collection_name):
             logger.info(f"Removing collection {collection_name}")
@@ -31,7 +31,7 @@ def reset_index():
     def reset_index_qdrant():
         from app.engine.vectordbs.qdrant import get_vector_store
 
-        store = get_vector_store()
+        store = get_vector_store(collection_name=f"default_{user_id}")
         store.client.delete_collection(
             store.collection_name,
         )
@@ -49,10 +49,10 @@ def reset_index():
         raise ValueError(f"Unsupported vector provider: {vector_store_provider}")
 
     # Remove STORAGE_DIR
-    storage_context_dir = os.getenv("STORAGE_DIR")
-    logger.info(f"Removing {storage_context_dir}")
-    if os.path.exists(storage_context_dir):
-        shutil.rmtree(storage_context_dir)
+    user_storage_dir = f"{os.getenv('STORAGE_DIR')}/{user_id}"
+    logger.info(f"Removing {user_storage_dir}")
+    if os.path.exists(user_storage_dir):
+        shutil.rmtree(user_storage_dir)
 
     # Run the indexing
-    index_all()
+    index_all(user_id)

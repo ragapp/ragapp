@@ -10,12 +10,12 @@ services:
   ollama:
     image: ollama/ollama:latest
     ports:
-      - 11434:11434 
+      - 11434:11434
     volumes:
       - ./ollama:/root/.ollama
     networks:
       - ragapp-network
-  
+
   setup:
     image: curlimages/curl:latest
     networks:
@@ -40,12 +40,15 @@ services:
 
   ragapp:
     build: .
-    image: ragapp/ragapp:latest
     ports:
       - "8000:8000"
     volumes:
       - ./config:/app/config
       - ./data:/app/data
+      - ./src:/app/src
+      - ./create_llama_local:/app/create_llama_local
+      - ./admin:/app/admin
+      - ./patch:/app/patch
     environment:
       - VECTOR_STORE_PROVIDER=qdrant
       - QDRANT_URL=http://qdrant:6333
@@ -60,7 +63,6 @@ services:
       - setup
     networks:
       - ragapp-network
-  
+
 networks:
   ragapp-network:
-

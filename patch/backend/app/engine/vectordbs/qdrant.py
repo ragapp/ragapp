@@ -2,8 +2,8 @@ import os
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 
 
-def get_vector_store():
-    collection_name = os.getenv("QDRANT_COLLECTION")
+def get_vector_store(user_id: str):
+    collection_name = f"{os.getenv('QDRANT_COLLECTION', 'default')}_{user_id}"
     url = os.getenv("QDRANT_URL")
     api_key = os.getenv("QDRANT_API_KEY")
     if not collection_name or not url:
