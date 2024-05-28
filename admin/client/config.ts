@@ -161,7 +161,7 @@ export async function fetchModels(
 ): Promise<string[]> {
   const params = new URLSearchParams({
     provider: provider,
-    ...(providerUrl && { provider_url: providerUrl })
+    ...(providerUrl && { provider_url: providerUrl }),
   });
 
   const url = `${getBaseURL()}/api/management/config/models?${params.toString()}`;

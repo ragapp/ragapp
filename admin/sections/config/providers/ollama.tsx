@@ -10,10 +10,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "react-query";
 import { ModelForm } from "./shared";
-import { Loader2 } from 'lucide-react';
 
 const embeddingModels = ["nomic-embed-text"];
 
@@ -85,48 +85,48 @@ export const OllamaForm = ({
           </FormItem>
         )}
       />
-      {isLoading ?
+      {isLoading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
-        : isError ? (
+      ) : isError ? (
+        <FormMessage>
+          Couldn't fetch Ollama models. Make sure the Ollama base URL is
+          accessible with RAGapp.
+        </FormMessage>
+      ) : getLLMModels(models ?? []).length === 0 ? (
+        <FormMessage>
+          There is no LLM model available using Ollama. <br />
+          Please pull a Ollama LLM model from &nbsp;
+          <a href="https://ollama.com/library" target="_blank" rel="noreferrer">
+            https://ollama.com/library
+          </a>
+        </FormMessage>
+      ) : getEmbeddingModels(models ?? []).length == 0 ? (
+        <>
+          <ModelForm
+            form={form}
+            defaultValues={defaultValues}
+            supportedModels={getLLMModels(models ?? [])}
+          />
           <FormMessage>
-            Couldn't fetch Ollama models. Make sure the Ollama base URL is accessible with RAGapp.
+            The embedding model <i>nomic-embed-text</i> is required. Please pull
+            it from{" "}
+            <a
+              href="https://ollama.com/library/nomic-embed-text"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {" "}
+              https://ollama.com/library/nomic-embed-text
+            </a>
           </FormMessage>
-        )
-          : getLLMModels(models ?? []).length === 0 ? (
-            <FormMessage>
-              There is no LLM model available using Ollama. <br />
-              Please pull a Ollama LLM model from &nbsp;
-              <a href="https://ollama.com/library" target="_blank" rel="noreferrer">
-                https://ollama.com/library
-              </a>
-            </FormMessage>
-          ) : getEmbeddingModels(models ?? []).length == 0 ? (
-            <>
-              <ModelForm
-                form={form}
-                defaultValues={defaultValues}
-                supportedModels={getLLMModels(models ?? [])}
-              />
-              <FormMessage>
-                The embedding model <i>nomic-embed-text</i> is required. Please pull
-                it from{" "}
-                <a
-                  href="https://ollama.com/library/nomic-embed-text"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {" "}
-                  https://ollama.com/library/nomic-embed-text
-                </a>
-              </FormMessage>
-            </>
-          ) : (
-            <ModelForm
-              form={form}
-              defaultValues={defaultValues}
-              supportedModels={getLLMModels(models ?? [])}
-            />
-          )}
+        </>
+      ) : (
+        <ModelForm
+          form={form}
+          defaultValues={defaultValues}
+          supportedModels={getLLMModels(models ?? [])}
+        />
+      )}
     </>
   );
 };
