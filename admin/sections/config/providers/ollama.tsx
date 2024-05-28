@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "react-query";
 import { ModelForm } from "./shared";
@@ -43,7 +44,10 @@ export const OllamaForm = ({
     isError,
   } = useQuery(
     ["models", form.getValues("ollama_base_url")],
-    () => fetchModels("ollama", form.getValues("ollama_base_url")),
+    () => {
+      const ollamaBaseUrl = form.getValues("ollama_base_url");
+      return ollamaBaseUrl && fetchModels("ollama", ollamaBaseUrl);
+    },
     {
       staleTime: 300000, // 5 minutes
       onError: (error: unknown) => {
@@ -81,7 +85,14 @@ export const OllamaForm = ({
           </FormItem>
         )}
       />
-      {getLLMModels(models ?? []).length === 0 && !isLoading ? (
+      {isLoading ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : isError ? (
+        <FormMessage>
+          Could not fetch Ollama models. Make sure the Ollama base URL is
+          accessible with RAGapp.
+        </FormMessage>
+      ) : getLLMModels(models ?? []).length === 0 ? (
         <FormMessage>
           There is no LLM model available using Ollama. <br />
           Please pull a Ollama LLM model from &nbsp;
@@ -89,7 +100,7 @@ export const OllamaForm = ({
             https://ollama.com/library
           </a>
         </FormMessage>
-      ) : getEmbeddingModels(models ?? []).length == 0 && !isLoading ? (
+      ) : getEmbeddingModels(models ?? []).length == 0 ? (
         <>
           <ModelForm
             form={form}

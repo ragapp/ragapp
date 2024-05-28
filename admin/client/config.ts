@@ -157,11 +157,15 @@ export async function updateConfig(
 
 export async function fetchModels(
   provider: string,
-  providerUrl: string,
+  providerUrl?: string,
 ): Promise<string[]> {
-  const res = await fetch(
-    `${getBaseURL()}/api/management/config/models?provider=${provider}&provider_url=${encodeURIComponent(providerUrl)}`,
-  );
+  const params = new URLSearchParams({
+    provider: provider,
+    ...(providerUrl && { provider_url: providerUrl }),
+  });
+
+  const url = `${getBaseURL()}/api/management/config/models?${params.toString()}`;
+  const res = await fetch(url);
   if (!res.ok) {
     const error = await res.text();
     throw new Error(error);
