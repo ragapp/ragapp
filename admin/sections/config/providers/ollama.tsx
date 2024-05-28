@@ -89,7 +89,7 @@ export const OllamaForm = ({
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : isError ? (
         <FormMessage>
-          Couldn't fetch Ollama models. Make sure the Ollama base URL is
+          Could not fetch Ollama models. Make sure the Ollama base URL is
           accessible with RAGapp.
         </FormMessage>
       ) : getLLMModels(models ?? []).length === 0 ? (
