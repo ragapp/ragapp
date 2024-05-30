@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AzureOpenAIForm } from "./providers/azureOpenai";
 import { GeminiForm } from "./providers/gemini";
 import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
@@ -42,6 +43,8 @@ export const ModelConfig = ({
         return <OllamaForm form={form} defaultValues={defaultValues} />;
       case "gemini":
         return <GeminiForm form={form} defaultValues={defaultValues} />;
+      case "azure-openai":
+        return <AzureOpenAIForm form={form} defaultValues={defaultValues} />;
       default:
         return null;
     }
