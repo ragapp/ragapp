@@ -1,10 +1,6 @@
 import os
-import logging
 from typing import Dict
 from llama_index.core.settings import Settings
-
-
-logger = logging.getLogger("uvicorn")
 
 
 def init_settings():
@@ -64,22 +60,11 @@ def init_azure_openai():
     from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
     from llama_index.core.constants import DEFAULT_TEMPERATURE
 
-    endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
-    api_key = os.getenv("AZURE_OPENAI_API_KEY")
-    api_version = os.getenv("AZURE_OPENAI_API_VERSION")
     llm_deployment = os.getenv("AZURE_OPENAI_LLM_DEPLOYMENT")
     embedding_deployment = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
-    if not all([endpoint, api_key, api_version, llm_deployment, embedding_deployment]):
-        logger.warning(
-            "Missing required environment variables for Azure OpenAI provider. "
-            "Required: AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY, AZURE_OPENAI_API_VERSION, AZURE_OPENAI_LLM_DEPLOYMENT, AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
-        )
     max_tokens = os.getenv("LLM_MAX_TOKENS")
     llm_config = {
-        "azure_endpoint": endpoint,
         "deployment_name": llm_deployment,
-        "api_key": api_key,
-        "api_version": api_version,
         "model": os.getenv("MODEL"),
         "temperature": float(os.getenv("LLM_TEMPERATURE", DEFAULT_TEMPERATURE)),
         "max_tokens": int(max_tokens) if max_tokens is not None else None,
@@ -88,10 +73,7 @@ def init_azure_openai():
 
     dimensions = os.getenv("EMBEDDING_DIM")
     embedding_config = {
-        "azure_endpoint": endpoint,
         "deployment_name": embedding_deployment,
-        "api_key": api_key,
-        "api_version": api_version,
         "model": os.getenv("EMBEDDING_MODEL"),
         "dimensions": int(dimensions) if dimensions is not None else None,
     }

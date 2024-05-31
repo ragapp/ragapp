@@ -62,14 +62,6 @@ const AzureOpenAIConfigSchema = BaseConfigSchema.extend({
       (value) => value && value.trim() !== "",
       "Azure OpenAI API key is required",
     ),
-  azure_openai_api_version: z
-    .string()
-    .nullable()
-    .optional()
-    .refine(
-      (value) => value && value.trim() !== "",
-      "Azure OpenAI API version is required",
-    ),
   azure_openai_llm_deployment: z
     .string()
     .nullable()
@@ -157,7 +149,6 @@ export const DEFAULT_AZURE_OPENAI_CONFIG: z.input<
   typeof AzureOpenAIConfigSchema
 > = {
   model_provider: "azure-openai",
-  azure_openai_api_version: "2024-02-01",
   model: "gpt-35-turbo",
   embedding_model: "text-embedding-3-small",
   embedding_dim: 1536,

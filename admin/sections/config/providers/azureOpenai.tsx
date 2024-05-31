@@ -23,7 +23,6 @@ export const AzureOpenAIForm = ({
   form: UseFormReturn;
   defaultValues: any;
 }) => {
-  const AZURE_OPENAI_API_VERSIONS = ["2024-02-01"];
   const MODELS = ["gpt-35-turbo", "gpt-4o", "gpt-4"];
   const EMBEDDING_MODELS = [
     "text-embedding-3-small",
@@ -53,53 +52,23 @@ export const AzureOpenAIForm = ({
         />
         <FormField
           control={form.control}
-          name="azure_openai_api_version"
+          name="azure_openai_api_key"
           render={({ field }) => (
             <FormItem className="w-1/2">
-              <FormLabel>API Version</FormLabel>
+              <FormLabel>API Key</FormLabel>
               <FormControl>
-                <Select
-                  defaultValue={defaultValues.azure_openai_api_version}
-                  onValueChange={field.onChange}
+                <PasswordInput
+                  placeholder={
+                    defaultValues.azure_openai_api && "****************"
+                  }
                   {...field}
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={defaultValues.azure_openai_api_version}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {AZURE_OPENAI_API_VERSIONS.map((api_version) => (
-                      <SelectItem key={api_version} value={api_version}>
-                        {api_version}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
       </div>
-      <FormField
-        control={form.control}
-        name="azure_openai_api_key"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>API Key</FormLabel>
-            <FormControl>
-              <PasswordInput
-                placeholder={
-                  defaultValues.azure_openai_api && "****************"
-                }
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
       <div className="flex flex-row w-full space-x-2">
         <FormField
           control={form.control}

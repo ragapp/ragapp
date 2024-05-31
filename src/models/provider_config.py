@@ -38,7 +38,7 @@ class AzureOpenAIConfig(BaseModel):
         env="AZURE_OPENAI_API_KEY",
     )
     azure_openai_api_version: str | None = Field(
-        default=None,
+        default="2024-02-01",
         description="The Azure OpenAI API version to use",
         env="AZURE_OPENAI_API_VERSION",
     )
