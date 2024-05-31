@@ -54,12 +54,14 @@ services:
       - MODEL_PROVIDER=ollama
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
       - EMBEDDING_MODEL=nomic-embed-text
-      - EMBEDDING_DIM=768
+      - EMBEDDING_DIM=${EMBEDDING_DIM:-1536}
       - MODEL=${MODEL:-phi3:latest}
     depends_on:
       - setup
     networks:
       - ragapp-network
+    env_file:
+      - config/.env
   
 networks:
   ragapp-network:

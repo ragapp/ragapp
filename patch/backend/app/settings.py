@@ -65,7 +65,7 @@ def init_azure_openai():
     max_tokens = os.getenv("LLM_MAX_TOKENS")
     # llama_index uses AZURE_OPENAI_API_KEY but it conflicts with the OpenAI API key.
     # To avoid this, we use OPENAI_API_KEY instead.
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("AZURE_OPENAI_API_KEY")
     llm_config = {
         "api_key": api_key,
         "deployment_name": llm_deployment,
