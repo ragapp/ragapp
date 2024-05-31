@@ -60,6 +60,7 @@ services:
       - setup
     networks:
       - ragapp-network
+
     env_file:
       - config/.env
   
