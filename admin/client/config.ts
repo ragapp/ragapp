@@ -1,48 +1,16 @@
 import { z } from "zod";
+import {
+  AzureOpenAIConfigSchema,
+  DEFAULT_AZURE_OPENAI_CONFIG,
+} from "./providers/azure";
+import { DEFAULT_GEMINI_CONFIG, GeminiConfigSchema } from "./providers/gemini";
+import { DEFAULT_OLLAMA_CONFIG, OllamaConfigSchema } from "./providers/ollama";
+import { DEFAULT_OPENAI_CONFIG, OpenAIConfigSchema } from "./providers/openai";
 import { getBaseURL } from "./utils";
 
 // Rag config scheme
 export const RagConfigSchema = z.object({
   system_prompt: z.string().nullable().optional(),
-});
-
-// Model config schemes
-const BaseConfigSchema = z.object({
-  model_provider: z.string().nullable().optional(),
-  model: z.string().nullable().optional(),
-  embedding_model: z.string().nullable().optional(),
-  embedding_dim: z.number().nullable().optional(),
-  configured: z.boolean().nullable().optional(),
-});
-const OpenAIConfigSchema = BaseConfigSchema.extend({
-  model_provider: z.literal("openai").nullable().optional(),
-  openai_api_key: z
-    .string()
-    .nullable()
-    .optional()
-    .refine(
-      (value) => value && value.trim() !== "",
-      "OpenAI API Key is required",
-    ),
-});
-const GeminiConfigSchema = BaseConfigSchema.extend({
-  model_provider: z.literal("gemini").nullable().optional(),
-  google_api_key: z
-    .string()
-    .nullable()
-    .optional()
-    .refine(
-      (value) => value && value.trim() !== "",
-      "Google API Key is required",
-    ),
-});
-const OllamaConfigSchema = BaseConfigSchema.extend({
-  model_provider: z.literal("ollama").nullable().optional(),
-  ollama_base_url: z
-    .string()
-    .default("http://host.docker.internal:11434")
-    .nullable()
-    .optional(),
 });
 
 // Merge the model config schemes with the Rag config scheme
@@ -51,6 +19,7 @@ export const ConfigFormSchema = z
     OpenAIConfigSchema.merge(RagConfigSchema),
     GeminiConfigSchema.merge(RagConfigSchema),
     OllamaConfigSchema.merge(RagConfigSchema),
+    AzureOpenAIConfigSchema.merge(RagConfigSchema),
   ])
   .refine((data) => {
     switch (data.model_provider) {
@@ -60,6 +29,8 @@ export const ConfigFormSchema = z
         return GeminiConfigSchema.parse(data);
       case "ollama":
         return OllamaConfigSchema.parse(data);
+      case "azure-openai":
+        return AzureOpenAIConfigSchema.parse(data);
       default:
         return true;
     }
@@ -80,29 +51,11 @@ export const supportedProviders = [
     name: "Ollama",
     value: "ollama",
   },
+  {
+    name: "Azure OpenAI",
+    value: "azure-openai",
+  },
 ];
-
-export const DEFAULT_OPENAI_CONFIG: z.input<typeof OpenAIConfigSchema> = {
-  model_provider: "openai",
-  model: "gpt-3.5-turbo",
-  embedding_model: "text-embedding-3-small",
-  embedding_dim: 1536,
-  openai_api_key: "",
-};
-export const DEFAULT_GEMINI_CONFIG: z.input<typeof GeminiConfigSchema> = {
-  model_provider: "gemini",
-  model: "gemini-1.5-pro-latest",
-  embedding_model: "embedding-001",
-  embedding_dim: 768,
-  google_api_key: "",
-};
-export const DEFAULT_OLLAMA_CONFIG: z.input<typeof OllamaConfigSchema> = {
-  model_provider: "ollama",
-  model: "phi3:latest",
-  embedding_model: "nomic-embed-text",
-  embedding_dim: 768,
-  ollama_base_url: "http://host.docker.internal:11434",
-};
 
 export const DEFAULT_CONFIG: z.input<typeof ConfigFormSchema> = {};
 
@@ -119,6 +72,8 @@ export const getDefaultConfig = (provider: string) => {
       return { ...config, ...DEFAULT_OLLAMA_CONFIG };
     case "gemini":
       return { ...config, ...DEFAULT_GEMINI_CONFIG };
+    case "azure-openai":
+      return { ...config, ...DEFAULT_AZURE_OPENAI_CONFIG };
     default:
       return { ...config };
   }

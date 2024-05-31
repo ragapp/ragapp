@@ -12,53 +12,26 @@ from pydantic import (
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from src.constants import ENV_FILE_PATH
+from src.models.provider_config import ProviderConfig
 
 
-class EnvConfig(BaseSettings):
+# We're using inheritance to flatten all the fields into a single class
+# Todo: Refactor API to nested structure
+class EnvConfig(ProviderConfig):
     """
     Inference configuration settings from environment variables.
     """
 
-    model_provider: str | None = Field(
-        default=None,
-        description="The model provider to use for the LLM.",
-        env="MODEL_PROVIDER",
-    )
-    model: str | None = Field(
-        default=None,
-        description="The model to use for the LLM.",
-        env="MODEL",
-    )
-    embedding_model: str | None = Field(
-        default=None,
-        description="The embedding model to use for the LLM.",
-        env="EMBEDDING_MODEL",
-    )
-    embedding_dim: int | None = Field(
-        default=None,
-        description="The vector size of the embedding model.",
-        env="EMBEDDING_DIM",
-    )
-    # OpenAI config
-    openai_api_key: str | None = Field(
-        default=None, description="The OpenAI API key to use.", env="OPENAI_API_KEY"
-    )
-    # Gemini config
-    google_api_key: str | None = Field(
-        default=None, description="The Google API key to use.", env="GOOGLE_API_KEY"
-    )
-    # Ollama config
-    ollama_base_url: str | None = Field(
-        default=None,
-        description="The base URL for the Ollama API.",
-        env="OLLAMA_BASE_URL",
-    )
+    # System prompt
     system_prompt: str | None = Field(
         default="You are a helpful assistant who helps users with their questions.",
         description="The system prompt to use for the LLM.",
         env="SYSTEM_PROMPT",
         preprocess=True,
     )
+
+    class Config:
+        extra = "ignore"
 
     @computed_field
     @property
@@ -68,6 +41,8 @@ class EnvConfig(BaseSettings):
         elif self.model_provider == "gemini":
             return self.google_api_key is not None
         elif self.model_provider == "ollama":
+            return True
+        elif self.model_provider == "azure-openai":
             return True
         return False
 
