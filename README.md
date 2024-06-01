@@ -65,6 +65,8 @@ MODEL=llama3 OLLAMA_BASE_URL=http://host.docker.internal:11434 docker-compose up
 
 This is necessary if you're running RAGapp on macOS, as Docker for Mac does not support GPU acceleration.
 
+To enable Docker access to NVIDIA GPUs on Linux, [install the NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+
 ### Kubernetes
 
 It's easy to deploy RAGapp in your own cloud infrastructure. Customized K8S deployment descriptors are coming soon.
