@@ -26,6 +26,8 @@ Then, access the Admin UI at http://localhost:8000/admin to configure your RAGap
 
 You can use hosted AI models from OpenAI or Gemini, and local models using [Ollama](https://ollama.com/).
 
+> _Note_: To avoid [running into any errors](https://github.com/ragapp/ragapp/issues/22), we recommend using the latest version of Docker and (if needed) Docker Compose.
+
 ## Endpoints
 
 The docker container exposes the following endpoints:
