@@ -28,6 +28,7 @@ export const AzureOpenAIForm = ({
     "text-embedding-3-small",
     "text-embedding-3-medium",
     "text-embedding-3-large",
+    "text-embedding-ada-002",
   ];
 
   return (
