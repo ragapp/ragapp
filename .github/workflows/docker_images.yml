@@ -39,6 +39,14 @@ jobs:
             ragapp/ragapp:${{ steps.tag.outputs.TAG }}
             ragapp/ragapp:latest
 
+      - name: Create GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "README.md"
+          name: Release ${{ steps.tag.outputs.TAG }}
+          bodyFile: "CHANGELOG.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
   release_dev_image:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
