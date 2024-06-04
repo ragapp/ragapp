@@ -78,3 +78,10 @@ class ProviderConfig(
     class Config:
         extra = "ignore"
         protected_namespaces = ("settings_",)
+
+    def model_post_init(self, __context: dict[str, any]) -> None:
+        # llama_index will be conflicted if the AZURE_OPENAI_API_KEY and OPENAI_API_KEY are used together.
+        # so we must clean OPENAI_API_KEY if the model_provider is azure-openai
+        # Todo: Refactor API to nested structure, clean the unused fields in the respective classes
+        if self.model_provider == "azure-openai":
+            self.openai_api_key = None

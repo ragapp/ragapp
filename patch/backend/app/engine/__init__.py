@@ -20,9 +20,8 @@ def get_chat_engine():
         from llama_index.core.chat_engine import CondensePlusContextChatEngine
 
         return CondensePlusContextChatEngine.from_defaults(
-            retriever=index.as_retriever(
-                system_prompt=system_prompt,
-            ),
+            retriever=index.as_retriever(top_k=top_k),
+            system_prompt=system_prompt,
             llm=Settings.llm,
         )
     else:

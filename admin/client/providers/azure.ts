@@ -10,6 +10,10 @@ export const AzureOpenAIConfigSchema = BaseConfigSchema.extend({
     .refine(
       (value) => value && value.trim() !== "",
       "Azure OpenAI endpoint is required",
+    )
+    .refine(
+      (value) => value && value.trim().startsWith("https://"),
+      "Azure OpenAI endpoint must start with 'https://'",
     ),
   azure_openai_api_key: z
     .string()
