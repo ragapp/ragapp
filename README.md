@@ -38,7 +38,17 @@ The docker container exposes the following endpoints:
 
 > _Note_: The Chat UI and API are only functional if the RAGapp is configured.
 
-RAGapp doesn't come with any authentication layer by design. Just protect the `/admin` path in your cloud environment to secure your RAGapp.
+## Security
+
+### Authentication
+
+RAGapp doesn't come with any authentication layer by design. You'll have to protect the `/admin` and `/api/management` paths in your cloud environment to secure your RAGapp.
+This step heavily depends on your cloud provider and the services you use.
+A common way to do so using Kubernetes is to use an [Ingress Controller](https://kubernetes.github.io/ingress-nginx/examples/auth/basic/).
+
+### Authorization
+
+Later versions of RAGapp will support to restrict access based on access tokens forwarded from an API Gateway or similar.
 
 ## Deployment
 
