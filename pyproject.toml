@@ -11,7 +11,7 @@ fastapi = "^0.110.1"
 python-dotenv = "^1.0.0"
 llama-index = "0.10.41"
 llama-index-core = "0.10.41"
-llama-index-agent-openai = "0.2.5"
+llama-index-agent-openai = "0.2.6"
 uvicorn = { version = "^0.23.2", extras = [ "standard" ] }
 pydantic-settings = "^2.2.1"
 python-multipart = "^0.0.9"
@@ -27,6 +27,7 @@ llama-index-vector-stores-qdrant = "^0.2.8"
 ollama = "^0.2.0"
 llama-index-llms-azure-openai = "^0.1.8"
 llama-index-embeddings-azure-openai = "^0.1.9"
+cachetools = "^5.3.3"
 
 
 [tool.poetry.group.dev.dependencies]
