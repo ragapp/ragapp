@@ -8,18 +8,21 @@ import { DEFAULT_OLLAMA_CONFIG, OllamaConfigSchema } from "./providers/ollama";
 import { DEFAULT_OPENAI_CONFIG, OpenAIConfigSchema } from "./providers/openai";
 import { getBaseURL } from "./utils";
 
-// Rag config scheme
-export const RagConfigSchema = z.object({
+// Chat config scheme
+export const ChatConfigSchema = z.object({
   system_prompt: z.string().nullable().optional(),
+  conversation_starters: z.array(z.string()).optional().refine((data) => {
+    return data?.every((item) => item.trim() !== "");
+  }, { message: "A conversation starter message must be non-empty" }),
 });
 
-// Merge the model config schemes with the Rag config scheme
+// Merge the model config schemes with the Chat config scheme
 export const ConfigFormSchema = z
   .union([
-    OpenAIConfigSchema.merge(RagConfigSchema),
-    GeminiConfigSchema.merge(RagConfigSchema),
-    OllamaConfigSchema.merge(RagConfigSchema),
-    AzureOpenAIConfigSchema.merge(RagConfigSchema),
+    OpenAIConfigSchema.merge(ChatConfigSchema),
+    GeminiConfigSchema.merge(ChatConfigSchema),
+    OllamaConfigSchema.merge(ChatConfigSchema),
+    AzureOpenAIConfigSchema.merge(ChatConfigSchema),
   ])
   .refine((data) => {
     switch (data.model_provider) {
@@ -62,6 +65,7 @@ export const DEFAULT_CONFIG: z.input<typeof ConfigFormSchema> = {};
 export const getDefaultConfig = (provider: string) => {
   const config = {
     system_prompt: null,
+    conversation_starters: [],
     configured: false,
   };
 

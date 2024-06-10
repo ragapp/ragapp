@@ -1,4 +1,5 @@
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
+import { MultipleInputs } from "@/components/ui/custom/multipleInput";
 import { SubmitButton } from "@/components/ui/custom/submitButton";
 import {
   FormControl,
@@ -6,10 +7,11 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 
-export const RAGConfig = ({
+export const ChatConfig = ({
   form,
   isSubmitting,
 }: {
@@ -18,8 +20,8 @@ export const RAGConfig = ({
 }) => {
   return (
     <ExpandableSection
-      title={"RAG Config"}
-      description="Modify RAG parameters to improve the AI's performance."
+      title={"Chat Config"}
+      description="Config how the chatbot behaves and interacts with the user"
       open={true}
     >
       <FormField
@@ -35,6 +37,22 @@ export const RAGConfig = ({
               Use system prompt to define the responsibilities and behaviors of
               the assistant.
             </FormDescription>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="conversation_starters"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Conversation questions</FormLabel>
+            <FormControl>
+              <MultipleInputs {...field} />
+            </FormControl>
+            <FormDescription>
+              Add suggested questions to help users start a conversation with the app.
+            </FormDescription>
+            <FormMessage />
           </FormItem>
         )}
       />

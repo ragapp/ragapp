@@ -1,18 +1,23 @@
 import os
 import dotenv
-from typing import Optional, Annotated
-from pydantic import (
-    BaseModel,
-    Field,
-    SecretStr,
-    PlainSerializer,
-    BeforeValidator,
-    validator,
-    computed_field,
-)
+from typing import Optional, Annotated, List, Any
+from pydantic import Field, validator, field_validator, computed_field
+from pydantic.json_schema import CoreSchema
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from src.constants import ENV_FILE_PATH
 from src.models.provider_config import ProviderConfig
+
+
+class NewlineListEnv(List[str]):
+    def __str__(self):
+        return "\n".join(self)
+
+    def __repr__(self):
+        return str(self)
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type, handler) -> CoreSchema:
+        return handler(NewlineListEnv)
 
 
 # We're using inheritance to flatten all the fields into a single class
@@ -29,9 +34,16 @@ class EnvConfig(ProviderConfig):
         env="SYSTEM_PROMPT",
         preprocess=True,
     )
+    conversation_starters: NewlineListEnv | str | None = Field(
+        default=None,
+        description="Suggested questions for users to start a conversation",
+        env="CONVERSATION_STARTERS",
+        preprocess=True,
+    )
 
     class Config:
         extra = "ignore"
+        arbitrary_types_allowed = True
 
     @computed_field
     @property
@@ -46,12 +58,27 @@ class EnvConfig(ProviderConfig):
             return True
         return False
 
-    # To convert empty string prompt to None automatically
-    @validator("system_prompt", pre=True)
+    @field_validator("system_prompt", mode="before")
     def preprocess_system_prompt(cls, value):
+        """
+        To convert empty string prompt to None automatically
+        """
         if value == "":
             return None
         return value
+
+    @field_validator("conversation_starters", mode="before")
+    def preprocess_conversation_starters(cls, value):
+        """
+        To convert empty string prompt to None automatically and split the string to list
+        """
+        if type(value) == list:
+            return NewlineListEnv(value)
+        if type(value) == str:
+            if value == "":
+                return None
+            else:
+                return NewlineListEnv(value.split("\n"))
 
     def to_runtime_env(self):
         """
