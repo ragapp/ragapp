@@ -9,7 +9,7 @@ import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ChatConfig } from "./chat";
 import { ModelConfig } from "./model";
@@ -21,6 +21,9 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [defaultValues, setDefaultValues] = useState(DEFAULT_CONFIG);
+  // To detect the change of conversation starters
+  const conversationStarters = form.watch("conversation_starters");
+  const initialConversationStarters = useRef(conversationStarters);
 
   async function onSubmit(data: any) {
     setIsSubmitting(true);
@@ -41,6 +44,13 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
       } else {
         setConfigured(false);
       }
+      // Reload the page if the conversation starters config have changed
+      if (
+        JSON.stringify(initialConversationStarters.current) !==
+        JSON.stringify(conversationStarters)
+      ) {
+        window.location.reload();
+      }
     } catch (err) {
       console.error(err);
       toast({
@@ -57,6 +67,7 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
     fetchConfig()
       .then((config) => {
         setDefaultValues(config);
+        initialConversationStarters.current = config.conversation_starters;
         // Set the configured state
         // todo: Consider to use provider or other state management
         if (config.configured) {

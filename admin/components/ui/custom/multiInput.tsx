@@ -13,7 +13,7 @@ type InputElementsProps = InputProps & {
   onChange: Dispatch<SetStateAction<string[]>>;
 };
 
-const MultipleInputs = forwardRef<HTMLInputElement, InputElementsProps>(
+const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
   ({ value = [""], onChange, ...props }, ref) => {
     useEffect(() => {
       if (!value || value.length === 0) {
@@ -126,6 +126,6 @@ const MultipleInputs = forwardRef<HTMLInputElement, InputElementsProps>(
   },
 );
 
-MultipleInputs.displayName = "MultipleInputs";
+MultiInput.displayName = "MultiInput";
 
-export { MultipleInputs };
+export { MultiInput };

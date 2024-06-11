@@ -1,5 +1,5 @@
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
-import { MultipleInputs } from "@/components/ui/custom/multipleInput";
+import { MultiInput } from "@/components/ui/custom/multiInput";
 import { SubmitButton } from "@/components/ui/custom/submitButton";
 import {
   FormControl,
@@ -47,7 +47,7 @@ export const ChatConfig = ({
           <FormItem className="pt-4">
             <FormLabel>Conversation questions</FormLabel>
             <FormControl>
-              <MultipleInputs {...field} />
+              <MultiInput {...field} />
             </FormControl>
             <FormDescription>
               Add suggested questions to help users start a conversation with
