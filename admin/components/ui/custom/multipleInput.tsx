@@ -1,6 +1,6 @@
 import { Input, InputProps } from "@/components/ui/input";
-import { XIcon, PlusIcon } from "lucide-react";
-import { Dispatch, SetStateAction, forwardRef, useEffect, useRef, useState } from "react";
+import { XIcon } from "lucide-react";
+import { Dispatch, SetStateAction, forwardRef, useEffect, useState } from "react";
 
 type InputElementsProps = InputProps & {
     value: string[];
@@ -8,9 +8,8 @@ type InputElementsProps = InputProps & {
 };
 
 export const MultipleInputs = forwardRef<HTMLInputElement, InputElementsProps>(
-    ({ value, onChange, ...props }, ref) => {
+    ({ value = [""], onChange, ...props }, ref) => {
         useEffect(() => {
-            // Ensure there's at least one input if the initial value is null or undefined
             if (!value || value.length === 0) {
                 onChange([""]);
             }
@@ -28,10 +27,12 @@ export const MultipleInputs = forwardRef<HTMLInputElement, InputElementsProps>(
         };
 
         const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-            if (e.key === "Enter" && index === value.length - 1) {
+            if (e.key === "Enter" && e.currentTarget.value.trim() !== "") {
                 e.preventDefault();
-                onChange([...value, ""]);
-            } else if (e.key === "Backspace" && value[index] === "" && index > 0) {
+                if (index === value.length - 1) {
+                    onChange([...value, ""]);
+                }
+            } else if (e.key === "Backspace" && value[index] === "" && value.length > 1) {
                 const newValues = [...value];
                 newValues.splice(index, 1);
                 onChange(newValues);
@@ -39,16 +40,11 @@ export const MultipleInputs = forwardRef<HTMLInputElement, InputElementsProps>(
         };
 
         const handleDeleteInput = (index: number) => {
-            if (value.length > 1) {
-                const newValues = [...value];
-                newValues.splice(index, 1);
-                onChange(newValues);
-            }
-        };
-
-        const handleAddInput = (index: number) => {
             const newValues = [...value];
-            newValues.splice(index + 1, 0, "");
+            newValues.splice(index, 1);
+            if (newValues.length === 0) {
+                newValues.push("");
+            }
             onChange(newValues);
         };
 
@@ -59,7 +55,7 @@ export const MultipleInputs = forwardRef<HTMLInputElement, InputElementsProps>(
                 {value && value.map((item, idx) => (
                     <div
                         key={idx}
-                        className="flex flex-row w-full p-2 justify-between items-center relative"
+                        className="flex flex-row w-full px-2 justify-between items-center relative"
                         onMouseEnter={() => setHoveredIndex(idx)}
                         onMouseLeave={() => setHoveredIndex(null)}
                     >
@@ -69,32 +65,45 @@ export const MultipleInputs = forwardRef<HTMLInputElement, InputElementsProps>(
                             onBlur={(e) => handleInputBlur(e, idx)}
                             onKeyDown={(e) => handleInputKeyDown(e, idx)}
                             className="border border-gray-300 rounded-md px-2 py-1"
-                            autoFocus={idx === value.length - 1} // Autofocus on the last input
+                            autoFocus={idx === value.length - 1}
                             {...props}
                             ref={ref}
                         />
-                        {hoveredIndex === idx && ( // Display buttons on hover for each input
+                        {hoveredIndex === idx && (
                             <>
                                 <button
                                     type="button"
-                                    className="absolute right-8 top-1/2 transform -translate-y-1/2 w-3"
+                                    className="absolute right-6 top-1/2 transform -translate-y-1/2 w-3 font-bold"
                                     onClick={() => handleDeleteInput(idx)}
                                 >
                                     <span className="sr-only">Delete</span>
-                                    <XIcon className="w-3" strokeWidth={5} />
-                                </button>
-                                <button
-                                    type="button"
-                                    className="absolute right-16 top-1/2 transform -translate-y-1/2 w-3"
-                                    onClick={() => handleAddInput(idx)}
-                                >
-                                    <span className="sr-only">Add</span>
-                                    <PlusIcon className="w-3" strokeWidth={5} />
+                                    <XIcon className="w-3" strokeWidth={3} />
                                 </button>
                             </>
                         )}
                     </div>
                 ))}
+                {value && value[value.length - 1].trim() !== "" && (
+                    <div className="flex flex-row w-full px-2 justify-between items-center relative">
+                        <Input
+                            value=""
+                            onChange={(e) => {
+                                const newValues = [...value, e.target.value];
+                                onChange(newValues.filter(item => item.trim() !== ""));
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && e.currentTarget.value.trim() !== "") {
+                                    const newValues = [...value, e.currentTarget.value.trim()];
+                                    onChange(newValues.filter(item => item.trim() !== ""));
+                                    e.currentTarget.value = "";
+                                }
+                            }}
+                            className="border border-gray-300 rounded-md px-2 py-1"
+                            {...props}
+                            ref={ref}
+                        />
+                    </div>
+                )}
             </>
         );
     }

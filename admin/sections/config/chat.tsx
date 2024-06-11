@@ -44,7 +44,7 @@ export const ChatConfig = ({
         control={form.control}
         name="conversation_starters"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="pt-4">
             <FormLabel>Conversation questions</FormLabel>
             <FormControl>
               <MultipleInputs {...field} />
