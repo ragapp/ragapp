@@ -11,20 +11,7 @@ import { getBaseURL } from "./utils";
 // Chat config scheme
 export const ChatConfigSchema = z.object({
   system_prompt: z.string().nullable().optional(),
-  conversation_starters: z
-    .array(z.string())
-    .optional()
-    .refine(
-      (data) => {
-        if (data?.length ?? 0 > 2) {
-          return data?.every((item) => item.trim() !== "");
-        } else {
-          // There is no conversation starter questions
-          return true;
-        }
-      },
-      { message: "A conversation starter message must be non-empty" },
-    ),
+  conversation_starters: z.array(z.string()).optional(),
 });
 
 // Merge the model config schemes with the Chat config scheme
