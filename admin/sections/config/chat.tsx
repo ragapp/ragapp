@@ -10,14 +10,45 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useRef } from "react";
+import { reloadDemoChat } from "../demoChat";
+
+// Get the first not null or undefined value
+function useInitialValue(value: any) {
+  const ref = useRef();
+
+  useEffect(() => {
+    if (value !== null && value !== undefined && ref.current === undefined) {
+      ref.current = value;
+    }
+  }, [value]);
+
+  return ref;
+}
 
 export const ChatConfig = ({
   form,
   isSubmitting,
+  addCallback,
 }: {
   form: any;
   isSubmitting: boolean;
+  addCallback: any;
 }) => {
+  // To detect the change of conversation starters
+  const conversationStarters = form.watch("conversation_starters");
+  const initialConversationStartersRef = useInitialValue(conversationStarters);
+
+  async function onClickSubmit() {
+    if (
+      JSON.stringify(conversationStarters) !==
+      JSON.stringify(initialConversationStartersRef.current)
+    ) {
+      initialConversationStartersRef.current = conversationStarters;
+      addCallback((prev: any) => [...prev, reloadDemoChat]);
+    }
+  }
+
   return (
     <ExpandableSection
       title={"Chat Config"}
@@ -57,7 +88,7 @@ export const ChatConfig = ({
           </FormItem>
         )}
       />
-      <div className="mt-4">
+      <div className="mt-4" onClick={onClickSubmit}>
         <SubmitButton isSubmitting={isSubmitting} />
       </div>
     </ExpandableSection>
