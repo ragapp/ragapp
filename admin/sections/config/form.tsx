@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ModelConfig } from "./model";
 import { ChatConfig } from "./chat";
+import { ModelConfig } from "./model";
 
 export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
   const form = useForm({

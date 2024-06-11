@@ -50,7 +50,8 @@ export const ChatConfig = ({
               <MultipleInputs {...field} />
             </FormControl>
             <FormDescription>
-              Add suggested questions to help users start a conversation with the app.
+              Add suggested questions to help users start a conversation with
+              the app.
             </FormDescription>
             <FormMessage />
           </FormItem>
