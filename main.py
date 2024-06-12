@@ -16,6 +16,7 @@ from create_llama.backend.app.api.routers.chat import chat_router
 from src.routers.management.config import config_router
 from src.routers.management.files import files_router
 from src.routers.management.tools import tools_router
+from src.routers.management.loader import loader_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -36,6 +37,7 @@ app.include_router(chat_router, prefix="/api/chat")
 app.include_router(config_router, prefix="/api/management/config")
 app.include_router(files_router, prefix="/api/management/files")
 app.include_router(tools_router, prefix="/api/management/tools")
+app.include_router(loader_router, prefix="/api/management/loader")
 
 
 @app.get("/")
@@ -59,4 +61,6 @@ if __name__ == "__main__":
     app_port = int(os.getenv("APP_PORT", "8000"))
     reload = environment == "dev"
 
-    uvicorn.run(app="main:app", host=app_host, port=app_port, reload=reload)
+    uvicorn.run(
+        app="main:app", host=app_host, port=app_port, reload=reload, loop="asyncio"
+    )

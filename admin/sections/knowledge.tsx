@@ -17,6 +17,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { FileLoaderConfig } from "./fileLoader";
 
 export const Knowledge = () => {
   const [files, setFiles] = useState<File[]>([]);
@@ -112,6 +113,8 @@ export const Knowledge = () => {
     >
       <ListFiles files={files} handleRemoveFile={handleRemoveFile} />
       <UploadFile handleAddFiles={handleAddFiles} />
+      <div className="border-b mb-2 border-gray-300 pt-4 pb-4"></div>
+      <FileLoaderConfig />
     </ExpandableSection>
   );
 };
