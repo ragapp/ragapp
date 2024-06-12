@@ -4,7 +4,6 @@ import {
   Dispatch,
   SetStateAction,
   forwardRef,
-  useEffect,
   useState,
 } from "react";
 
@@ -15,11 +14,9 @@ type InputElementsProps = InputProps & {
 
 const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
   ({ value, onChange, ...props }, ref) => {
-    useEffect(() => {
-      if (!value || value.length === 0) {
-        onChange([""]);
-      }
-    }, [value, onChange]);
+    if (value === null) {
+      value = [];
+    }
 
     const handleInputChange = (newValue: string, index: number) => {
       const newValues = [...value];
@@ -31,7 +28,7 @@ const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
       e: React.FocusEvent<HTMLInputElement>,
       index: number,
     ) => {
-      const newValue = e.target.value.trim();
+      const newValue = e.target.value?.trim();
       handleInputChange(newValue, index);
     };
 
@@ -100,18 +97,18 @@ const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
               )}
             </div>
           ))}
-        {value && value[value.length - 1].trim() !== "" && (
+        {value && value[value.length - 1]?.trim() !== "" && (
           <div className="flex flex-row w-full px-2 justify-between items-center relative">
             <Input
               value=""
               onChange={(e) => {
                 const newValues = [...value, e.target.value];
-                onChange(newValues.filter((item) => item.trim() !== ""));
+                onChange(newValues.filter((item) => item?.trim() !== ""));
               }}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && e.currentTarget.value.trim() !== "") {
-                  const newValues = [...value, e.currentTarget.value.trim()];
-                  onChange(newValues.filter((item) => item.trim() !== ""));
+                if (e.key === "Enter" && e.currentTarget.value?.trim() !== "") {
+                  const newValues = [...value, e.currentTarget.value?.trim()];
+                  onChange(newValues.filter((item) => item?.trim() !== ""));
                   e.currentTarget.value = "";
                 }
               }}
