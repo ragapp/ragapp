@@ -25,7 +25,6 @@ const DemoChat = forwardRef((props, ref) => {
         className="w-full h-full rounded"
         src={`${getBaseURL()}/chat.html`}
         scrolling="no"
-        id="demo-chat-iframe"
       ></iframe>
     </div>
   );
