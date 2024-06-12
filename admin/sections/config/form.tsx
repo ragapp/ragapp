@@ -11,10 +11,16 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ChatConfig } from "./chat";
 import { ModelConfig } from "./model";
-import { RAGConfig } from "./rag";
 
-export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
+export const ConfigForm = ({
+  setConfigured,
+  demoChatIframeRef,
+}: {
+  setConfigured: any;
+  demoChatIframeRef: any;
+}) => {
   const form = useForm({
     resolver: zodResolver(ConfigFormSchema),
   });
@@ -41,6 +47,8 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
       } else {
         setConfigured(false);
       }
+      // Reload the chat iframe to apply the changes from the new config
+      demoChatIframeRef.current?.reloadIframe();
     } catch (err) {
       console.error(err);
       toast({
@@ -49,8 +57,9 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
         ),
         title: "Failed to update config",
       });
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   }
 
   useEffect(() => {
@@ -92,7 +101,7 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
         />
 
         {defaultValues.configured && (
-          <RAGConfig form={form} isSubmitting={isSubmitting} />
+          <ChatConfig form={form} isSubmitting={isSubmitting} />
         )}
       </form>
     </Form>
