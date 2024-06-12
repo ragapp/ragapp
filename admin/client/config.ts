@@ -11,7 +11,7 @@ import { getBaseURL } from "./utils";
 // Chat config scheme
 export const ChatConfigSchema = z.object({
   system_prompt: z.string().nullable().optional(),
-  conversation_starters: z.array(z.string()).optional(),
+  conversation_starters: z.array(z.string()).nullable().optional(),
 });
 
 // Merge the model config schemes with the Chat config scheme
