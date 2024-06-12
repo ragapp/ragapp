@@ -15,12 +15,13 @@ import { Footer } from "@/sections/footer";
 import { Knowledge } from "@/sections/knowledge";
 import { StatusBar } from "@/sections/statusBar";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
   const [showWelcome, setShowWelcome] = useState(false);
   const [configured, setConfigured] = useState(false);
+  const demoChatIframeRef = useRef(null);
 
   useEffect(() => {
     if (router.asPath.split("#")[1] === "new") {
@@ -50,7 +51,10 @@ export default function Home() {
                 "m-auto": !configured,
               })}
             >
-              <ConfigForm setConfigured={setConfigured} />
+              <ConfigForm
+                setConfigured={setConfigured}
+                demoChatIframeRef={demoChatIframeRef}
+              />
               {configured && (
                 <>
                   <ToolConfig />
@@ -60,7 +64,7 @@ export default function Home() {
             </div>
             {configured && (
               <div className="flex-1 overflow-y-auto p-4">
-                <DemoChat />
+                <DemoChat ref={demoChatIframeRef} />
               </div>
             )}
           </div>

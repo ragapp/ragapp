@@ -14,17 +14,19 @@ import { useForm } from "react-hook-form";
 import { ChatConfig } from "./chat";
 import { ModelConfig } from "./model";
 
-export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
+export const ConfigForm = ({
+  setConfigured,
+  demoChatIframeRef,
+}: {
+  setConfigured: any;
+  demoChatIframeRef: any;
+}) => {
   const form = useForm({
     resolver: zodResolver(ConfigFormSchema),
   });
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [defaultValues, setDefaultValues] = useState(DEFAULT_CONFIG);
-  // Callback function to run after the form is submitted successfully
-  const [postSubmitCallback, setPostSubmitCallback] = useState<(() => void)[]>(
-    [],
-  );
 
   async function onSubmit(data: any) {
     setIsSubmitting(true);
@@ -45,8 +47,8 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
       } else {
         setConfigured(false);
       }
-      // Run the post submit callbacks
-      postSubmitCallback.forEach((callback) => callback());
+      // Reload the chat iframe to apply the changes from the new config
+      demoChatIframeRef.current?.reloadIframe();
     } catch (err) {
       console.error(err);
       toast({
@@ -57,7 +59,6 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
       });
     } finally {
       setIsSubmitting(false);
-      setPostSubmitCallback([]);
     }
   }
 
@@ -100,11 +101,7 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
         />
 
         {defaultValues.configured && (
-          <ChatConfig
-            form={form}
-            isSubmitting={isSubmitting}
-            addCallback={setPostSubmitCallback}
-          />
+          <ChatConfig form={form} isSubmitting={isSubmitting} />
         )}
       </form>
     </Form>

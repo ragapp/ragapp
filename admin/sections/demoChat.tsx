@@ -1,11 +1,27 @@
 "use client";
 
 import { getBaseURL } from "@/client/utils";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 
-export const DemoChat = () => {
+const DemoChat = forwardRef((props, ref) => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    getIframe: () => {
+      return iframeRef.current;
+    },
+    reloadIframe: () => {
+      const iframe = iframeRef.current;
+      if (iframe) {
+        iframe.src += "";
+      }
+    },
+  }));
+
   return (
     <div className="h-full w-full">
       <iframe
+        ref={iframeRef}
         className="w-full h-full rounded"
         src={`${getBaseURL()}/chat.html`}
         scrolling="no"
@@ -13,13 +29,8 @@ export const DemoChat = () => {
       ></iframe>
     </div>
   );
-};
+});
 
-export const reloadDemoChat = () => {
-  const iframe = document.getElementById(
-    "demo-chat-iframe",
-  ) as HTMLIFrameElement;
-  if (iframe) {
-    iframe.src = iframe.src;
-  }
-};
+DemoChat.displayName = "DemoChat";
+
+export { DemoChat };

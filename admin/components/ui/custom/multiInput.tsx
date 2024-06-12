@@ -14,7 +14,7 @@ type InputElementsProps = InputProps & {
 };
 
 const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
-  ({ value = [""], onChange, ...props }, ref) => {
+  ({ value, onChange, ...props }, ref) => {
     useEffect(() => {
       if (!value || value.length === 0) {
         onChange([""]);
@@ -39,7 +39,7 @@ const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
       e: React.KeyboardEvent<HTMLInputElement>,
       index: number,
     ) => {
-      if (e.key === "Enter" && e.currentTarget.value.trim() !== "") {
+      if (e.key === "Enter" && e.currentTarget.value?.trim() !== "") {
         e.preventDefault();
         if (index === value.length - 1) {
           onChange([...value, ""]);
