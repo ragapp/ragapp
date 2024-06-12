@@ -6,9 +6,5 @@
 import ChatSection from "../components/chat-section";
 
 export default function Home() {
-	return (
-		<div className="h-full w-full">
-			<ChatSection />
-		</div>
-	);
+	return <ChatSection />;
 }
