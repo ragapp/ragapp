@@ -1,11 +1,6 @@
 import { Input, InputProps } from "@/components/ui/input";
 import { XIcon } from "lucide-react";
-import {
-  Dispatch,
-  SetStateAction,
-  forwardRef,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, forwardRef, useState } from "react";
 
 type InputElementsProps = InputProps & {
   value: string[];
