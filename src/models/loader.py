@@ -19,7 +19,7 @@ class FileLoader(BaseModel):
 
     def __init__(self, **data):
         env_api_key = os.getenv("LLAMA_CLOUD_API_KEY")
-        if env_api_key:
+        if env_api_key and "llama_cloud_api_key" not in data:
             data["llama_cloud_api_key"] = env_api_key
         super().__init__(**data)
 
