@@ -8,7 +8,11 @@ export const OllamaConfigSchema = BaseConfigSchema.extend({
     .default("http://host.docker.internal:11434")
     .nullable()
     .optional(),
-  ollama_request_timeout: z.coerce.number().default(120.0).nullable().optional(),
+  ollama_request_timeout: z.coerce
+    .number()
+    .default(120.0)
+    .nullable()
+    .optional(),
 });
 
 export const DEFAULT_OLLAMA_CONFIG: z.input<typeof OllamaConfigSchema> = {
