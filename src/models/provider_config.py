@@ -24,6 +24,11 @@ class OllamaConfig(BaseModel):
         description="The base URL for the Ollama API",
         env="OLLAMA_BASE_URL",
     )
+    ollama_request_timeout: float | None = Field(
+        default=120.0,
+        description="The request timeout for the Ollama API in seconds",
+        env="OLLAMA_REQUEST_TIMEOUT",
+    )
 
 
 class AzureOpenAIConfig(BaseModel):
