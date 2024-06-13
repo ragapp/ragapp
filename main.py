@@ -51,8 +51,19 @@ async def redirect():
         return RedirectResponse(url="/admin/#new")
 
 
-app.mount("/api/data", StaticFiles(directory="data"), name="static")
-app.mount("", StaticFiles(directory="static", html=True), name="static")
+def mount_static_files(directory, path):
+    if os.path.exists(directory):
+        app.mount(path, StaticFiles(directory=directory), name=f"{directory}-static")
+
+
+# Mount the data files to serve the file viewer
+mount_static_files("data", "/api/files/data")
+
+# Mount the output files from tools
+mount_static_files("tool-output", "/api/files/tool-output")
+
+# Mount the frontend static files
+mount_static_files("static", "")
 
 if __name__ == "__main__":
     app_host = os.getenv("APP_HOST", "0.0.0.0")
