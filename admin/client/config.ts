@@ -14,6 +14,11 @@ export const ChatConfigSchema = z.object({
   conversation_starters: z.array(z.string()).nullable().optional(),
 });
 
+const DEFAULT_CHAT_CONFIG = {
+  system_prompt: null,
+  conversation_starters: [],
+};
+
 // Merge the model config schemes with the Chat config scheme
 export const ConfigFormSchema = z
   .union([
@@ -60,25 +65,27 @@ export const supportedProviders = [
 
 export const DEFAULT_CONFIG: z.input<typeof ConfigFormSchema> = {};
 
-export const getDefaultConfig = (provider: string) => {
-  const config = {
-    system_prompt: null,
-    conversation_starters: [],
-    configured: false,
-  };
-
+export const getDefaultProviderConfig = (provider: string) => {
   switch (provider) {
     case "openai":
-      return { ...config, ...DEFAULT_OPENAI_CONFIG };
+      return DEFAULT_OPENAI_CONFIG;
     case "ollama":
-      return { ...config, ...DEFAULT_OLLAMA_CONFIG };
+      return DEFAULT_OLLAMA_CONFIG;
     case "gemini":
-      return { ...config, ...DEFAULT_GEMINI_CONFIG };
+      return DEFAULT_GEMINI_CONFIG;
     case "azure-openai":
-      return { ...config, ...DEFAULT_AZURE_OPENAI_CONFIG };
+      return DEFAULT_AZURE_OPENAI_CONFIG;
     default:
-      return { ...config };
+      throw new Error(`Provider ${provider} not supported`);
   }
+};
+
+export const getDefaultConfig = (provider: string) => {
+  return {
+    configured: false,
+    ...DEFAULT_CHAT_CONFIG,
+    ...getDefaultProviderConfig(provider),
+  };
 };
 
 export async function fetchConfig(): Promise<ConfigFormType> {

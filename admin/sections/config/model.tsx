@@ -1,6 +1,6 @@
 import {
   ConfigFormType,
-  getDefaultConfig,
+  getDefaultProviderConfig,
   supportedProviders,
 } from "@/client/config";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
@@ -53,12 +53,13 @@ export const ModelConfig = ({
   const changeModelProvider = async (modelProvider: string) => {
     // If user changes the model provider
     // we need to reset the model config to the default value of the provider
-    const providerConfig = getDefaultConfig(modelProvider);
+    const newConfig = {
+      ...form.getValues(),
+      ...getDefaultProviderConfig(modelProvider),
+    };
     // Assign the configured state to the new provider to keep the state (showing the Chat config or not)
-    providerConfig.configured =
-      values.configured !== undefined ? values.configured : null;
-    form.reset(providerConfig);
-    setValues(providerConfig);
+    form.reset(newConfig);
+    setValues(newConfig);
   };
 
   return (
