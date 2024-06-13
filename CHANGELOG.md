@@ -1,5 +1,17 @@
 # ragbox
 
+## 0.0.9
+
+### Patch Changes
+
+- fef1d1a: Fix not showing file viewer
+- 67c3ac5: Fix the issue with losing chat config when switching providers
+- 9dd1704: Add a new config for Llama parse
+- 8803c69: Fix system prompt not working and improved Azure OpenAI validation
+- f7dc582: Bump create-llama version to 0.1.10
+- fef1d1a: Add timeout config for Ollama requests
+- e559534: Add config for conversation starter questions
+
 ## 0.0.8
 
 ### Patch Changes
