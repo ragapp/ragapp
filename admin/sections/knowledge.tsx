@@ -68,7 +68,9 @@ export const Knowledge = () => {
       } catch (err: unknown) {
         // Remove the file from the list
         setFiles((prevFiles) => {
-          const filteredFiles = prevFiles.filter((f) => f.name !== fileObj.name);
+          const filteredFiles = prevFiles.filter(
+            (f) => f.name !== fileObj.name,
+          );
           return filteredFiles;
         });
         // Show a error toast
@@ -152,7 +154,7 @@ const ListFiles = ({
                         onClick={() => handleRemoveFile(file)}
                       >
                         {file.status.includes("removing") ||
-                          file.status.includes("uploading")
+                        file.status.includes("uploading")
                           ? file.status
                           : "✖"}
                       </button>
@@ -170,7 +172,7 @@ const ListFiles = ({
   );
 };
 
-const UploadFile = ({ handleAddFiles = async (files: any[]) => { } }) => {
+const UploadFile = ({ handleAddFiles = async (files: any[]) => {} }) => {
   return (
     <div className="grid mt-10 w-full max-w-sm items-center gap-1.5">
       <Label>Upload File</Label>

@@ -43,7 +43,7 @@ export const FileLoaderConfig = () => {
         className: cn(
           "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-green-500",
         ),
-        title: "File loader configuration updated!",
+        title: "Config updated successfully",
       });
     } catch (error) {
       console.error(error);
@@ -58,7 +58,7 @@ export const FileLoaderConfig = () => {
 
   return (
     <>
-      <h4 className="text-lg font-semibold mb-2">File Loader Configuration</h4>
+      <h4 className="text-lg font-semibold mb-2">File loader configuration</h4>
       <Form {...loaderForm}>
         <form
           className="space-y-4 mb-4"
