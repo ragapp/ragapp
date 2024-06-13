@@ -55,7 +55,7 @@ export const ModelConfig = ({
     // we need to reset the model config to the default value of the provider
     const newConfig = {
       ...form.getValues(),
-      ...getDefaultProviderConfig(modelProvider)
+      ...getDefaultProviderConfig(modelProvider),
     };
     // Assign the configured state to the new provider to keep the state (showing the Chat config or not)
     form.reset(newConfig);
