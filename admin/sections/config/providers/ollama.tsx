@@ -85,6 +85,26 @@ export const OllamaForm = ({
           </FormItem>
         )}
       />
+      <FormField
+        control={form.control}
+        name="ollama_request_timeout"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Request timeout</FormLabel>
+            <FormControl>
+              <Input
+                type="number"
+                placeholder={defaultValues.ollama_request_timeout}
+                {...field}
+              />
+            </FormControl>
+            <FormDescription>
+              Timeout in seconds for Ollama API requests.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       {isLoading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : isError ? (
