@@ -18,8 +18,10 @@ export const ChatConfig = ({
   form: any;
   isSubmitting: boolean;
 }) => {
-  const chatConfigFields = ["system_prompt", "conversation_starters"]
-  const fieldsChanged = chatConfigFields.some((field) => form.formState.dirtyFields[field]);
+  const chatConfigFields = ["system_prompt", "conversation_starters"];
+  const fieldsChanged = chatConfigFields.some(
+    (field) => form.formState.dirtyFields[field],
+  );
 
   return (
     <ExpandableSection

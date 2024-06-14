@@ -26,7 +26,8 @@ export const FileLoaderConfig = () => {
   const loaderForm = useForm({
     resolver: zodResolver(FileLoaderSchema),
   });
-  const fieldsChanged = Object.keys(loaderForm.formState.dirtyFields).length > 0;
+  const fieldsChanged =
+    Object.keys(loaderForm.formState.dirtyFields).length > 0;
 
   const { data: fileLoader, refetch } = useQuery("fileLoader", fetchFileLoader);
 

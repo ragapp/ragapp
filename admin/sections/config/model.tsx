@@ -66,7 +66,11 @@ export const ModelConfig = ({
     <ExpandableSection
       name="update-model"
       title={values.configured ? "Update model" : "Start"}
-      description={values.configured ? "Change to a different model or other providers" : "Let set up a model to start the app."}
+      description={
+        values.configured
+          ? "Change to a different model or other providers"
+          : "Let set up a model to start the app."
+      }
     >
       <FormField
         control={form.control}
