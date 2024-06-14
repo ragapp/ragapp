@@ -68,8 +68,8 @@ export const ModelConfig = ({
       title={values.configured ? "Update model" : "Start"}
       description={
         values.configured
-          ? "Change to a different model or other providers"
-          : "Let set up a model to start the app."
+          ? "Change to a different model or use another provider"
+          : "Set up an AI model to start the app."
       }
     >
       <FormField

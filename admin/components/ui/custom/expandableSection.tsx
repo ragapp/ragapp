@@ -4,6 +4,7 @@ const ExpandableSection = ({
   name,
   title,
   description,
+  open = true,
   children,
 }: {
   name: string;
@@ -16,18 +17,28 @@ const ExpandableSection = ({
 
   // Load the state from local storage when the component mounts
   useEffect(() => {
-    const savedState = localStorage.getItem("expandable-section-" + name);
-    if (savedState !== null) {
+    const expandable = JSON.parse(localStorage.getItem("expandable-sections") || "{}");
+    const savedState = expandable ? expandable[name] : undefined;
+
+    if (savedState !== undefined) {
       setIsOpen(savedState === "open");
+    } else {
+      setIsOpen(open ?? false);
     }
   }, []);
 
   // Save the state to local storage whenever it changes
   useEffect(() => {
     if (isOpen !== null) {
+      // Get the saved state from local storage
+      const expandable = JSON.parse(
+        localStorage.getItem("expandable-sections") || "{}"
+      );
+      // Set the new state
+      expandable[name] = isOpen ? "open" : "closed";
       localStorage.setItem(
-        "expandable-section-" + name,
-        isOpen ? "open" : "closed",
+        "expandable-sections",
+        JSON.stringify(expandable)
       );
     }
   }, [isOpen]);
