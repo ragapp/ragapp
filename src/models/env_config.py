@@ -1,5 +1,6 @@
 import os
 import dotenv
+from dotenv.main import DotEnv
 from typing import Optional, Annotated, List, Any
 from pydantic import Field, validator, field_validator, computed_field
 from pydantic.json_schema import CoreSchema
@@ -85,11 +86,12 @@ class EnvConfig(ProviderConfig):
         Update the current values to the runtime environment variables.
         """
         for field_name, field_info in self.__fields__.items():
+            env_name = field_info.json_schema_extra.get("env")
             value = getattr(self, field_name)
             if value is not None:
-                os.environ[field_info.json_schema_extra["env"]] = str(value)
+                os.environ[env_name] = str(value)
             else:
-                os.environ.pop(field_info.json_schema_extra["env"], None)
+                os.environ.pop(env_name, None)
 
     def to_env_file(self):
         """
@@ -97,11 +99,16 @@ class EnvConfig(ProviderConfig):
         """
         dotenv_file = dotenv.find_dotenv(filename=ENV_FILE_PATH)
         for field_name, field_info in self.__fields__.items():
+            env_name = field_info.json_schema_extra.get("env")
             value = getattr(self, field_name)
             if value is not None:
-                dotenv.set_key(dotenv_file, field_info.json_schema_extra.get("env"), str(value))  # type: ignore
+                dotenv.set_key(dotenv_file, env_name, str(value))  # type: ignore
             else:
-                dotenv.unset_key(dotenv_file, field_info.json_schema_extra.get("env"))
+                # Disable verbose output to hide unnecessary warnings
+                if DotEnv(dotenv_path=dotenv_file, verbose=False, encoding="utf-8").get(
+                    env_name
+                ):
+                    dotenv.unset_key(dotenv_file, env_name)
 
     def to_api_response(self):
         """

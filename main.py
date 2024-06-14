@@ -1,9 +1,7 @@
 from dotenv import load_dotenv
 from src.constants import ENV_FILE_PATH
 
-load_dotenv(
-    dotenv_path=ENV_FILE_PATH,
-)
+load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False)
 
 import os
 import logging
