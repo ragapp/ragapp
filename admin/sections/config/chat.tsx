@@ -20,9 +20,9 @@ export const ChatConfig = ({
 }) => {
   return (
     <ExpandableSection
+      name="chat-config"
       title={"Chat Config"}
       description="Config how the chatbot behaves and interacts with the user"
-      open={true}
     >
       <FormField
         control={form.control}

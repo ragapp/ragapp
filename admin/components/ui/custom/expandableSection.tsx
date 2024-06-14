@@ -1,17 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ExpandableSection = ({
+  name,
   title,
   description,
-  open,
   children,
 }: {
+  name: string;
   title: string;
   description?: string;
-  open: boolean;
+  open?: boolean;
   children: React.ReactNode;
 }) => {
-  const [isOpen, setIsOpen] = useState(open ?? true);
+  const [isOpen, setIsOpen] = useState<boolean | null>(null);
+
+  // Load the state from local storage when the component mounts
+  useEffect(() => {
+    const savedState = localStorage.getItem('expandable-section-' + name);
+    if (savedState !== null) {
+      setIsOpen(savedState === 'open');
+    }
+  }, []);
+
+  // Save the state to local storage whenever it changes
+  useEffect(() => {
+    if (isOpen !== null) {
+      localStorage.setItem('expandable-section-' + name, isOpen ? 'open' : 'closed');
+    }
+  }, [isOpen]);
 
   return (
     <section className="mb-4 rounded-lg p-2 border border-gray-300">

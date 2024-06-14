@@ -46,9 +46,9 @@ export const ToolConfig = () => {
 
   return (
     <ExpandableSection
+      name="agent-config"
       title={"Agent Config"}
       description="Config tools and agent"
-      open
     >
       <Form {...form}>
         <form className="space-y-4 mb-4">

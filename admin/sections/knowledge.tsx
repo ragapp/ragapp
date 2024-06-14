@@ -111,9 +111,9 @@ export const Knowledge = () => {
 
   return (
     <ExpandableSection
+      name="knowledge"
       title={"Knowledge"}
       description="Upload your own data to chat with"
-      open
     >
       <ListFiles files={files} handleRemoveFile={handleRemoveFile} />
       <UploadFile handleAddFiles={handleAddFiles} />
@@ -154,7 +154,7 @@ const ListFiles = ({
                         onClick={() => handleRemoveFile(file)}
                       >
                         {file.status.includes("removing") ||
-                        file.status.includes("uploading")
+                          file.status.includes("uploading")
                           ? file.status
                           : "✖"}
                       </button>
@@ -172,7 +172,7 @@ const ListFiles = ({
   );
 };
 
-const UploadFile = ({ handleAddFiles = async (files: any[]) => {} }) => {
+const UploadFile = ({ handleAddFiles = async (files: any[]) => { } }) => {
   return (
     <div className="grid mt-10 w-full max-w-sm items-center gap-1.5">
       <Label>Upload File</Label>
