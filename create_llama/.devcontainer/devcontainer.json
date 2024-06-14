@@ -1,0 +1,47 @@
+{
+  "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:dev-20-bullseye",
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
+    "ghcr.io/devcontainers-contrib/features/typescript:2": {},
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11",
+      "toolsToInstall": [
+        "flake8",
+        "black",
+        "mypy",
+        "poetry"
+      ]
+    }
+  },
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "README.md"
+      ]
+    },
+    "vscode": {
+      "extensions": [
+        "ms-vscode.typescript-language-features",
+        "esbenp.prettier-vscode",
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.vscode-flake8",
+        "ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "python.formatting.provider": "black",
+        "python.languageServer": "Pylance",
+        "python.analysis.typeCheckingMode": "basic"
+      }
+    }
+  },
+  "containerEnv": {
+    "POETRY_VIRTUALENVS_CREATE": "false",
+    "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/backend"
+  },
+  "forwardPorts": [
+    3000,
+    8000
+  ],
+  "postCreateCommand": "cd backend && poetry install && cd ../frontend && npm install"
+}
