@@ -64,8 +64,8 @@ export const ModelConfig = ({
 
   return (
     <ExpandableSection
-      title={"AI Config"}
-      description="Configure the AI model."
+      title={values.configured ? "Update model" : "Start"}
+      description={values.configured ? "Change to a different model or other providers" : "Let set up a model to start the app."}
       open={true}
     >
       <FormField
