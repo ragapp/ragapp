@@ -65,15 +65,13 @@ def persist_storage(docstore, vector_store):
     storage_context.persist(STORAGE_DIR)
 
 
-def generate_datasource(collection_name=None):
+def generate_datasource(collection_name):
     init_settings()
     logger.info("Generate index for the provided data")
 
     # Get the stores and documents or create new ones
     documents = get_documents()
     docstore = get_doc_store()
-
-    
     vector_store = get_vector_store(collection_name)
 
     # Run the ingestion pipeline
