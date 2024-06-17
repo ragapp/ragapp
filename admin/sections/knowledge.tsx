@@ -41,19 +41,25 @@ export const Knowledge = () => {
     update(getFileIndex(file), { ...file, status: new_status });
   };
 
+  const selectingFiles = fields.some((file) => file.status === "selecting");
+
   async function handleRemoveFile(file: File) {
-    updateStatus(file, "removing");
-    try {
-      await removeFile(file.name);
+    if (file.status === "uploaded") {
+      updateStatus(file, "removing");
+      try {
+        await removeFile(file.name);
+        remove(getFileIndex(file));
+      } catch {
+        updateStatus(file, "failed");
+        toast({
+          className: cn(
+            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
+          ),
+          title: "Failed to remove the file: " + file.name + "!",
+        });
+      }
+    } else {
       remove(getFileIndex(file));
-    } catch {
-      updateStatus(file, "failed");
-      toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-        ),
-        title: "Failed to remove the file: " + file.name + "!",
-      });
     }
   }
 
@@ -108,8 +114,8 @@ export const Knowledge = () => {
     >
       <form onSubmit={handleSubmit(handleAddFiles)}>
         <ListFiles files={fields} handleRemoveFile={handleRemoveFile} />
-        <UploadFile append={append} />
-        {fields.length > 0 && (
+        <UploadFile append={append} uploadedFiles={fields} />
+        {selectingFiles && (
           <Button type="submit" className="mt-4 p-2 text-white rounded">
             Upload
           </Button>
@@ -170,7 +176,7 @@ const ListFiles = ({
   );
 };
 
-const UploadFile = ({ append }: { append: (file: File) => void }) => {
+const UploadFile = ({ append, uploadedFiles }: { append: (file: File) => void, uploadedFiles: File[] }) => {
   return (
     <div className="grid mt-10 w-full max-w-sm items-center gap-1.5">
       <Label>Upload File</Label>
@@ -178,14 +184,20 @@ const UploadFile = ({ append }: { append: (file: File) => void }) => {
         type="file"
         multiple
         onChange={(e) => {
-          const files = Array.from(e.target.files ?? []);
-          files.forEach((file) => {
+          const selectedFiles = Array.from(e.target.files ?? []);
+          for (const file of selectedFiles) {
+            // Check if the file is already uploaded
+            if (uploadedFiles.some((f) => f.name === file.name)) {
+              alert(`File ${file.name} is already exists`);
+              continue;
+            }
+            // Append the file to the list of files
             append({
               name: file.name,
-              status: "selecting" as FileStatus,
               blob: file,
+              status: "selecting",
             });
-          });
+          }
           e.target.value = ""; // Clear the input value
         }}
       />
