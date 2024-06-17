@@ -20,9 +20,11 @@ export const Knowledge = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleRemoveFiles(toRemoveFiles: File[]) {
+  async function handleRemoveFiles(toRemoveFiles: File[], setSubmit?: boolean) {
     console.log("Removing files:", toRemoveFiles);
-    setIsSubmitting(true);
+    if (setSubmit) {
+      setIsSubmitting(true);
+    }
     setFiles((prevFiles) => {
       return prevFiles.map((f) => {
         if (toRemoveFiles.find((rf) => rf.name === f.name)) {
@@ -51,7 +53,9 @@ export const Knowledge = () => {
         (f) => !toRemoveFiles.find((rf) => rf.name === f.name),
       );
     });
-    setIsSubmitting(false);
+    if (setSubmit) {
+      setIsSubmitting(false);
+    }
   }
 
   async function handleAddFiles(addingFiles: globalThis.File[]) {
@@ -103,7 +107,7 @@ export const Knowledge = () => {
             return f;
           });
         });
-        await handleRemoveFiles([file]);
+        await handleRemoveFiles([file], false);
       }
     }
   }
@@ -176,7 +180,7 @@ const ListFiles = ({
   isSubmitting,
 }: {
   files: File[];
-  handleRemoveFiles: (files: File[]) => void;
+  handleRemoveFiles: (files: File[], setSubmit?: boolean) => Promise<void>;
   isSubmitting: boolean;
 }) => {
   return (
