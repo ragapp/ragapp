@@ -1,10 +1,4 @@
-import {
-  File,
-  FileStatus,
-  fetchFiles,
-  removeFile,
-  uploadFile,
-} from "@/client/files";
+import { File, fetchFiles, removeFile, uploadFile } from "@/client/files";
 import { Button } from "@/components/ui/button";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Input } from "@/components/ui/input";
@@ -15,117 +9,168 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
 import { FileLoaderConfig } from "./fileLoader";
 
 export const Knowledge = () => {
-  const { control, reset } = useForm({
-    defaultValues: {
-      files: [] as File[],
-    },
-  });
-  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { fields, append, remove, update } = useFieldArray({
-    control,
-    name: "files",
-  });
-
-  const getFileIndex = (file: File) =>
-    fields.findIndex((f) => f.name === file.name);
-
-  const updateStatus = (file: File, new_status: FileStatus) => {
-    update(getFileIndex(file), { ...file, status: new_status });
-  };
-
-  async function handleRemoveFile(file: File) {
-    setSubmitting(true);
-    if (file.status === "uploaded") {
-      updateStatus(file, "removing");
-      try {
-        await removeFile(file.name);
-        remove(getFileIndex(file));
-      } catch {
-        updateStatus(file, "failed");
-        toast({
-          title: "Failed to remove the file: " + file.name + "!",
-          variant: "destructive",
-        });
-      }
-    } else {
-      remove(getFileIndex(file));
-    }
-    setSubmitting(false);
+  async function handleRemoveFiles(toRemoveFiles: File[]) {
+    console.log("Removing files:", toRemoveFiles);
+    setIsSubmitting(true);
+    setFiles((prevFiles) => {
+      return prevFiles.map((f) => {
+        if (toRemoveFiles.find((rf) => rf.name === f.name)) {
+          return { ...f, status: "toRemove" };
+        }
+        return f;
+      });
+    });
+    await Promise.all(
+      toRemoveFiles.map(async (file) => {
+        try {
+          await removeFile(file.name);
+          return { ...file, status: "removed" };
+        } catch (error) {
+          toast({
+            title: "Failed to remove the file: " + file.name + "!",
+            variant: "destructive",
+          });
+          return { ...file, status: "failed" };
+        }
+      }),
+    );
+    // Remove the files from the state no matter the result
+    setFiles((prevFiles) => {
+      return prevFiles.filter(
+        (f) => !toRemoveFiles.find((rf) => rf.name === f.name),
+      );
+    });
+    setIsSubmitting(false);
   }
 
-  async function handleAddFiles() {
-    // Upload the selecting files
-    const selectingFiles = fields.filter((file) => file.status === "selecting");
-    if (selectingFiles.length > 0) {
-      setSubmitting(true);
-      for (const file of selectingFiles) {
+  async function handleAddFiles(addingFiles: globalThis.File[]) {
+    const toUploadFiles: File[] = addingFiles.map((file) => ({
+      name: file.name,
+      status: "toUpload",
+      blob: file,
+    }));
+    setFiles((prevFiles) => [...prevFiles, ...toUploadFiles]);
+    return toUploadFiles;
+  }
+
+  async function handleUploadFile(toUploadFiles?: File[]) {
+    // Todo
+    if (!toUploadFiles) {
+      toUploadFiles = files.filter((file) => file.status === "toUpload");
+    }
+    console.log("Uploading files:", toUploadFiles);
+
+    const uploadResult: File[] = await Promise.all(
+      toUploadFiles.map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file.blob as Blob);
         try {
-          if (file.blob && file.status === "selecting") {
-            // Change the status of the file to uploading
-            updateStatus(file, "uploading");
-            const formData = new FormData();
-            formData.append("file", file.blob);
-            await uploadFile(formData);
-            // Change the status of the file to uploaded
-            updateStatus(file, "uploaded");
-          }
+          await uploadFile(formData);
+          setFiles((prevFiles) => {
+            return prevFiles.map((f) => {
+              if (f.name === file.name) {
+                return { ...f, status: "uploaded" };
+              }
+              return f;
+            });
+          });
+          return { ...file, status: "uploaded" };
         } catch (err: unknown) {
-          remove(getFileIndex(file));
+          console.error(
+            "Failed to upload the file:",
+            file.name,
+            (err as Error)?.message,
+          );
           toast({
             title: "Failed to upload the file: " + file.name + "!",
             variant: "destructive",
           });
+          setFiles((prevFiles) => {
+            return prevFiles.map((f) => {
+              if (f.name === file.name) {
+                return { ...f, status: "failed" };
+              }
+              return f;
+            });
+          });
+          return { ...file, status: "failed" };
         }
-      }
-      setSubmitting(false);
-    }
+      }),
+    );
+
+    return uploadResult;
   }
 
-  useEffect(() => {
-    handleAddFiles();
-  }, [fields]);
+  async function processUpload(blobFiles: globalThis.File[]) {
+    // Ignore duplicate files
+    const duplicateFiles = files.filter((file) =>
+      blobFiles.find((f) => f.name === file.name),
+    );
+    if (duplicateFiles.length > 0) {
+      toast({
+        title: `Duplicate files (${duplicateFiles.map((f) => f.name).join(", ")})!`,
+        variant: "destructive",
+      });
+    }
+    // Filter out duplicate files
+    const newFiles = blobFiles.filter(
+      (file) => !duplicateFiles.find((f) => f.name === file.name),
+    );
+    if (newFiles.length > 0) {
+      setIsSubmitting(true);
+      const addedFiles = await handleAddFiles(newFiles);
+      const uploadedFiles = await handleUploadFile(addedFiles);
+      await handleRemoveFiles(
+        uploadedFiles.filter((file) => file.status === "failed"),
+      );
+      setIsSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     async function handleFetchFiles() {
       try {
         const files = await fetchFiles();
-        reset({ files });
+        setFiles(files);
       } catch (error) {
+        console.error(error);
+        // Show a error toast
         toast({
+          className: cn(
+            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
+          ),
           title: "Failed to load uploaded files!",
-          variant: "destructive",
         });
       }
     }
+
     handleFetchFiles();
-  }, []);
+  }, [toast]);
 
   return (
     <ExpandableSection
       name="knowledge"
       title={"Knowledge"}
       description="Upload your own data to chat with"
+      open
     >
       <ListFiles
-        files={fields}
-        handleRemoveFile={handleRemoveFile}
-        isSubmitting={submitting}
+        files={files}
+        handleRemoveFiles={handleRemoveFiles}
+        isSubmitting={isSubmitting}
       />
-      <form>
-        <UploadFile
-          append={append}
-          uploadedFiles={fields}
-          isSubmitting={submitting}
-        />
-      </form>
+      <UploadFile processUpload={processUpload} isSubmitting={isSubmitting} />
       <div className="border-b mb-2 border-gray-300 pt-4 pb-4"></div>
       <FileLoaderConfig />
     </ExpandableSection>
@@ -134,118 +179,90 @@ export const Knowledge = () => {
 
 const ListFiles = ({
   files,
-  handleRemoveFile,
+  handleRemoveFiles,
   isSubmitting,
 }: {
   files: File[];
-  handleRemoveFile: (file: File) => void;
+  handleRemoveFiles: (files: File[]) => void;
   isSubmitting: boolean;
 }) => {
   return (
+    // Show uploaded files in grid layout
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {files.map(
-        (file, index) =>
-          file.status !== "failed" && (
-            <TooltipProvider key={index}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div
-                    key={index}
-                    className={`rounded-lg p-2 border border-gray-300 ${file.status === "removing" || file.status === "selecting" ? "bg-gray-100" : "bg-white"}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">
-                        {file.name.length > 20
-                          ? `${file.name.slice(0, 10)}...${file.name.slice(-10)}`
-                          : file.name}
-                      </div>
-                      <button
-                        className="text-gray-500 text-sm"
-                        onClick={() => handleRemoveFile(file)}
-                      >
-                        {file.status === "uploading" ? (
-                          <LoaderCircle className="animate-spin" />
-                        ) : isSubmitting ? (
-                          ""
-                        ) : (
-                          "✖"
-                        )}
-                      </button>
-                    </div>
+      {files.map((file, index) => (
+        <TooltipProvider key={index}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                key={index}
+                className={`rounded-lg pl-2 pr-4 border border-gray-300 ${file.status !== "uploaded" ? "bg-gray-300" : "bg-gray-100"}`}
+              >
+                <div className="flex flex-row justify-between items-center h-10">
+                  <div className="text-sm overflow-hidden">
+                    {file.name.length > 20
+                      ? `${file.name.slice(0, 10)}...${file.name.slice(-10)}`
+                      : file.name}
                   </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{file.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ),
-      )}
+                  <button
+                    className="text-gray-500 text-sm w-2"
+                    onClick={() => handleRemoveFiles([file])}
+                    disabled={isSubmitting}
+                  >
+                    {file.status === "uploaded" || file.status === "failed" ? (
+                      "✖"
+                    ) : (
+                      <LoaderCircle className="animate-spin w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{file.name}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ))}
     </div>
   );
 };
 
 const UploadFile = ({
-  append,
-  uploadedFiles,
+  processUpload,
   isSubmitting,
 }: {
-  append: (file: File) => void;
-  uploadedFiles: File[];
+  processUpload: (files: globalThis.File[]) => Promise<void>;
   isSubmitting: boolean;
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const checkFileExist = (file: globalThis.File) => {
-    if (uploadedFiles.some((f) => f.name === file.name)) {
-      toast({
-        title: "The file " + file.name + " is existing!",
-        variant: "destructive",
-      });
-      return true;
-    }
-    return false;
-  };
 
   return (
     <div className="grid mt-10 w-full max-w-sm items-center gap-1.5">
       <Input
         ref={inputRef}
-        id="knowledge-file-upload"
+        id="upload-knowledge-files"
         type="file"
         style={{ display: "none" }}
         multiple
         onChange={async (e) => {
-          const selectedFiles = Array.from(e.target.files ?? []);
-          await Promise.all(
-            selectedFiles.map(async (file) => {
-              // Check if the file is already uploaded
-              if (checkFileExist(file)) {
-                return;
-              }
-              append({
-                name: file.name,
-                blob: file,
-                status: "selecting",
-              });
-            }),
-          );
-          e.target.value = "";
+          await processUpload(Array.from(e.target.files ?? []));
+          e.target.value = ""; // Clear the input value
         }}
       />
-      <Label htmlFor="knowledge-file-upload">
-        <Button
-          type="button"
-          className="rounded"
-          disabled={isSubmitting}
-          onClick={(e) => {
-            e.preventDefault();
-            inputRef.current?.click();
-          }}
-        >
-          Upload new files
-        </Button>
-      </Label>
+      {!isSubmitting && (
+        <Label htmlFor="upload-knowledge-files">
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              if (!isSubmitting) {
+                inputRef.current?.click();
+              }
+            }}
+          >
+            Upload Files
+          </Button>
+        </Label>
+      )}
     </div>
   );
 };

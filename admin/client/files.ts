@@ -1,12 +1,6 @@
 import { getBaseURL } from "./utils";
 
-export type FileStatus =
-  | "selecting"
-  | "uploading"
-  | "uploaded"
-  | "failed"
-  | "removing"
-  | "removed";
+export type FileStatus = "toUpload" | "uploaded" | "failed" | "toRemove";
 
 export type File = {
   name: string;
