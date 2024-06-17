@@ -5,6 +5,7 @@ import {
   removeFile,
   uploadFile,
 } from "@/client/files";
+import { Button } from "@/components/ui/button";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,69 +17,61 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { LoaderCircle } from "lucide-react";
+import { useEffect } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import { FileLoaderConfig } from "./fileLoader";
 
 export const Knowledge = () => {
-  const [files, setFiles] = useState<File[]>([]);
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: {
+      files: [] as File[],
+    },
+  });
+  const { fields, append, remove, update } = useFieldArray({
+    control,
+    name: "files",
+  });
   const { toast } = useToast();
 
-  const updateStatus = (name: string, status: FileStatus) => (f: File) => {
-    if (f.name === name) {
-      return { ...f, status };
-    }
-    return f;
+  const getFileIndex = (file: File) =>
+    fields.findIndex((f) => f.name === file.name);
+
+  const updateStatus = (file: File, new_status: FileStatus) => {
+    update(getFileIndex(file), { ...file, status: new_status });
   };
 
   async function handleRemoveFile(file: File) {
-    setFiles((prevFiles) => {
-      return prevFiles.map(updateStatus(file.name, "removing"));
-    });
+    updateStatus(file, "removing");
     try {
       await removeFile(file.name);
-      // Remove the file from the list
-      setFiles((prevFiles) => {
-        const filteredFiles = prevFiles.filter((f) => f.name !== file.name);
-        return filteredFiles;
-      });
+      remove(getFileIndex(file));
     } catch {
-      // Update the file status to failed
-      setFiles((prevFiles) => {
-        return prevFiles.map(updateStatus(file.name, "failed"));
+      updateStatus(file, "failed");
+      toast({
+        className: cn(
+          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
+        ),
+        title: "Failed to remove the file: " + file.name + "!",
       });
     }
   }
 
-  async function handleAddFiles(addingFiles: any[]) {
-    for (const file of addingFiles) {
-      // Add the file to list files with uploading status
-      const fileObj = {
-        name: file.name,
-        status: "uploading" as FileStatus,
-      };
-      setFiles((prevFiles) => [...prevFiles, fileObj]);
-      // Upload the file to the server
-      const formData = new FormData();
-      formData.append("file", file);
+  async function handleAddFiles(data: { files: File[] }) {
+    // Upload the selecting files
+    for (const file of data.files) {
       try {
-        await uploadFile(formData);
-        setFiles((prevFiles) => {
-          return prevFiles.map(updateStatus(fileObj.name, "uploaded"));
-        });
+        if (file.blob && file.status === "selecting") {
+          // Change the status of the file to uploading
+          updateStatus(file, "uploading");
+          const formData = new FormData();
+          formData.append("file", file.blob);
+          await uploadFile(formData);
+          // Change the status of the file to uploaded
+          updateStatus(file, "uploaded");
+        }
       } catch (err: unknown) {
-        // Remove the file from the list
-        setFiles((prevFiles) => {
-          const filteredFiles = prevFiles.filter(
-            (f) => f.name !== fileObj.name,
-          );
-          return filteredFiles;
-        });
-        // Show a error toast
-        console.error(
-          "Failed to upload the file:",
-          file.name,
-          (err as Error)?.message,
-        );
+        remove(getFileIndex(file));
         toast({
           className: cn(
             "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
@@ -93,10 +86,8 @@ export const Knowledge = () => {
     async function handleFetchFiles() {
       try {
         const files = await fetchFiles();
-        setFiles(files);
+        reset({ files });
       } catch (error) {
-        console.error(error);
-        // Show a error toast
         toast({
           className: cn(
             "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
@@ -115,8 +106,15 @@ export const Knowledge = () => {
       title={"Knowledge"}
       description="Upload your own data to chat with"
     >
-      <ListFiles files={files} handleRemoveFile={handleRemoveFile} />
-      <UploadFile handleAddFiles={handleAddFiles} />
+      <form onSubmit={handleSubmit(handleAddFiles)}>
+        <ListFiles files={fields} handleRemoveFile={handleRemoveFile} />
+        <UploadFile append={append} />
+        {fields.length > 0 && (
+          <Button type="submit" className="mt-4 p-2 text-white rounded">
+            Upload
+          </Button>
+        )}
+      </form>
       <div className="border-b mb-2 border-gray-300 pt-4 pb-4"></div>
       <FileLoaderConfig />
     </ExpandableSection>
@@ -131,7 +129,6 @@ const ListFiles = ({
   handleRemoveFile: (file: File) => void;
 }) => {
   return (
-    // Show uploaded files in grid layout
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {files.map(
         (file, index) =>
@@ -141,7 +138,7 @@ const ListFiles = ({
                 <TooltipTrigger asChild>
                   <div
                     key={index}
-                    className={`rounded-lg p-2 border border-gray-300 ${file.status === "removing" ? "bg-gray-100" : "bg-white"}`}
+                    className={`rounded-lg p-2 border border-gray-300 ${file.status === "removing" || file.status === "selecting" ? "bg-gray-100" : "bg-white"}`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="text-sm">
@@ -153,10 +150,11 @@ const ListFiles = ({
                         className="text-gray-500 text-sm"
                         onClick={() => handleRemoveFile(file)}
                       >
-                        {file.status.includes("removing") ||
-                        file.status.includes("uploading")
-                          ? file.status
-                          : "✖"}
+                        {file.status === "uploading" ? (
+                          <LoaderCircle className="animate-spin" />
+                        ) : (
+                          "✖"
+                        )}
                       </button>
                     </div>
                   </div>
@@ -172,15 +170,22 @@ const ListFiles = ({
   );
 };
 
-const UploadFile = ({ handleAddFiles = async (files: any[]) => {} }) => {
+const UploadFile = ({ append }: { append: (file: File) => void }) => {
   return (
     <div className="grid mt-10 w-full max-w-sm items-center gap-1.5">
       <Label>Upload File</Label>
       <Input
         type="file"
         multiple
-        onChange={async (e) => {
-          await handleAddFiles(Array.from(e.target.files ?? []));
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []);
+          files.forEach((file) => {
+            append({
+              name: file.name,
+              status: "selecting" as FileStatus,
+              blob: file,
+            });
+          });
           e.target.value = ""; // Clear the input value
         }}
       />

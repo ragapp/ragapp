@@ -1,6 +1,7 @@
 import { getBaseURL } from "./utils";
 
 export type FileStatus =
+  | "selecting"
   | "uploading"
   | "uploaded"
   | "failed"
@@ -10,6 +11,7 @@ export type FileStatus =
 export type File = {
   name: string;
   status: FileStatus;
+  blob?: Blob;
 };
 
 export async function fetchFiles(): Promise<File[]> {
