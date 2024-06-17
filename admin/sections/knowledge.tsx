@@ -15,7 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast, useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { LoaderCircle } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -31,7 +31,6 @@ export const Knowledge = () => {
     control,
     name: "files",
   });
-  const { toast } = useToast();
 
   const getFileIndex = (file: File) =>
     fields.findIndex((f) => f.name === file.name);
@@ -61,6 +60,8 @@ export const Knowledge = () => {
   }
 
   async function handleAddFiles(data: { files: File[] }) {
+    console.log("Adding files", data);
+
     // Upload the selecting files
     for (const file of data.files) {
       try {
@@ -95,9 +96,8 @@ export const Knowledge = () => {
         });
       }
     }
-
     handleFetchFiles();
-  }, [toast]);
+  }, []);
 
   return (
     <ExpandableSection
@@ -105,8 +105,8 @@ export const Knowledge = () => {
       title={"Knowledge"}
       description="Upload your own data to chat with"
     >
+      <ListFiles files={fields} handleRemoveFile={handleRemoveFile} />
       <form onSubmit={handleSubmit(handleAddFiles)}>
-        <ListFiles files={fields} handleRemoveFile={handleRemoveFile} />
         <UploadFile append={append} uploadedFiles={fields} />
         {selectingFiles && (
           <Button type="submit" className="mt-4 p-2 text-white rounded">

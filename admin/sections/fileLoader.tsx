@@ -24,7 +24,13 @@ export const FileLoaderConfig = () => {
   const loaderForm = useForm({
     resolver: zodResolver(FileLoaderSchema),
   });
-  const { data: fileLoader, refetch } = useQuery("fileLoader", fetchFileLoader);
+  const { data: fileLoader, refetch } = useQuery(
+    "fileLoader",
+    fetchFileLoader,
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   useEffect(() => {
     if (fileLoader) {
