@@ -71,45 +71,41 @@ export const Knowledge = () => {
     }
     console.log("Uploading files:", toUploadFiles);
 
-    const uploadResult: File[] = await Promise.all(
-      toUploadFiles.map(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file.blob as Blob);
-        try {
-          await uploadFile(formData);
-          setFiles((prevFiles) => {
-            return prevFiles.map((f) => {
-              if (f.name === file.name) {
-                return { ...f, status: "uploaded" };
-              }
-              return f;
-            });
+    // Change to for loop to upload files one by one
+    for (const file of toUploadFiles) {
+      const formData = new FormData();
+      formData.append("file", file.blob as Blob);
+      try {
+        await uploadFile(formData);
+        setFiles((prevFiles) => {
+          return prevFiles.map((f) => {
+            if (f.name === file.name) {
+              return { ...f, status: "uploaded" };
+            }
+            return f;
           });
-          return { ...file, status: "uploaded" };
-        } catch (err: unknown) {
-          console.error(
-            "Failed to upload the file:",
-            file.name,
-            (err as Error)?.message,
-          );
-          toast({
-            title: "Failed to upload the file: " + file.name + "!",
-            variant: "destructive",
+        });
+      } catch (err: unknown) {
+        console.error(
+          "Failed to upload the file:",
+          file.name,
+          (err as Error)?.message,
+        );
+        toast({
+          title: "Failed to upload the file: " + file.name + "!",
+          variant: "destructive",
+        });
+        setFiles((prevFiles) => {
+          return prevFiles.map((f) => {
+            if (f.name === file.name) {
+              return { ...f, status: "failed" };
+            }
+            return f;
           });
-          setFiles((prevFiles) => {
-            return prevFiles.map((f) => {
-              if (f.name === file.name) {
-                return { ...f, status: "failed" };
-              }
-              return f;
-            });
-          });
-          return { ...file, status: "failed" };
-        }
-      }),
-    );
-
-    return uploadResult;
+        });
+        await handleRemoveFiles([file]);
+      }
+    }
   }
 
   async function processUpload(blobFiles: globalThis.File[]) {
@@ -130,10 +126,7 @@ export const Knowledge = () => {
     if (newFiles.length > 0) {
       setIsSubmitting(true);
       const addedFiles = await handleAddFiles(newFiles);
-      const uploadedFiles = await handleUploadFile(addedFiles);
-      await handleRemoveFiles(
-        uploadedFiles.filter((file) => file.status === "failed"),
-      );
+      await handleUploadFile(addedFiles);
       setIsSubmitting(false);
     }
   }
