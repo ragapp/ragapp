@@ -14,13 +14,7 @@ import { useForm } from "react-hook-form";
 import { ChatConfig } from "./chat";
 import { ModelConfig } from "./model";
 
-export const ConfigForm = ({
-  setConfigured,
-  demoChatIframeRef,
-}: {
-  setConfigured: any;
-  demoChatIframeRef: any;
-}) => {
+export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
   const form = useForm({
     resolver: zodResolver(ConfigFormSchema),
   });
@@ -48,11 +42,6 @@ export const ConfigForm = ({
         setConfigured(true);
       } else {
         setConfigured(false);
-      }
-      // Reload the chat iframe to apply the changes from the new config
-      const changedFields = form.formState.dirtyFields;
-      if (changedFields.conversation_starters) {
-        demoChatIframeRef.current?.reloadIframe();
       }
     } catch (err) {
       console.error(err);
