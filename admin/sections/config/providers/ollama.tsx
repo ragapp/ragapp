@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "react-query";
@@ -53,10 +52,8 @@ export const OllamaForm = ({
       onError: (error: unknown) => {
         console.error("Failed to fetch Ollama models:", error);
         toast({
-          className: cn(
-            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-          ),
           title: "Failed to fetch Ollama models",
+          variant: "destructive",
           duration: 5000,
         });
       },

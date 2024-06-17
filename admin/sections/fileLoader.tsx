@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -40,10 +39,8 @@ export const FileLoaderConfig = () => {
     } catch (error) {
       console.error(error);
       toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-        ),
         title: "Failed to update file loader configuration!",
+        variant: "destructive",
       });
     }
   };

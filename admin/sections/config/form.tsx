@@ -7,7 +7,6 @@ import {
 } from "@/client/config";
 import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -30,9 +29,6 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
       const configData = await updateConfig(data as ConfigFormType);
       if (showSuccessToast) {
         toast({
-          className: cn(
-            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-green-500",
-          ),
           title: "Config updated successfully",
         });
       }
@@ -46,10 +42,8 @@ export const ConfigForm = ({ setConfigured }: { setConfigured: any }) => {
     } catch (err) {
       console.error(err);
       toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-        ),
         title: "Failed to update config",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);

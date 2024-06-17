@@ -15,8 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
+import { toast, useToast } from "@/components/ui/use-toast";
 import { LoaderCircle } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -52,10 +51,8 @@ export const Knowledge = () => {
       } catch {
         updateStatus(file, "failed");
         toast({
-          className: cn(
-            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-          ),
           title: "Failed to remove the file: " + file.name + "!",
+          variant: "destructive",
         });
       }
     } else {
@@ -79,10 +76,8 @@ export const Knowledge = () => {
       } catch (err: unknown) {
         remove(getFileIndex(file));
         toast({
-          className: cn(
-            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-          ),
           title: "Failed to upload the file: " + file.name + "!",
+          variant: "destructive",
         });
       }
     }
@@ -95,10 +90,8 @@ export const Knowledge = () => {
         reset({ files });
       } catch (error) {
         toast({
-          className: cn(
-            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-          ),
           title: "Failed to load uploaded files!",
+          variant: "destructive",
         });
       }
     }
@@ -176,7 +169,13 @@ const ListFiles = ({
   );
 };
 
-const UploadFile = ({ append, uploadedFiles }: { append: (file: File) => void, uploadedFiles: File[] }) => {
+const UploadFile = ({
+  append,
+  uploadedFiles,
+}: {
+  append: (file: File) => void;
+  uploadedFiles: File[];
+}) => {
   return (
     <div className="grid mt-10 w-full max-w-sm items-center gap-1.5">
       <Label>Upload File</Label>
@@ -188,7 +187,10 @@ const UploadFile = ({ append, uploadedFiles }: { append: (file: File) => void, u
           for (const file of selectedFiles) {
             // Check if the file is already uploaded
             if (uploadedFiles.some((f) => f.name === file.name)) {
-              alert(`File ${file.name} is already exists`);
+              toast({
+                title: "The file " + file.name + " is existing!",
+                variant: "destructive",
+              });
               continue;
             }
             // Append the file to the list of files
