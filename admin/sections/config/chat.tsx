@@ -1,6 +1,5 @@
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { MultiInput } from "@/components/ui/custom/multiInput";
-import { SubmitButton } from "@/components/ui/custom/submitButton";
 import {
   FormControl,
   FormDescription,
@@ -13,16 +12,11 @@ import { Textarea } from "@/components/ui/textarea";
 
 export const ChatConfig = ({
   form,
-  isSubmitting,
+  submit,
 }: {
   form: any;
-  isSubmitting: boolean;
+  submit: (data: any, showSuccessToast?: boolean) => void;
 }) => {
-  const chatConfigFields = ["system_prompt", "conversation_starters"];
-  const fieldsChanged = chatConfigFields.some(
-    (field) => form.formState.dirtyFields[field],
-  );
-
   return (
     <ExpandableSection
       name="chat-config"
@@ -35,7 +29,7 @@ export const ChatConfig = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel>Custom Prompt</FormLabel>
-            <FormControl>
+            <FormControl onBlur={() => submit(form.getValues(), false)}>
               <Textarea rows={3} {...field} />
             </FormControl>
             <FormDescription>
@@ -51,7 +45,20 @@ export const ChatConfig = ({
         render={({ field }) => (
           <FormItem className="pt-4">
             <FormLabel>Conversation questions</FormLabel>
-            <FormControl>
+            <FormControl
+              onBlur={() => {
+                submit(form.getValues(), false);
+              }}
+              onChange={() => {
+                // Handle for the case when the user deletes a question
+                if (
+                  form.getValues().conversation_starters.length <
+                  field.value?.length
+                ) {
+                  submit(form.getValues(), false);
+                }
+              }}
+            >
               <MultiInput {...field} />
             </FormControl>
             <FormDescription>
@@ -62,11 +69,6 @@ export const ChatConfig = ({
           </FormItem>
         )}
       />
-      {fieldsChanged && (
-        <div className="mt-4">
-          <SubmitButton isSubmitting={isSubmitting} />
-        </div>
-      )}
     </ExpandableSection>
   );
 };

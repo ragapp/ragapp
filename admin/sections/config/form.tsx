@@ -28,18 +28,20 @@ export const ConfigForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [defaultValues, setDefaultValues] = useState(DEFAULT_CONFIG);
 
-  async function onSubmit(data: any) {
+  async function onSubmit(data: any, showSuccessToast = true) {
     setIsSubmitting(true);
 
     // Send the data to the server
     try {
       const configData = await updateConfig(data as ConfigFormType);
-      toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-green-500",
-        ),
-        title: "Updated config successfully",
-      });
+      if (showSuccessToast) {
+        toast({
+          className: cn(
+            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-green-500",
+          ),
+          title: "Config updated successfully",
+        });
+      }
 
       setDefaultValues(configData);
       if (configData.configured) {
@@ -48,7 +50,10 @@ export const ConfigForm = ({
         setConfigured(false);
       }
       // Reload the chat iframe to apply the changes from the new config
-      demoChatIframeRef.current?.reloadIframe();
+      const changedFields = form.formState.dirtyFields;
+      if (changedFields.conversation_starters) {
+        demoChatIframeRef.current?.reloadIframe();
+      }
     } catch (err) {
       console.error(err);
       toast({
@@ -90,7 +95,10 @@ export const ConfigForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
+      <form
+        onSubmit={form.handleSubmit(() => onSubmit(form.getValues(), true))}
+        className="space-y-4 mb-4"
+      >
         {/* Provider config */}
 
         <ModelConfig
@@ -101,7 +109,7 @@ export const ConfigForm = ({
         />
 
         {defaultValues.configured && (
-          <ChatConfig form={form} isSubmitting={isSubmitting} />
+          <ChatConfig form={form} submit={onSubmit} />
         )}
       </form>
     </Form>

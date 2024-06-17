@@ -4,7 +4,6 @@ import {
   updateFileLoader,
 } from "@/client/loader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { SubmitButton } from "@/components/ui/custom/submitButton";
 import {
   Form,
   FormControl,
@@ -26,9 +25,6 @@ export const FileLoaderConfig = () => {
   const loaderForm = useForm({
     resolver: zodResolver(FileLoaderSchema),
   });
-  const fieldsChanged =
-    Object.keys(loaderForm.formState.dirtyFields).length > 0;
-
   const { data: fileLoader, refetch } = useQuery("fileLoader", fetchFileLoader);
 
   useEffect(() => {
@@ -41,12 +37,6 @@ export const FileLoaderConfig = () => {
     try {
       await updateFileLoader(data);
       refetch();
-      toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-green-500",
-        ),
-        title: "Config updated successfully",
-      });
     } catch (error) {
       console.error(error);
       toast({
@@ -64,7 +54,7 @@ export const FileLoaderConfig = () => {
       <Form {...loaderForm}>
         <form
           className="space-y-4 mb-4"
-          onSubmit={loaderForm.handleSubmit(submitLoaderForm)}
+          onBlur={loaderForm.handleSubmit(submitLoaderForm)}
         >
           <FormField
             control={loaderForm.control}
@@ -74,7 +64,11 @@ export const FileLoaderConfig = () => {
                 <FormControl>
                   <Checkbox
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(checked) => {
+                      // Instantly update the form value
+                      field.onChange(checked);
+                      submitLoaderForm(loaderForm.getValues());
+                    }}
                   />
                 </FormControl>
                 <div>
@@ -103,11 +97,6 @@ export const FileLoaderConfig = () => {
                 </FormItem>
               )}
             />
-          )}
-          {fieldsChanged && (
-            <div className="mt-4">
-              <SubmitButton isSubmitting={false} />
-            </div>
           )}
         </form>
       </Form>

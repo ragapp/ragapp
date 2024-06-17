@@ -10,21 +10,19 @@ type InputElementsProps = InputProps & {
 const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
   ({ value, onChange, ...props }, ref) => {
     if (value === null) {
-      value = [];
+      // Set the default value to an empty string to always have at least one input
+      value = [""];
     }
 
     const handleInputChange = (newValue: string, index: number) => {
       const newValues = [...value];
       newValues[index] = newValue;
-      onChange(newValues);
-    };
-
-    const handleInputBlur = (
-      e: React.FocusEvent<HTMLInputElement>,
-      index: number,
-    ) => {
-      const newValue = e.target.value?.trim();
-      handleInputChange(newValue, index);
+      // If the last input is not empty, add a new empty input at the end
+      if (index === value.length - 1 && newValue !== "") {
+        onChange([...newValues, ""]);
+      } else {
+        onChange(newValues);
+      }
     };
 
     const handleInputKeyDown = (
@@ -69,12 +67,11 @@ const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
               onMouseLeave={() => setHoveredIndex(null)}
             >
               <Input
+                autoFocus={false}
                 value={item}
                 onChange={(e) => handleInputChange(e.target.value, idx)}
-                onBlur={(e) => handleInputBlur(e, idx)}
                 onKeyDown={(e) => handleInputKeyDown(e, idx)}
                 className="border border-gray-300 rounded-md px-2 py-1"
-                autoFocus={idx === value.length - 1}
                 {...props}
                 ref={ref}
               />
@@ -92,27 +89,6 @@ const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
               )}
             </div>
           ))}
-        {value && value[value.length - 1]?.trim() !== "" && (
-          <div className="flex flex-row w-full px-2 justify-between items-center relative">
-            <Input
-              value=""
-              onChange={(e) => {
-                const newValues = [...value, e.target.value];
-                onChange(newValues.filter((item) => item?.trim() !== ""));
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && e.currentTarget.value?.trim() !== "") {
-                  const newValues = [...value, e.currentTarget.value?.trim()];
-                  onChange(newValues.filter((item) => item?.trim() !== ""));
-                  e.currentTarget.value = "";
-                }
-              }}
-              className="border border-gray-300 rounded-md px-2 py-1"
-              {...props}
-              ref={ref}
-            />
-          </div>
-        )}
       </>
     );
   },
