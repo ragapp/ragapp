@@ -33,7 +33,7 @@ export const FileLoaderConfig = () => {
     if (fileLoader) {
       loaderForm.reset(fileLoader);
     }
-  }, [fileLoader]);
+  }, [fileLoader, loaderForm]);
 
   const submitLoaderForm = async (data: any) => {
     try {

@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint '**/*.{ts,tsx}'",
+    "lint": "eslint '**/*.{ts,tsx}' --max-warnings=0",
     "format": "prettier --ignore-unknown --cache --check .",
     "format:write": "prettier --ignore-unknown --write ."
   },
@@ -43,5 +43,6 @@
     "prettier-plugin-organize-imports": "^3.2.4",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.4.5"
-  }
+  },
+  "packageManager": "pnpm@9.4.0"
 }

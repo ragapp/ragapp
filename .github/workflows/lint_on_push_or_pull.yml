@@ -16,24 +16,26 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 'admin'
+        working-directory: "admin"
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Run lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Run Prettier
-        run: npm run format
-  
+        run: pnpm run format
+
   linting-python:
     runs-on: ubuntu-latest
     strategy:

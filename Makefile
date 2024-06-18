@@ -6,6 +6,7 @@ create-llama-app:
 	@echo "\nCreating Llama App..."
 	rm -rf create_llama
 	npx -y create-llama@${CREATE_LLAMA_VERSION} \
+	    --use-pnpm \
 		--framework fastapi \
 		--template streaming \
 		--engine context \
@@ -29,14 +30,14 @@ patch-chat: create-llama-app
 
 build-chat: patch-chat
 	@echo "\nBuilding Chat UI..."
-	cd ./create_llama/frontend && npm install && npm run build
+	cd ./create_llama/frontend && pnpm install && pnpm run build
 	@echo "\nCopying Chat UI to static folder..."
 	mkdir -p ./static && cp -r ./create_llama/frontend/out/* ./static/
 	@echo "\nDone!"
 
 build-admin:
 	@echo "\nBuilding Admin UI..."
-	cd ./admin && npm install && npm run build
+	cd ./admin && pnpm install && pnpm run build
 	@echo "\nCopying Admin UI to static folder..."
 	mkdir -p ./static/admin && cp -r ./admin/out/* ./static/admin/
 	@echo "\nDone!"
@@ -52,5 +53,5 @@ dev:
 	@export ENVIRONMENT=dev; \
 	trap 'kill 0' SIGINT; \
 	poetry run python main.py & \
-	npm run dev --prefix ./admin & \
+	pnpm run dev --prefix ./admin & \
 	wait
