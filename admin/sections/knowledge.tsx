@@ -118,7 +118,7 @@ export const Knowledge = () => {
     );
     if (duplicateFiles.length > 0) {
       toast({
-        title: `Duplicate files (${duplicateFiles.map((f) => f.name).join(", ")})!`,
+        title: `Ignoring duplicate files (${duplicateFiles.map((f) => f.name).join(", ")})!`,
         variant: "destructive",
       });
     }
