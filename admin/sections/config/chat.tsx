@@ -49,17 +49,13 @@ export const ChatConfig = ({
               onBlur={() => {
                 submit(form.getValues(), false);
               }}
-              onChange={() => {
-                // Handle for the case when the user deletes a question
-                if (
-                  form.getValues().conversation_starters.length <
-                  field.value?.length
-                ) {
-                  submit(form.getValues(), false);
-                }
-              }}
             >
-              <MultiInput {...field} />
+              <MultiInput
+                {...field}
+                onDelete={() => {
+                  submit(form.getValues(), false);
+                }}
+              />
             </FormControl>
             <FormDescription>
               Add suggested questions to help users start a conversation with

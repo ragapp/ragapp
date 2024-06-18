@@ -5,10 +5,11 @@ import { Dispatch, SetStateAction, forwardRef, useState } from "react";
 type InputElementsProps = InputProps & {
   value: string[];
   onChange: Dispatch<SetStateAction<string[]>>;
+  onDelete: () => void;
 };
 
 const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
-  ({ value, onChange, ...props }, ref) => {
+  ({ value, onChange, onDelete, ...props }, ref) => {
     if (value === null) {
       // Set the default value to an empty string to always have at least one input
       value = [""];
@@ -52,6 +53,7 @@ const MultiInput = forwardRef<HTMLInputElement, InputElementsProps>(
         newValues.push("");
       }
       onChange(newValues);
+      onDelete();
     };
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
