@@ -7,21 +7,33 @@ export type FileStatus =
   | "removing"
   | "removed";
 
-export type File = {
-  name: string;
-  status: FileStatus;
-};
+  export type File = {
+    name: string;
+    status: FileStatus;
+  };
+  
+  // Define FileObject type
+  export interface FileObject {
+    name: string;
+    status: FileStatus;
+  }
+  
+  // Define FilesState type
+  export interface FilesState {
+    [collection: string]: FileObject[];
+  }
 
-export async function fetchFiles(): Promise<File[]> {
-  const res = await fetch(`${getBaseURL()}/api/management/files`);
+export async function fetchFiles(collectionName: string): Promise<FileObject[]> {
+  const res = await fetch(`${getBaseURL()}/api/management/files?collection=${encodeURIComponent(collectionName)}`);
   if (!res.ok) {
     throw new Error("Failed to fetch files");
   }
-  return res.json();
+  const files: FileObject[] = await res.json();
+  return files;
 }
 
-export async function uploadFile(formData: any) {
-  const res = await fetch(`${getBaseURL()}/api/management/files`, {
+export async function uploadFile(collection: string, formData: FormData) {
+  const res = await fetch(`${getBaseURL()}/api/management/files/${encodeURIComponent(collection)}`, {
     method: "POST",
     body: formData,
   });
@@ -31,10 +43,10 @@ export async function uploadFile(formData: any) {
   }
 }
 
-export async function removeFile(fileName: string) {
+export async function removeFile(collection: string, fileName: string) {
   const encodedFileName = encodeURIComponent(fileName);
   const res = await fetch(
-    `${getBaseURL()}/api/management/files/${encodedFileName}`,
+    `${getBaseURL()}/api/management/files/${encodeURIComponent(collection)}/${encodedFileName}`,
     {
       method: "DELETE",
     },

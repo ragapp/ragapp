@@ -4,6 +4,8 @@ import {
   fetchFiles,
   removeFile,
   uploadFile,
+  FileObject,
+  FilesState,
 } from "@/client/files";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Input } from "@/components/ui/input";
@@ -22,14 +24,16 @@ import { QdrantClient } from "@qdrant/js-client-rest";
 const client = new QdrantClient({ host: "localhost", port: 6333 });
 
 export const Knowledge = () => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [collections, setCollections] = useState<string[]>([]);
+  const [files, setFiles] = useState<FilesState>({});
   const [selectedCollection, setSelectedCollection] = useState<string>('');
+  const [collections, setCollections] = useState<string[]>([]);
   const [loadingCollections, setLoadingCollections] = useState<boolean>(false);
   const [errorLoadingCollections, setErrorLoadingCollections] = useState<boolean>(false);
   const [creatingCollection, setCreatingCollection] = useState<boolean>(false);
   const [newCollectionName, setNewCollectionName] = useState<string>('');
   const { toast } = useToast();
+
+
 
   const updateStatus = (name: string, status: FileStatus) => (f: File) => {
     if (f.name === name) {
@@ -38,56 +42,77 @@ export const Knowledge = () => {
     return f;
   };
 
-  async function handleRemoveFile(file: File) {
+  
+  async function handleRemoveFile(collectionName: string, file: FileObject) {
     setFiles((prevFiles) => {
-      return prevFiles.map(updateStatus(file.name, "removing"));
+      const updatedFiles = { ...prevFiles };
+      updatedFiles[collectionName] = updatedFiles[collectionName].map((f) =>
+        f.name === file.name ? { ...f, status: "removing" } : f
+      );
+      return updatedFiles;
     });
+  
     try {
-      await removeFile(file.name);
-      // Remove the file from the list
+      await removeFile(collectionName, file.name);
       setFiles((prevFiles) => {
-        const filteredFiles = prevFiles.filter((f) => f.name !== file.name);
-        return filteredFiles;
+        const updatedFiles = { ...prevFiles };
+        updatedFiles[collectionName] = updatedFiles[collectionName].filter(
+          (f) => f.name !== file.name
+        );
+        return updatedFiles;
       });
-    } catch {
-      // Update the file status to failed
+    } catch (error) {
+      console.error("Failed to remove file:", error);
       setFiles((prevFiles) => {
-        return prevFiles.map(updateStatus(file.name, "failed"));
+        const updatedFiles = { ...prevFiles };
+        updatedFiles[collectionName] = updatedFiles[collectionName].map((f) =>
+          f.name === file.name ? { ...f, status: "failed" } : f
+        );
+        return updatedFiles;
       });
     }
   }
 
-  async function handleAddFiles(addingFiles: any[]) {
+  
+  async function handleAddFiles(collectionName: string, addingFiles: any[]) {
     for (const file of addingFiles) {
-      // Add the file to list files with uploading status
       const fileObj = {
         name: file.name,
         status: "uploading" as FileStatus,
       };
-      setFiles((prevFiles) => [...prevFiles, fileObj]);
-      // Upload the file to the server
+  
+      setFiles((prevFiles) => {
+        const updatedFiles = { ...prevFiles };
+        if (!updatedFiles[collectionName]) {
+          updatedFiles[collectionName] = [];
+        }
+        updatedFiles[collectionName].push(fileObj);
+        return updatedFiles;
+      });
+  
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("collection_name", selectedCollection); // Use "collection_name" to match the server expectation
+  
       try {
-        await uploadFile(formData);
+        await uploadFile(collectionName, formData);
         setFiles((prevFiles) => {
-          return prevFiles.map(updateStatus(fileObj.name, "uploaded"));
+          const updatedFiles = { ...prevFiles };
+          updatedFiles[collectionName] = updatedFiles[collectionName].map(f => 
+            f.name === fileObj.name ? { ...f, status: "uploaded" } : f
+          );
+          return updatedFiles;
         });
       } catch (err: unknown) {
         setFiles((prevFiles) => {
-          return prevFiles.map(updateStatus(fileObj.name, "failed"));
+          const updatedFiles = { ...prevFiles };
+          updatedFiles[collectionName] = updatedFiles[collectionName].map(f => 
+            f.name === fileObj.name ? { ...f, status: "failed" } : f
+          );
+          return updatedFiles;
         });
-        // Show a error toast
-        console.error(
-          "Failed to upload the file:",
-          file.name,
-          (err as Error)?.message,
-        );
+        console.error("Failed to upload the file:", file.name, (err as Error)?.message);
         toast({
-          className: cn(
-            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-          ),
+          className: cn("top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500"),
           title: "Failed to upload the file: " + file.name + "!",
         });
       }
@@ -96,23 +121,26 @@ export const Knowledge = () => {
 
   useEffect(() => {
     async function handleFetchFiles() {
+      if (!selectedCollection) return; // Do not fetch if no collection is selected
+
       try {
-        const files = await fetchFiles();
-        setFiles(files);
+        const files: FileObject[] = await fetchFiles(selectedCollection);
+        setFiles((prevFiles) => ({
+          ...prevFiles,
+          [selectedCollection]: files,
+        }));
       } catch (error) {
-        console.error(error);
-        // Show a error toast
+        console.error("Failed to fetch files:", error);
         toast({
-          className: cn(
-            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-          ),
+          className: cn("top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500"),
           title: "Failed to load uploaded files!",
         });
       }
     }
 
     handleFetchFiles();
-  }, [toast]);
+  }, [selectedCollection, toast]); // Run effect when selectedCollection or toast changes
+
 
 
   const fetchCollections = async () => {
@@ -203,7 +231,6 @@ const handleCreateCollection = async () => {
   }
 };
 
-
 return (
   <ExpandableSection
     title={"Knowledge"}
@@ -249,19 +276,29 @@ return (
         </select>
       )}
     </div>
-    <ListFiles files={files} handleRemoveFile={handleRemoveFile} />
-    <UploadFile handleAddFiles={handleAddFiles} />
+    <ListFiles 
+      files={files[selectedCollection] || []} 
+      collectionName={selectedCollection} 
+      handleRemoveFile={handleRemoveFile} 
+    />
+    <UploadFile 
+      collectionName={selectedCollection} 
+      handleAddFiles={handleAddFiles} 
+    />
   </ExpandableSection>
 );
 
 };
 
+
 const ListFiles = ({
   files,
+  collectionName,
   handleRemoveFile,
 }: {
-  files: File[];
-  handleRemoveFile: (file: File) => void;
+  files: FileObject[];
+  collectionName: string;
+  handleRemoveFile: (collectionName: string, file: FileObject) => void;
 }) => {
   return (
     // Show uploaded files in grid layout
@@ -284,7 +321,7 @@ const ListFiles = ({
                       </div>
                       <button
                         className="text-gray-500 text-sm"
-                        onClick={() => handleRemoveFile(file)}
+                        onClick={() => handleRemoveFile(collectionName, file)}
                       >
                         {file.status.includes("removing") ||
                         file.status.includes("uploading")
@@ -305,7 +342,8 @@ const ListFiles = ({
   );
 };
 
-const UploadFile = ({ handleAddFiles = async (files: any[]) => {} }) => {
+
+const UploadFile = ({ collectionName, handleAddFiles }: { collectionName: string, handleAddFiles: (collectionName: string, files: any[]) => Promise<void> }) => {
   return (
     <div className="grid mt-10 w-full max-w-sm items-center gap-1.5">
       <Label>Upload File</Label>
@@ -313,13 +351,14 @@ const UploadFile = ({ handleAddFiles = async (files: any[]) => {} }) => {
         type="file"
         multiple
         onChange={async (e) => {
-          await handleAddFiles(Array.from(e.target.files ?? []));
+          await handleAddFiles(collectionName, Array.from(e.target.files ?? []));
           e.target.value = ""; // Clear the input value
         }}
       />
     </div>
   );
 };
+
 
 const CollectionSelector = ({
   collections,
