@@ -16,6 +16,7 @@ from create_llama.backend.app.api.routers.chat import chat_router
 from src.routers.management.config import config_router
 from src.routers.management.files import files_router
 from src.routers.management.tools import tools_router
+from src.routers.management.vectordb_actions import vectordb_actions_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -36,6 +37,7 @@ app.include_router(chat_router, prefix="/api/chat")
 app.include_router(config_router, prefix="/api/management/config")
 app.include_router(files_router, prefix="/api/management/files")
 app.include_router(tools_router, prefix="/api/management/tools")
+app.include_router(vectordb_actions_router, prefix="/api/management/set-collection")
 
 
 @app.get("/")

@@ -15,9 +15,17 @@ services:
       - ./ollama:/root/.ollama
     networks:
       - ragapp-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
   
   setup:
     image: curlimages/curl:latest
+    user: root
     networks:
       - ragapp-network
     volumes:
@@ -37,10 +45,18 @@ services:
     depends_on:
       - qdrant
       - ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   ragapp:
     build: .
     image: ragapp/ragapp:latest
+    user: root
     ports:
       - "8000:8000"
     volumes:
@@ -60,6 +76,13 @@ services:
       - setup
     networks:
       - ragapp-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
   
 networks:
   ragapp-network:
