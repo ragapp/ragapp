@@ -69,7 +69,6 @@ export const Knowledge = () => {
   }
 
   async function handleUploadFile(toUploadFiles?: File[]) {
-    // Todo
     if (!toUploadFiles) {
       toUploadFiles = files.filter((file) => file.status === "toUpload");
     }
