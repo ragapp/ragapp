@@ -41,6 +41,8 @@ def remove_file(file_name: str):
         FileHandler.remove_file(file_name)
     except FileNotFoundError:
         # Ignore the error if the file is not found
+        # This is to ensure that the file is removed even if it is not found
+        # and we don't have to show an unnecessary error message to the user
         pass
     return JSONResponse(
         status_code=200,

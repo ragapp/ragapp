@@ -31,8 +31,6 @@ export default function Home() {
   }, [router.asPath]);
 
   useEffect(() => {
-    console.log("configured", configured);
-
     if (configured === undefined) {
       fetchIsAppConfigured().then((data) => {
         setConfigured(data);
