@@ -20,16 +20,31 @@ import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 
 export const ChatConfig = ({}: {}) => {
-  const form = useForm({
+  const form = useForm<ChatConfigFormType>({
     resolver: zodResolver(ChatConfigSchema),
   });
 
   // Use query to fetch the chat config
+  // TODO: show isLoading state, e.g. a spinner in the exapandable section component
   const { data, error, isLoading } = useQuery("chatConfig", getChatConfig, {
     refetchOnWindowFocus: false,
+  });
+  const { mutate: updateConfig, updateError } = useMutation(updateChatConfig, {
+    onError: (error: unknown) => {
+      // TODO: form.reset(data) is just resetting to the last value, but a failure in the API
+      // call doesn't guarantee that the data is still the same.
+      // @Lee can we guarantee this? if not we should probably refetch the data
+      // see https://tanstack.com/query/v4/docs/framework/react/guides/mutations#mutation-side-effects
+      form.reset(data);
+      console.error(error);
+      toast({
+        title: "Failed to update chat config",
+        variant: "destructive",
+      });
+    },
   });
 
   useEffect(() => {
@@ -38,16 +53,8 @@ export const ChatConfig = ({}: {}) => {
     }
   }, [data, form]);
 
-  async function onSubmit(data: any) {
-    try {
-      await updateChatConfig(data as ChatConfigFormType);
-    } catch (err) {
-      console.error(err);
-      toast({
-        title: "Failed to update chat config",
-        variant: "destructive",
-      });
-    }
+  async function handleSubmit() {
+    updateConfig(form.getValues());
   }
 
   return (
@@ -58,9 +65,9 @@ export const ChatConfig = ({}: {}) => {
     >
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(() => onSubmit(form.getValues()))}
+          onSubmit={handleSubmit}
           className="space-y-4 mb-4"
-          onBlur={() => onSubmit(form.getValues())}
+          onBlur={handleSubmit}
         >
           <FormField
             control={form.control}
@@ -85,12 +92,7 @@ export const ChatConfig = ({}: {}) => {
               <FormItem className="pt-4">
                 <FormLabel>Conversation questions</FormLabel>
                 <FormControl>
-                  <MultiInput
-                    {...field}
-                    onDelete={() => {
-                      onSubmit(form.getValues());
-                    }}
-                  />
+                  <MultiInput {...field} onDelete={handleSubmit} />
                 </FormControl>
                 <FormDescription>
                   Add suggested questions to help users start a conversation

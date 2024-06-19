@@ -29,6 +29,8 @@ def update_chat_config(
     new_config: ChatConfig,
     config: ChatConfig = Depends(ChatConfig.get_config),
 ):
+    # Just to send always an error to test FE
+    raise NotImplementedError("Chat config is not implemented yet.")
     new_config.to_runtime_env()
     new_config.to_env_file()
 
