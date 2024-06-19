@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -30,10 +29,8 @@ export const ToolConfig = () => {
   const onSubmit = async (tool_name: string, data: any) => {
     await updateToolConfig(tool_name, data).catch((error) => {
       toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-        ),
         title: `Could not update ${tool_name} config`,
+        variant: "destructive",
       });
     });
   };
@@ -46,9 +43,9 @@ export const ToolConfig = () => {
 
   return (
     <ExpandableSection
+      name="agent-config"
       title={"Agent Config"}
       description="Config tools and agent"
-      open
     >
       <Form {...form}>
         <form className="space-y-4 mb-4">

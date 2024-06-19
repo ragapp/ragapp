@@ -1,22 +1,11 @@
 "use client";
 
 import { getBaseURL } from "@/client/utils";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { RefreshCw } from "lucide-react";
+import { forwardRef, useRef } from "react";
 
 const DemoChat = forwardRef((props, ref) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  useImperativeHandle(ref, () => ({
-    getIframe: () => {
-      return iframeRef.current;
-    },
-    reloadIframe: () => {
-      const iframe = iframeRef.current;
-      if (iframe) {
-        iframe.src += "";
-      }
-    },
-  }));
 
   return (
     <div className="h-full w-full">
@@ -26,6 +15,17 @@ const DemoChat = forwardRef((props, ref) => {
         src={`${getBaseURL()}/chat.html`}
         scrolling="no"
       ></iframe>
+      <button
+        className="absolute bg-white text-gray-500 rounded-full p-4 top-20 right-8"
+        onClick={() => {
+          const iframe = iframeRef.current;
+          if (iframe) {
+            iframe.src += "";
+          }
+        }}
+      >
+        <RefreshCw className="w-8" strokeWidth={3} />
+      </button>
     </div>
   );
 });

@@ -40,13 +40,10 @@ def remove_file(file_name: str):
     try:
         FileHandler.remove_file(file_name)
     except FileNotFoundError:
-        return JSONResponse(
-            status_code=404,
-            content={
-                "error": "FileNotFoundError",
-                "message": f"File {file_name} not found.",
-            },
-        )
+        # Ignore the error if the file is not found
+        # This is to ensure that the file is removed even if it is not found
+        # and we don't have to show an unnecessary error message to the user
+        pass
     return JSONResponse(
         status_code=200,
         content={"message": f"File {file_name} removed successfully."},

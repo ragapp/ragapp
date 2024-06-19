@@ -1,9 +1,7 @@
 from dotenv import load_dotenv
 from src.constants import ENV_FILE_PATH
 
-load_dotenv(
-    dotenv_path=ENV_FILE_PATH,
-)
+load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False)
 
 import os
 import logging
@@ -33,11 +31,11 @@ if environment == "dev":
     )
 
 # Add chat router from create_llama/backend
-app.include_router(chat_router, prefix="/api/chat")
+app.include_router(chat_router, prefix="/api/chat", tags=["Chat"])
 app.include_router(config_router, prefix="/api/management/config")
-app.include_router(files_router, prefix="/api/management/files")
-app.include_router(tools_router, prefix="/api/management/tools")
-app.include_router(loader_router, prefix="/api/management/loader")
+app.include_router(tools_router, prefix="/api/management/tools", tags=["Agent"])
+app.include_router(files_router, prefix="/api/management/files", tags=["Knowledge"])
+app.include_router(loader_router, prefix="/api/management/loader", tags=["Knowledge"])
 
 
 @app.get("/")
