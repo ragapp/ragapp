@@ -1,8 +1,26 @@
 import os
 import dotenv
 from dotenv.main import DotEnv
+from typing import List
 from pydantic_settings import BaseSettings
+from pydantic.json_schema import CoreSchema
 from src.constants import ENV_FILE_PATH
+
+
+class NewlineListEnv(List[str]):
+    """
+    A custom data type to represent a list of strings separated by newlines.
+    """
+
+    def __str__(self):
+        return "\n".join(self)
+
+    def __repr__(self):
+        return str(self)
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type, handler) -> CoreSchema:
+        return handler(NewlineListEnv)
 
 
 class BaseEnvConfig(BaseSettings):

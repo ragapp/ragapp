@@ -1,19 +1,6 @@
 from typing import List, Self
 from pydantic import Field, validator, field_validator
-from pydantic.json_schema import CoreSchema
-from src.models.base_env import BaseEnvConfig
-
-
-class NewlineListEnv(List[str]):
-    def __str__(self):
-        return "\n".join(self)
-
-    def __repr__(self):
-        return str(self)
-
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source_type, handler) -> CoreSchema:
-        return handler(NewlineListEnv)
+from src.models.base_env import BaseEnvConfig, NewlineListEnv
 
 
 class ChatConfig(BaseEnvConfig):

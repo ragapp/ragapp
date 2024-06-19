@@ -78,7 +78,7 @@ def update_model_config(
     )
 
 
-@r.get("/available_models", tags=["Model config"])
+@r.get("/models/list", tags=["Model config"])
 def get_available_models(
     provider: Optional[str] = Query(
         None,

@@ -62,7 +62,10 @@ export default function Home() {
                 "m-auto": !configured,
               })}
             >
-              <ModelConfig setConfigured={setConfigured} />
+              <ModelConfig
+                configured={configured ?? false}
+                setConfigured={setConfigured}
+              />
               {configured && (
                 <>
                   <ChatConfig />

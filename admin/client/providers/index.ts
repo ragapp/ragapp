@@ -96,7 +96,7 @@ export async function fetchModels(
     ...(providerUrl && { provider_url: providerUrl }),
   });
 
-  const url = `${getBaseURL()}/api/management/config/available_models?${params.toString()}`;
+  const url = `${getBaseURL()}/api/management/config/models/list?${params.toString()}`;
   const res = await fetch(url);
   if (!res.ok) {
     const error = await res.text();

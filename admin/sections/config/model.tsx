@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { AzureOpenAIForm } from "./providers/azureOpenai";
@@ -33,9 +33,11 @@ import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
 
 export const ModelConfig = ({
-  setConfigured
+  configured,
+  setConfigured,
 }: {
-  setConfigured: any
+  configured: boolean;
+  setConfigured: any;
 }) => {
   const form = useForm({
     resolver: zodResolver(ModelConfigSchema),
@@ -98,8 +100,12 @@ export const ModelConfig = ({
   return (
     <ExpandableSection
       name="update-model"
-      title={"Update model"}
-      description={"Change to a different model or use another provider"}
+      title={configured ? "Update model" : "Start"}
+      description={
+        configured
+          ? "Change to a different model or use another provider"
+          : "Set up an AI model to start the app."
+      }
     >
       <Form {...form}>
         <form
