@@ -36,7 +36,7 @@ export const ChatConfig = ({}: {}) => {
     if (data) {
       form.reset(data);
     }
-  }, [data]);
+  }, [data, form]);
 
   async function onSubmit(data: any) {
     try {

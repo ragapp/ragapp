@@ -53,5 +53,5 @@ dev:
 	@export ENVIRONMENT=dev; \
 	trap 'kill 0' SIGINT; \
 	poetry run python main.py & \
-	pnpm run dev --prefix ./admin & \
+	pnpm --prefix ./admin run dev & \
 	wait

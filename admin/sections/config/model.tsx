@@ -53,7 +53,7 @@ export const ModelConfig = ({
     if (data) {
       form.reset(data);
     }
-  }, [data]);
+  }, [data, form]);
 
   async function onSubmit(data: any) {
     try {

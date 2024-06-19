@@ -27,7 +27,7 @@ const ExpandableSection = ({
     } else {
       setIsOpen(open ?? false);
     }
-  }, []);
+  }, [name, open]);
 
   // Save the state to local storage whenever it changes
   useEffect(() => {
@@ -40,7 +40,7 @@ const ExpandableSection = ({
       expandable[name] = isOpen ? "open" : "closed";
       localStorage.setItem("expandable-sections", JSON.stringify(expandable));
     }
-  }, [isOpen]);
+  }, [isOpen, name]);
 
   return (
     <section className="mb-4 rounded-lg p-2 border border-gray-300">
