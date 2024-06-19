@@ -1,4 +1,4 @@
-import { fetchModels } from "@/client/config";
+import { fetchModels } from "@/client/providers";
 import {
   FormControl,
   FormDescription,

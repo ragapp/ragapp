@@ -6,7 +6,6 @@ from pydantic_settings import BaseSettings
 from typing import Dict, Tuple, List
 
 from src.models.tools import DuckDuckGoTool, WikipediaTool, Tools
-from src.models.env_config import get_config
 from src.constants import TOOL_CONFIG_FILE
 
 
