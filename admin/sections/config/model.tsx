@@ -35,7 +35,7 @@ import { OpenAIForm } from "./providers/openai";
 export const ModelConfig = ({
   setConfigured
 }: {
-  setConfigured: Dispatch<SetStateAction<boolean>>
+  setConfigured: any
 }) => {
   const form = useForm({
     resolver: zodResolver(ModelConfigSchema),

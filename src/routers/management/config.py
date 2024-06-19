@@ -31,6 +31,11 @@ def update_chat_config(
 ):
     new_config.to_runtime_env()
     new_config.to_env_file()
+
+    if new_config.system_prompt != config.system_prompt:
+        # Reload the llama_index settings
+        init_settings()
+
     return JSONResponse(
         {
             "message": "Config updated successfully.",
