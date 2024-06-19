@@ -33,11 +33,13 @@ import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
 
 export const ModelConfig = ({
-  configured,
-  setConfigured,
+  sectionTitle,
+  sectionDescription,
+  onConfigChange,
 }: {
-  configured: boolean;
-  setConfigured: any;
+  sectionTitle: string;
+  sectionDescription: string;
+  onConfigChange: () => void;
 }) => {
   const form = useForm({
     resolver: zodResolver(ModelConfigSchema),
@@ -57,7 +59,7 @@ export const ModelConfig = ({
     try {
       const updateResult = await updateModelConfig(data);
       if (updateResult) {
-        setConfigured(true);
+        onConfigChange();
       }
       toast({
         title: "Model config updated successfully",
@@ -100,12 +102,8 @@ export const ModelConfig = ({
   return (
     <ExpandableSection
       name="update-model"
-      title={configured ? "Update model" : "Start"}
-      description={
-        configured
-          ? "Change to a different model or use another provider"
-          : "Set up an AI model to start the app."
-      }
+      title={sectionTitle}
+      description={sectionDescription}
     >
       <Form {...form}>
         <form

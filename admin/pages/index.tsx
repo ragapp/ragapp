@@ -47,6 +47,13 @@ export default function Home() {
     }
   }
 
+  function handleModelConfigChange() {
+    // Fetch the app configuration again to update the state
+    fetchIsAppConfigured().then((data) => {
+      setConfigured(data);
+    });
+  }
+
   return (
     <>
       <main className="h-screen w-screen">
@@ -61,8 +68,13 @@ export default function Home() {
               })}
             >
               <ModelConfig
-                configured={configured ?? false}
-                setConfigured={setConfigured}
+                sectionTitle={configured ? "Update model" : "Start"}
+                sectionDescription={
+                  configured
+                    ? "Change to a different model or use another provider"
+                    : "Set up an AI model to start the app."
+                }
+                onConfigChange={handleModelConfigChange}
               />
               {configured && (
                 <>
