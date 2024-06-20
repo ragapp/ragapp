@@ -43,7 +43,8 @@ class ToolsManager:
         if data.get("enabled"):
             self.config[tool.tool_type][tool.config_id] = config
         else:
-            self.config[tool.tool_type].pop(tool.config_id)
+            if tool.config_id in self.config[tool.tool_type]:
+                self.config[tool.tool_type].pop(tool.config_id)
         self._update_config_file()
 
     @staticmethod
