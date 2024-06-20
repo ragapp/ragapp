@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
@@ -110,6 +111,76 @@ export const ToolConfig = () => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="openapi"
+              render={({ field }) => (
+                <FormItem
+                  key={field.value.name}
+                  className="flex flex-row items-center space-x-3 space-y-0"
+                >
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value.enabled}
+                      onCheckedChange={(checked) => {
+                        field.onChange({
+                          ...field.value,
+                          enabled: checked,
+                        });
+                        if (
+                          (checked &&
+                            form.getValues().openapi.config.openapi_uri) ||
+                          !checked
+                        ) {
+                          onSubmit(field.value.name, form.getValues().openapi);
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <div>
+                    <FormLabel className="font-normal">
+                      {field.value.label}
+                    </FormLabel>
+                    <FormDescription>{field.value.description}</FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+            {form.getValues().openapi.enabled && (
+              <div className="flex flex-col space-y-4 pl-6">
+                <FormField
+                  control={form.control}
+                  name="openapi.config.openapi_uri"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL to OpenAPI spec (*)</FormLabel>
+                      <FormControl
+                        onBlur={() => {
+                          form.trigger("openapi.config").then((value) => {
+                            if (value) {
+                              onSubmit(
+                                form.getValues().openapi.name,
+                                form.getValues().openapi,
+                              );
+                            }
+                          });
+                        }}
+                      >
+                        <Input
+                          {...field}
+                          placeholder="https://example.com/openapi.yaml"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      <FormDescription>
+                        The URL to the OpenAPI specification file (YAML or
+                        JSON).
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
           </div>
         </form>
       </Form>

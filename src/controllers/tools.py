@@ -5,7 +5,7 @@ from pydantic import Field, validator
 from pydantic_settings import BaseSettings
 from typing import Dict, Tuple, List
 
-from src.models.tools import DuckDuckGoTool, WikipediaTool, Tools
+from src.models.tools import DuckDuckGoTool, WikipediaTool, OpenAPITool, Tools
 from src.constants import TOOL_CONFIG_FILE
 
 
@@ -25,6 +25,9 @@ class ToolsManager:
                 return DuckDuckGoTool(**kwargs)
             case "Wikipedia" | "wikipedia.WikipediaToolSpec" | "wikipedia":
                 return WikipediaTool(**kwargs)
+            case "OpenAPI" | "openapi.OpenAPIActionToolSpec" | "openapi":
+                print(kwargs)
+                return OpenAPITool(**kwargs)
             case _:
                 raise ValueError(f"Tool {tool_name} not found")
 
@@ -38,9 +41,9 @@ class ToolsManager:
         # Add the tool to the config if it is enabled
         # Otherwise, remove it from the config
         if data.get("enabled"):
-            self.config[tool.tool_type][tool.name] = config
+            self.config[tool.tool_type][tool.config_id] = config
         else:
-            self.config[tool.tool_type].pop(tool.name)
+            self.config[tool.tool_type].pop(tool.config_id)
         self._update_config_file()
 
     @staticmethod
