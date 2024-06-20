@@ -62,7 +62,7 @@ export const ToolConfig = () => {
                 >
                   <FormControl>
                     <Checkbox
-                      checked={field.value?.enabled ?? false}
+                      checked={field.value.enabled ?? false}
                       onCheckedChange={(checked) => {
                         field.onChange({
                           ...field.value,
@@ -74,12 +74,10 @@ export const ToolConfig = () => {
                   </FormControl>
                   <div>
                     <FormLabel className="font-normal">
-                      {field.value?.label}
+                      {field.value.label}
                     </FormLabel>
                     <FormMessage />
-                    <FormDescription>
-                      {field.value?.description}
-                    </FormDescription>
+                    <FormDescription>{field.value.description}</FormDescription>
                   </div>
                 </FormItem>
               )}
@@ -94,7 +92,7 @@ export const ToolConfig = () => {
                 >
                   <FormControl>
                     <Checkbox
-                      checked={field.value?.enabled ?? false}
+                      checked={field.value.enabled ?? false}
                       onCheckedChange={(checked) => {
                         field.onChange({
                           ...field.value,
@@ -106,12 +104,10 @@ export const ToolConfig = () => {
                   </FormControl>
                   <div>
                     <FormLabel className="font-normal">
-                      {field.value?.label}
+                      {field.value.label}
                     </FormLabel>
                     <FormMessage />
-                    <FormDescription>
-                      {field.value?.description}
-                    </FormDescription>
+                    <FormDescription>{field.value.description}</FormDescription>
                   </div>
                 </FormItem>
               )}

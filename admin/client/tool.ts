@@ -14,9 +14,9 @@ import {
 import { getBaseURL } from "./utils";
 
 export const ToolConfigSchema = z.object({
-  duckduckgo: DuckDuckGoToolConfig.optional(),
-  wikipedia: WikipediaToolConfig.optional(),
-  openapi: OpenAPIToolConfig.optional(),
+  duckduckgo: DuckDuckGoToolConfig,
+  wikipedia: WikipediaToolConfig,
+  openapi: OpenAPIToolConfig,
 });
 export type ToolConfigType = z.infer<typeof ToolConfigSchema>;
 

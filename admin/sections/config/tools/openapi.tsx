@@ -30,12 +30,12 @@ export const OpenAPIConfig = ({
         name="openapi"
         render={({ field }) => (
           <FormItem
-            key={field.value?.name}
+            key={field.value.name}
             className="flex flex-row items-center space-x-3 space-y-0"
           >
             <FormControl>
               <Checkbox
-                checked={field.value?.enabled ?? false}
+                checked={field.value.enabled ?? false}
                 onCheckedChange={(checked) => {
                   // Submit the openapi config when the checkbox has changed and either:
                   // 1. The checkbox is unchecked
@@ -52,7 +52,7 @@ export const OpenAPIConfig = ({
                     !checked
                   ) {
                     onSubmit(
-                      "openapi",
+                      field.value.name,
                       openAPIConfig ?? DEFAULT_OPENAPI_TOOL_CONFIG,
                     );
                   }
@@ -60,10 +60,8 @@ export const OpenAPIConfig = ({
               />
             </FormControl>
             <div>
-              <FormLabel className="font-normal">
-                {field.value?.label}
-              </FormLabel>
-              <FormDescription>{field.value?.description}</FormDescription>
+              <FormLabel className="font-normal">{field.value.label}</FormLabel>
+              <FormDescription>{field.value.description}</FormDescription>
             </div>
           </FormItem>
         )}
