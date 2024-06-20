@@ -1,0 +1,165 @@
+openapi: 3.0.0
+info:
+  title: Hackernews API
+  description: An API to interact with Hackernews data.
+  version: 1.0.0
+servers:
+  - url: https://hacker-news.firebaseio.com/v0
+    description: Main API server
+paths:
+  /topstories.json:
+    get:
+      summary: Get top stories
+      description: Retrieve a list of IDs for the current top stories.
+      responses:
+        "200":
+          description: A JSON array of story IDs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        "500":
+          description: Server error
+  /item/{id}.json:
+    get:
+      summary: Get item by ID
+      description: Retrieve an item (story, comment, job, etc.) by its ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the item.
+      responses:
+        "200":
+          description: A JSON object representing the item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  type:
+                    type: string
+                    description: The type of item (e.g., "story", "comment").
+                  by:
+                    type: string
+                    description: The username of the item's author.
+                  time:
+                    type: integer
+                    description: Time of creation, in Unix Time.
+                  text:
+                    type: string
+                    description: The comment, story or poll text. HTML.
+                  url:
+                    type: string
+                    description: The URL of the story.
+                  score:
+                    type: integer
+                    description: The story's score, or the votes for a poll option.
+                  title:
+                    type: string
+                    description: The title of the story, poll or job.
+                  descendants:
+                    type: integer
+                    description: In the case of stories or polls, the total comment count.
+        "404":
+          description: Item not found
+        "500":
+          description: Server error
+  /user/{id}.json:
+    get:
+      summary: Get user by ID
+      description: Retrieve a user's profile by their ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the user.
+      responses:
+        "200":
+          description: A JSON object representing the user profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  created:
+                    type: integer
+                    description: Creation date of the user, in Unix Time.
+                  karma:
+                    type: integer
+                    description: The user's karma.
+                  about:
+                    type: string
+                    description: The user's optional self-description. HTML.
+                  submitted:
+                    type: array
+                    items:
+                      type: integer
+                    description: List of IDs of the user's submissions.
+        "404":
+          description: User not found
+        "500":
+          description: Server error
+  /newstories.json:
+    get:
+      summary: Get new stories
+      description: Retrieve a list of IDs for the newest stories.
+      responses:
+        "200":
+          description: A JSON array of story IDs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        "500":
+          description: Server error
+components:
+  schemas:
+    Story:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        by:
+          type: string
+        time:
+          type: integer
+        text:
+          type: string
+        url:
+          type: string
+        score:
+          type: integer
+        title:
+          type: string
+        descendants:
+          type: integer
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        created:
+          type: integer
+        karma:
+          type: integer
+        about:
+          type: string
+        submitted:
+          type: array
+          items:
+            type: integer
