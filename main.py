@@ -15,6 +15,7 @@ from src.routers.management.config import config_router
 from src.routers.management.files import files_router
 from src.routers.management.tools import tools_router
 from src.routers.management.loader import loader_router
+from src.models.model_config import ModelConfig
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -40,9 +41,7 @@ app.include_router(loader_router, prefix="/api/management/loader", tags=["Knowle
 
 @app.get("/")
 async def redirect():
-    from src.models.env_config import get_config
-
-    config = get_config()
+    config = ModelConfig.get_config()
     if config.configured:
         # system is configured - / points to chat UI
         return FileResponse("static/index.html")
