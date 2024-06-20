@@ -20,6 +20,14 @@ class GeminiConfig(BaseModel):
     )
 
 
+class GroqConfig(BaseModel):
+    groq_api_key: str | None = Field(
+        default=None,
+        description="The Groq API key to use",
+        env="GROQ_API_KEY",
+    )
+
+
 class OllamaConfig(BaseModel):
     ollama_base_url: str | None = Field(
         default=None,
@@ -63,8 +71,13 @@ class AzureOpenAIConfig(BaseModel):
 
 # We're using inheritance to flatten all the fields into a single class
 # Todo: Refactor API to nested structure
-class ModelConfig(
-    BaseEnvConfig, OpenAIConfig, GeminiConfig, OllamaConfig, AzureOpenAIConfig
+class ProviderConfig(
+    BaseSettings,
+    OpenAIConfig,
+    GroqConfig,
+    GeminiConfig,
+    OllamaConfig,
+    AzureOpenAIConfig,
 ):
     model_provider: str | None = Field(
         default=None,
