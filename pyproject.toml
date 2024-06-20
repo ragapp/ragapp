@@ -28,6 +28,7 @@ ollama = "^0.2.0"
 llama-index-llms-azure-openai = "^0.1.8"
 llama-index-embeddings-azure-openai = "^0.1.9"
 cachetools = "^5.3.3"
+e2b-code-interpreter = "^0.0.10"
 
 
 [tool.poetry.group.dev.dependencies]
