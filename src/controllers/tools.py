@@ -26,7 +26,6 @@ class ToolsManager:
             case "Wikipedia" | "wikipedia.WikipediaToolSpec" | "wikipedia":
                 return WikipediaTool(**kwargs)
             case "OpenAPI" | "openapi.OpenAPIActionToolSpec" | "openapi":
-                print(kwargs)
                 return OpenAPITool(**kwargs)
             case _:
                 raise ValueError(f"Tool {tool_name} not found")
