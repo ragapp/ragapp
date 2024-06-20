@@ -20,6 +20,7 @@ import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { E2BInterpreterConfig } from "./tools/interpreter";
 import { OpenAPIConfig } from "./tools/openapi";
 
 export const ToolConfig = () => {
@@ -113,6 +114,7 @@ export const ToolConfig = () => {
               )}
             />
             <OpenAPIConfig form={form} onSubmit={onSubmit} />
+            <E2BInterpreterConfig form={form} onSubmit={onSubmit} />
           </div>
         </form>
       </Form>

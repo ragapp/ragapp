@@ -49,10 +49,30 @@ class OpenAPITool(BaseModel):
     enabled: bool = False
 
 
+class E2BInterpreterToolConfig(BaseModel):
+    api_key: str | None = Field(
+        default=None,
+        description="The API key to use for the E2B Interpreter.",
+    )
+
+
+class E2BInterpreterTool(BaseModel):
+    config_id: ClassVar[str] = "interpreter"
+    name: Literal["interpreter"] = "interpreter"
+    tool_type: Literal["local"] = "local"
+    label: Literal["E2B Interpreter"] = "E2B Interpreter"
+    description: str = "Execute Python code in a sandbox environment."
+    config: E2BInterpreterToolConfig | None = Field(
+        default=E2BInterpreterToolConfig(),
+    )
+    enabled: bool = False
+
+
 class Tools(BaseModel):
     duckduckgo: DuckDuckGoTool = DuckDuckGoTool()
     wikipedia: WikipediaTool = WikipediaTool()
     openapi: OpenAPITool = OpenAPITool()
+    interpreter: E2BInterpreterTool = E2BInterpreterTool()
 
     @classmethod
     def from_config(cls, config: Dict):
@@ -71,5 +91,9 @@ class Tools(BaseModel):
             openapi=OpenAPITool(
                 enabled=local_config.get(OpenAPITool.config_id) is not None,
                 config=local_config.get(OpenAPITool.config_id, {}),
+            ),
+            interpreter=E2BInterpreterTool(
+                enabled=local_config.get(E2BInterpreterTool.config_id) is not None,
+                config=local_config.get(E2BInterpreterTool.config_id, {}),
             ),
         )

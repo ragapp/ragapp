@@ -4,6 +4,10 @@ import {
   DuckDuckGoToolConfig,
 } from "./tools/duckduckgo";
 import {
+  DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
+  E2BInterpreterToolConfig,
+} from "./tools/interpreter";
+import {
   DEFAULT_OPENAPI_TOOL_CONFIG,
   OpenAPIToolConfig,
 } from "./tools/openapi";
@@ -17,6 +21,7 @@ export const ToolConfigSchema = z.object({
   duckduckgo: DuckDuckGoToolConfig,
   wikipedia: WikipediaToolConfig,
   openapi: OpenAPIToolConfig,
+  interpreter: E2BInterpreterToolConfig,
 });
 export type ToolConfigType = z.infer<typeof ToolConfigSchema>;
 
@@ -24,6 +29,7 @@ export const DEFAULT_TOOL_CONFIG = {
   duckduckgo: DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
   wikipedia: DEFAULT_WIKIPEDIA_TOOL_CONFIG,
   openapi: DEFAULT_OPENAPI_TOOL_CONFIG,
+  interpreter: DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
 };
 
 export async function updateToolConfig(tool_name: string, data: any) {
