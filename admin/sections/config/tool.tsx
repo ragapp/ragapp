@@ -1,6 +1,7 @@
 import {
   DEFAULT_TOOL_CONFIG,
   ToolConfigSchema,
+  ToolConfigType,
   getToolsConfig,
   updateToolConfig,
 } from "@/client/tool";
@@ -19,9 +20,10 @@ import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { OpenAPIConfig } from "./tools/openapi";
 
 export const ToolConfig = () => {
-  const form = useForm({
+  const form = useForm<ToolConfigType>({
     resolver: zodResolver(ToolConfigSchema),
     defaultValues: DEFAULT_TOOL_CONFIG,
   });
@@ -55,18 +57,18 @@ export const ToolConfig = () => {
               name="duckduckgo"
               render={({ field }) => (
                 <FormItem
-                  key={field.value.name}
+                  key="duckduckgo"
                   className="flex flex-row items-center space-x-3 space-y-0"
                 >
                   <FormControl>
                     <Checkbox
-                      checked={field.value.enabled}
+                      checked={field.value.enabled ?? false}
                       onCheckedChange={(checked) => {
                         field.onChange({
                           ...field.value,
                           enabled: checked,
                         });
-                        onSubmit(field.value.name, form.getValues().duckduckgo);
+                        onSubmit("duckduckgo", form.getValues().duckduckgo);
                       }}
                     />
                   </FormControl>
@@ -85,18 +87,18 @@ export const ToolConfig = () => {
               name="wikipedia"
               render={({ field }) => (
                 <FormItem
-                  key={field.value.name}
+                  key="wikipedia"
                   className="flex flex-row items-center space-x-3 space-y-0"
                 >
                   <FormControl>
                     <Checkbox
-                      checked={field.value.enabled}
+                      checked={field.value.enabled ?? false}
                       onCheckedChange={(checked) => {
                         field.onChange({
                           ...field.value,
                           enabled: checked,
                         });
-                        onSubmit(field.value.name, form.getValues().wikipedia);
+                        onSubmit("wikipedia", form.getValues().wikipedia);
                       }}
                     />
                   </FormControl>
@@ -110,6 +112,7 @@ export const ToolConfig = () => {
                 </FormItem>
               )}
             />
+            <OpenAPIConfig form={form} onSubmit={onSubmit} />
           </div>
         </form>
       </Form>

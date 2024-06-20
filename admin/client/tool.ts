@@ -1,42 +1,29 @@
 import { z } from "zod";
+import {
+  DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
+  DuckDuckGoToolConfig,
+} from "./tools/duckduckgo";
+import {
+  DEFAULT_OPENAPI_TOOL_CONFIG,
+  OpenAPIToolConfig,
+} from "./tools/openapi";
+import {
+  DEFAULT_WIKIPEDIA_TOOL_CONFIG,
+  WikipediaToolConfig,
+} from "./tools/wikipedia";
 import { getBaseURL } from "./utils";
 
-const DuckDuckGoToolConfig = z.object({
-  name: z.literal("duckduckgo.DuckDuckGoSearchToolSpec"),
-  label: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
-  enabled: z.boolean().nullable().optional(),
-  config: z.object({}).nullable().optional(),
-});
-
-const WikipediaToolConfig = z.object({
-  name: z.literal("wikipedia.WikipediaToolSpec"),
-  label: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
-  enabled: z.boolean().nullable().optional(),
-  config: z.object({}).nullable().optional(),
-});
-
 export const ToolConfigSchema = z.object({
-  duckduckgo: DuckDuckGoToolConfig.optional(),
-  wikipedia: WikipediaToolConfig.optional(),
+  duckduckgo: DuckDuckGoToolConfig,
+  wikipedia: WikipediaToolConfig,
+  openapi: OpenAPIToolConfig,
 });
+export type ToolConfigType = z.infer<typeof ToolConfigSchema>;
 
 export const DEFAULT_TOOL_CONFIG = {
-  duckduckgo: {
-    name: "duckduckgo.DuckDuckGoSearchToolSpec",
-    label: "DuckDuckGo",
-    description: "",
-    config: {},
-    enabled: false,
-  },
-  wikipedia: {
-    name: "wikipedia.WikipediaToolSpec",
-    label: "Wikipedia",
-    description: "",
-    config: {},
-    enabled: false,
-  },
+  duckduckgo: DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
+  wikipedia: DEFAULT_WIKIPEDIA_TOOL_CONFIG,
+  openapi: DEFAULT_OPENAPI_TOOL_CONFIG,
 };
 
 export async function updateToolConfig(tool_name: string, data: any) {
