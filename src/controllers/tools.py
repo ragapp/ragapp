@@ -13,6 +13,8 @@ from src.models.tools import (
     Tools,
 )
 from src.constants import TOOL_CONFIG_FILE, ENV_FILE_PATH
+from src.models.tools import DuckDuckGoTool, WikipediaTool, OpenAPITool, Tools
+from src.constants import TOOL_CONFIG_FILE
 
 
 class ToolsManager:
