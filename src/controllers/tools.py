@@ -13,7 +13,13 @@ from src.models.tools import (
     Tools,
 )
 from src.constants import TOOL_CONFIG_FILE, ENV_FILE_PATH
-from src.models.tools import DuckDuckGoTool, WikipediaTool, OpenAPITool, Tools
+from src.models.tools import (
+    DuckDuckGoTool,
+    WikipediaTool,
+    OpenAPITool,
+    ImageGeneratorTool,
+    Tools,
+)
 from src.constants import TOOL_CONFIG_FILE
 
 
@@ -37,6 +43,8 @@ class ToolsManager:
                 return OpenAPITool(**kwargs)
             case "E2BInterpreter" | "interpreter":
                 return E2BInterpreterTool(**kwargs)
+            case "ImageGenerator" | "image_generator":
+                return ImageGeneratorTool(**kwargs)
             case _:
                 raise ValueError(f"Tool {tool_name} not found")
 
@@ -51,7 +59,7 @@ class ToolsManager:
         # Otherwise, remove it from the config
         if data.get("enabled"):
             self.config[tool.tool_type][tool.config_id] = config
-            # Hard-code for E2BInterpreter tool
+            # Hard-code for E2BInterpreter and Image generator tool
             # to set E2B_API_KEY in .env file
             # Todo: Better handling in upstream code to get the value in config if not provided
             if tool_name == "interpreter":
@@ -59,6 +67,11 @@ class ToolsManager:
                 if api_key:
                     os.environ["E2B_API_KEY"] = api_key
                     dotenv.set_key(ENV_FILE_PATH, "E2B_API_KEY", api_key)
+            elif tool_name == "image_generator":
+                api_key = config.get("api_key")
+                if api_key:
+                    os.environ["STABILITY_API_KEY"] = api_key
+                    dotenv.set_key(ENV_FILE_PATH, "STABILITY_API_KEY", api_key)
         else:
             if tool.config_id in self.config[tool.tool_type]:
                 self.config[tool.tool_type].pop(tool.config_id)

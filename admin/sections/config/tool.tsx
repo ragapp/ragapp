@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { E2BInterpreterConfig } from "./tools/interpreter";
 import { OpenAPIConfig } from "./tools/openapi";
+import { ImageGeneratorConfig } from "./tools/image_generator";
 
 export const ToolConfig = () => {
   const form = useForm<ToolConfigType>({
@@ -115,6 +116,7 @@ export const ToolConfig = () => {
             />
             <OpenAPIConfig form={form} onSubmit={onSubmit} />
             <E2BInterpreterConfig form={form} onSubmit={onSubmit} />
+            <ImageGeneratorConfig form={form} onSubmit={onSubmit} />
           </div>
         </form>
       </Form>

@@ -16,12 +16,14 @@ import {
   WikipediaToolConfig,
 } from "./tools/wikipedia";
 import { getBaseURL } from "./utils";
+import { DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG, ImageGeneratorToolConfig } from "./tools/image_generator";
 
 export const ToolConfigSchema = z.object({
   duckduckgo: DuckDuckGoToolConfig,
   wikipedia: WikipediaToolConfig,
   openapi: OpenAPIToolConfig,
   interpreter: E2BInterpreterToolConfig,
+  image_generator: ImageGeneratorToolConfig,
 });
 export type ToolConfigType = z.infer<typeof ToolConfigSchema>;
 
@@ -30,6 +32,7 @@ export const DEFAULT_TOOL_CONFIG = {
   wikipedia: DEFAULT_WIKIPEDIA_TOOL_CONFIG,
   openapi: DEFAULT_OPENAPI_TOOL_CONFIG,
   interpreter: DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
+  image_generator: DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
 };
 
 export async function updateToolConfig(tool_name: string, data: any) {
