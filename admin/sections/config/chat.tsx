@@ -1,4 +1,9 @@
-import { ChatConfigFormType, ChatConfigSchema } from "@/client/chatConfig";
+import {
+  ChatConfigFormType,
+  ChatConfigSchema,
+  getChatConfig,
+  updateChatConfig,
+} from "@/client/chatConfig";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { MultiInput } from "@/components/ui/custom/multiInput";
 import {
@@ -16,29 +21,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 
-const fakeApiGetChatConfig = async (): Promise<
-  ChatConfigFormType | undefined
-> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  const str = localStorage.getItem("TEST_CHAT_CONFIG");
-  return str ? JSON.parse(str) : undefined;
-};
-
-const fakeApiSaveChatConfig = async (data: any) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  if (data.system_prompt?.length > 10) {
-    throw new Error("System prompt is too long");
-  }
-  localStorage.setItem("TEST_CHAT_CONFIG", JSON.stringify(data));
-};
-
 export const ChatConfig = ({}: {}) => {
   const {
     data,
     isLoading: isFetching,
     refetch,
     isRefetching,
-  } = useQuery("chatConfig", fakeApiGetChatConfig, {
+  } = useQuery("chatConfig", getChatConfig, {
     refetchOnWindowFocus: false,
   });
   const form = useForm<ChatConfigFormType>({
@@ -51,7 +40,7 @@ export const ChatConfig = ({}: {}) => {
   });
 
   const { mutate: updateConfig, isLoading: isSubmitting } = useMutation(
-    fakeApiSaveChatConfig,
+    updateChatConfig,
     {
       onError: (error: unknown) => {
         console.error(error);
