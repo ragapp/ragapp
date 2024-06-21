@@ -20,9 +20,9 @@ import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { ImageGeneratorConfig } from "./tools/image_generator";
 import { E2BInterpreterConfig } from "./tools/interpreter";
 import { OpenAPIConfig } from "./tools/openapi";
-import { ImageGeneratorConfig } from "./tools/image_generator";
 
 export const ToolConfig = () => {
   const form = useForm<ToolConfigType>({

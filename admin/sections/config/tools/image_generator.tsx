@@ -1,5 +1,8 @@
 import { ToolConfigType } from "@/client/tool";
-import { DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG, ImageGeneratorToolConfigType } from "@/client/tools/image_generator";
+import {
+  DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
+  ImageGeneratorToolConfigType,
+} from "@/client/tools/image_generator";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -82,7 +85,7 @@ export const ImageGeneratorConfig = ({
                       onSubmit(
                         "image_generator",
                         imgGeneratorConfig ??
-                        DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
+                          DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
                       );
                     }
                   }}
@@ -94,7 +97,7 @@ export const ImageGeneratorConfig = ({
                   />
                 </FormControl>
                 <FormDescription>
-                  Get the Stability AI API Key from {" "}
+                  Get the Stability AI API Key from{" "}
                   <a
                     href="https://platform.stability.ai/account/keys"
                     target="_blank"
