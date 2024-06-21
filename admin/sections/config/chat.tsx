@@ -1,9 +1,4 @@
-import {
-  ChatConfigFormType,
-  ChatConfigSchema,
-  getChatConfig,
-  updateChatConfig,
-} from "@/client/chatConfig";
+import { ChatConfigFormType, ChatConfigSchema } from "@/client/chatConfig";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { MultiInput } from "@/components/ui/custom/multiInput";
 import {
@@ -18,47 +13,67 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 
-export const ChatConfig = ({}: {}) => {
-  const form = useForm<ChatConfigFormType>({
-    resolver: zodResolver(ChatConfigSchema),
-  });
+const fakeApiGetChatConfig = async (): Promise<
+  ChatConfigFormType | undefined
+> => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const str = localStorage.getItem("TEST_CHAT_CONFIG");
+  return str ? JSON.parse(str) : undefined;
+};
 
-  // Use query to fetch the chat config
-  // TODO: show isLoading state, e.g. a spinner in the exapandable section component
-  const { data, error, isLoading } = useQuery("chatConfig", getChatConfig, {
+const fakeApiSaveChatConfig = async (data: any) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (data.system_prompt?.length > 10) {
+    throw new Error("System prompt is too long");
+  }
+  localStorage.setItem("TEST_CHAT_CONFIG", JSON.stringify(data));
+};
+
+export const ChatConfig = ({}: {}) => {
+  const {
+    data,
+    isLoading: isFetching,
+    refetch,
+    isRefetching,
+  } = useQuery("chatConfig", fakeApiGetChatConfig, {
     refetchOnWindowFocus: false,
   });
-  const { mutate: updateConfig, updateError } = useMutation(updateChatConfig, {
-    onError: (error: unknown) => {
-      // TODO: form.reset(data) is just resetting to the last value, but a failure in the API
-      // call doesn't guarantee that the data is still the same.
-      // @Lee can we guarantee this? if not we should probably refetch the data
-      // see https://tanstack.com/query/v4/docs/framework/react/guides/mutations#mutation-side-effects
-      form.reset(data);
-      console.error(error);
-      toast({
-        title: "Failed to update chat config",
-        variant: "destructive",
-      });
+  const form = useForm<ChatConfigFormType>({
+    resolver: zodResolver(ChatConfigSchema),
+    defaultValues: {
+      system_prompt: "",
+      conversation_starters: [],
     },
+    values: data,
   });
 
-  useEffect(() => {
-    if (data) {
-      form.reset(data);
-    }
-  }, [data, form]);
+  const { mutate: updateConfig, isLoading: isSubmitting } = useMutation(
+    fakeApiSaveChatConfig,
+    {
+      onError: (error: unknown) => {
+        console.error(error);
+        toast({
+          title: "Failed to update chat config",
+          variant: "destructive",
+        });
+        form.reset();
+      },
+    },
+  );
 
   async function handleSubmit() {
     updateConfig(form.getValues());
+    await refetch();
   }
+
+  const isLoading = isFetching || isRefetching || isSubmitting;
 
   return (
     <ExpandableSection
+      isLoading={isLoading}
       name="chat-config"
       title={"Chat Config"}
       description="Config how the chatbot behaves and interacts with the user"
@@ -70,6 +85,7 @@ export const ChatConfig = ({}: {}) => {
           onBlur={handleSubmit}
         >
           <FormField
+            disabled={isLoading}
             control={form.control}
             name="system_prompt"
             render={({ field }) => (
@@ -86,6 +102,7 @@ export const ChatConfig = ({}: {}) => {
             )}
           />
           <FormField
+            disabled={isLoading}
             control={form.control}
             name="conversation_starters"
             render={({ field }) => (

@@ -3,8 +3,8 @@ import { getBaseURL } from "./utils";
 
 // Chat config scheme
 export const ChatConfigSchema = z.object({
-  system_prompt: z.string().nullable().optional(),
-  conversation_starters: z.array(z.string()).nullable().optional(),
+  system_prompt: z.string().optional(),
+  conversation_starters: z.array(z.string()),
 });
 
 export type ChatConfigFormType = z.TypeOf<typeof ChatConfigSchema>;

@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const ExpandableSection = ({
@@ -6,12 +7,14 @@ const ExpandableSection = ({
   description,
   open = true,
   children,
+  isLoading,
 }: {
   name: string;
   title: string;
   description?: string;
   open?: boolean;
   children: React.ReactNode;
+  isLoading?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean | null>(null);
 
@@ -49,7 +52,11 @@ const ExpandableSection = ({
         onClick={() => setIsOpen(!isOpen)}
       >
         <h2 className="text-lg font-semibold">{title}</h2>
-        <span>{isOpen ? <>&#x25BC;</> : <>&#x25B6;</>}</span>
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin text-secondary-foreground" />
+        ) : (
+          <span>{isOpen ? <>&#x25BC;</> : <>&#x25B6;</>}</span>
+        )}
       </header>
       <div className="border-b mb-2 border-gray-300"></div>
       <div className="z-10 pl-2 max-w-5xl w-full items-center justify-between">
