@@ -1,6 +1,7 @@
 import {
   DEFAULT_TOOL_CONFIG,
   ToolConfigSchema,
+  ToolConfigType,
   getToolsConfig,
   updateToolConfig,
 } from "@/client/tool";
@@ -16,13 +17,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { E2BInterpreterConfig } from "./tools/interpreter";
+import { OpenAPIConfig } from "./tools/openapi";
 
 export const ToolConfig = () => {
-  const form = useForm({
+  const form = useForm<ToolConfigType>({
     resolver: zodResolver(ToolConfigSchema),
     defaultValues: DEFAULT_TOOL_CONFIG,
   });
@@ -30,10 +32,8 @@ export const ToolConfig = () => {
   const onSubmit = async (tool_name: string, data: any) => {
     await updateToolConfig(tool_name, data).catch((error) => {
       toast({
-        className: cn(
-          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4 text-red-500",
-        ),
         title: `Could not update ${tool_name} config`,
+        variant: "destructive",
       });
     });
   };
@@ -46,9 +46,9 @@ export const ToolConfig = () => {
 
   return (
     <ExpandableSection
+      name="agent-config"
       title={"Agent Config"}
       description="Config tools and agent"
-      open
     >
       <Form {...form}>
         <form className="space-y-4 mb-4">
@@ -58,18 +58,18 @@ export const ToolConfig = () => {
               name="duckduckgo"
               render={({ field }) => (
                 <FormItem
-                  key={field.value.name}
+                  key="duckduckgo"
                   className="flex flex-row items-center space-x-3 space-y-0"
                 >
                   <FormControl>
                     <Checkbox
-                      checked={field.value.enabled}
+                      checked={field.value.enabled ?? false}
                       onCheckedChange={(checked) => {
                         field.onChange({
                           ...field.value,
                           enabled: checked,
                         });
-                        onSubmit(field.value.name, form.getValues().duckduckgo);
+                        onSubmit("duckduckgo", form.getValues().duckduckgo);
                       }}
                     />
                   </FormControl>
@@ -88,18 +88,18 @@ export const ToolConfig = () => {
               name="wikipedia"
               render={({ field }) => (
                 <FormItem
-                  key={field.value.name}
+                  key="wikipedia"
                   className="flex flex-row items-center space-x-3 space-y-0"
                 >
                   <FormControl>
                     <Checkbox
-                      checked={field.value.enabled}
+                      checked={field.value.enabled ?? false}
                       onCheckedChange={(checked) => {
                         field.onChange({
                           ...field.value,
                           enabled: checked,
                         });
-                        onSubmit(field.value.name, form.getValues().wikipedia);
+                        onSubmit("wikipedia", form.getValues().wikipedia);
                       }}
                     />
                   </FormControl>
@@ -113,6 +113,8 @@ export const ToolConfig = () => {
                 </FormItem>
               )}
             />
+            <OpenAPIConfig form={form} onSubmit={onSubmit} />
+            <E2BInterpreterConfig form={form} onSubmit={onSubmit} />
           </div>
         </form>
       </Form>

@@ -1,11 +1,12 @@
 export PYTHONPATH := ${PYTHONPATH}:./create_llama/backend
-export CREATE_LLAMA_VERSION=0.1.9
+export CREATE_LLAMA_VERSION=0.1.11
 export NEXT_PUBLIC_API_URL=/api/chat
 
 create-llama-app:
 	@echo "\nCreating Llama App..."
 	rm -rf create_llama
 	npx -y create-llama@${CREATE_LLAMA_VERSION} \
+	    --use-pnpm \
 		--framework fastapi \
 		--template streaming \
 		--engine context \
@@ -54,5 +55,5 @@ dev:
 	@export ENVIRONMENT=dev; \
 	trap 'kill 0' SIGINT; \
 	poetry run python main.py & \
-	npm run dev --prefix ./admin & \
+	pnpm --prefix ./admin run dev & \
 	wait

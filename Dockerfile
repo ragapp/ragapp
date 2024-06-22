@@ -1,6 +1,9 @@
 # ======= FRONT-END BUILD ==========
 FROM node:20-alpine as build
 
+# Install pnpm
+RUN npm install -g pnpm@9.4.0
+
 # Install make
 RUN apk add --no-cache make
 

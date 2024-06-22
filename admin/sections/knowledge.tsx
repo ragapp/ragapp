@@ -233,6 +233,7 @@ const handleCreateCollection = async () => {
 
 return (
   <ExpandableSection
+    name="uniqueSectionName"
     title={"Knowledge"}
     description="Upload your own data to chat with"
     open

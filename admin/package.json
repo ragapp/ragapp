@@ -6,12 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint '**/*.{ts,tsx}'",
+    "lint": "eslint '**/*.{ts,tsx}' --max-warnings=0",
     "format": "prettier --ignore-unknown --cache --check .",
     "format:write": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.3.4",
+    "@hookform/resolvers": "^3.6.0",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-label": "^2.0.2",
@@ -20,28 +20,29 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.0",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.368.0",
     "next": "14.2.1",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-hook-form": "^7.51.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.52.0",
     "react-query": "^3.39.3",
-    "tailwind-merge": "^2.2.2",
+    "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8.56.0",
+    "@types/node": "^20.14.4",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^8.57.0",
     "eslint-config-next": "14.2.1",
     "eslint-config-prettier": "^8.10.0",
-    "postcss": "^8",
-    "prettier": "^3.2.5",
+    "postcss": "^8.4.38",
+    "prettier": "^3.3.2",
     "prettier-plugin-organize-imports": "^3.2.4",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  }
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "pnpm@9.4.0"
 }

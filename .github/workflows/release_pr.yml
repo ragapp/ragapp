@@ -44,14 +44,15 @@ jobs:
         with:
           commit: Release ${{ steps.get-changeset-status.outputs.new-version }}
           title: Release ${{ steps.get-changeset-status.outputs.new-version }}
-          publish: echo "published=true" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Tag and Push Release
-        if: steps.changesets.outputs.published == 'true'
+        if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
-          git tag v${{ steps.get-changeset-status.outputs.new-version }}
-          git push origin v${{ steps.get-changeset-status.outputs.new-version }}
+          # version is already in package.json - just tag and push
+          new_version=$(jq -r '.version' < package.json)
+          git tag v${new_version}
+          git push origin v${new_version}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

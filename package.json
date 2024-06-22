@@ -1,10 +1,10 @@
 {
   "name": "ragbox",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "private": true,
   "scripts": {},
   "devDependencies": {
     "@changesets/cli": "^2.27.1"
   },
-  "packageManager": "pnpm@9.0.5"
+  "packageManager": "pnpm@9.4.0"
 }
