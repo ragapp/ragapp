@@ -50,12 +50,14 @@ export const ChatConfig = ({}: {}) => {
         });
         form.reset();
       },
+      onSuccess: () => {
+        refetch();
+      },
     },
   );
 
   async function handleSubmit() {
     updateConfig(form.getValues());
-    await refetch();
   }
 
   const isLoading = isFetching || isRefetching || isSubmitting;
