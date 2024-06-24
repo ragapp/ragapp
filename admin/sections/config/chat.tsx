@@ -18,51 +18,65 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 
 export const ChatConfig = ({}: {}) => {
-  const form = useForm({
-    resolver: zodResolver(ChatConfigSchema),
-  });
-
-  // Use query to fetch the chat config
-  const { data, error, isLoading } = useQuery("chatConfig", getChatConfig, {
+  const {
+    data,
+    isLoading: isFetching,
+    refetch,
+    isRefetching,
+  } = useQuery("chatConfig", getChatConfig, {
     refetchOnWindowFocus: false,
   });
+  const form = useForm<ChatConfigFormType>({
+    resolver: zodResolver(ChatConfigSchema),
+    defaultValues: {
+      system_prompt: "",
+      conversation_starters: [],
+    },
+    values: data,
+  });
 
-  useEffect(() => {
-    if (data) {
-      form.reset(data);
-    }
-  }, [data, form]);
+  const { mutate: updateConfig, isLoading: isSubmitting } = useMutation(
+    updateChatConfig,
+    {
+      onError: (error: unknown) => {
+        console.error(error);
+        toast({
+          title: "Failed to update chat config",
+          variant: "destructive",
+        });
+        form.reset();
+      },
+      onSuccess: () => {
+        refetch();
+      },
+    },
+  );
 
-  async function onSubmit(data: any) {
-    try {
-      await updateChatConfig(data as ChatConfigFormType);
-    } catch (err) {
-      console.error(err);
-      toast({
-        title: "Failed to update chat config",
-        variant: "destructive",
-      });
-    }
+  async function handleSubmit() {
+    updateConfig(form.getValues());
   }
+
+  const isLoading = isFetching || isRefetching || isSubmitting;
 
   return (
     <ExpandableSection
+      isLoading={isLoading}
       name="chat-config"
       title={"Chat Config"}
       description="Config how the chatbot behaves and interacts with the user"
     >
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(() => onSubmit(form.getValues()))}
+          onSubmit={handleSubmit}
           className="space-y-4 mb-4"
-          onBlur={() => onSubmit(form.getValues())}
+          onBlur={handleSubmit}
         >
           <FormField
+            disabled={isLoading}
             control={form.control}
             name="system_prompt"
             render={({ field }) => (
@@ -79,18 +93,14 @@ export const ChatConfig = ({}: {}) => {
             )}
           />
           <FormField
+            disabled={isLoading}
             control={form.control}
             name="conversation_starters"
             render={({ field }) => (
               <FormItem className="pt-4">
                 <FormLabel>Conversation questions</FormLabel>
                 <FormControl>
-                  <MultiInput
-                    {...field}
-                    onDelete={() => {
-                      onSubmit(form.getValues());
-                    }}
-                  />
+                  <MultiInput {...field} onDelete={handleSubmit} />
                 </FormControl>
                 <FormDescription>
                   Add suggested questions to help users start a conversation

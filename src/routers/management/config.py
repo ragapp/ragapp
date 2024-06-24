@@ -1,10 +1,12 @@
 from typing import Optional, Annotated, List
 from fastapi import APIRouter, Depends, Query
+from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from src.models.model_config import ModelConfig
 from src.models.chat_config import ChatConfig
 from src.controllers.providers import AIProvider
 from src.tasks.indexing import reset_index
+from src.controllers.env_configs import EnvConfigManager
 from create_llama.backend.app.settings import init_settings
 
 config_router = r = APIRouter()
@@ -29,12 +31,7 @@ def update_chat_config(
     new_config: ChatConfig,
     config: ChatConfig = Depends(ChatConfig.get_config),
 ):
-    new_config.to_runtime_env()
-    new_config.to_env_file()
-
-    if new_config.system_prompt != config.system_prompt:
-        # Reload the llama_index settings
-        init_settings()
+    EnvConfigManager.update(config, new_config, rollback_on_failure=True)
 
     return JSONResponse(
         {
@@ -56,14 +53,14 @@ def update_model_config(
     new_config: ModelConfig,
     config: ModelConfig = Depends(ModelConfig.get_config),
 ):
-    new_config.to_runtime_env()
-    new_config.to_env_file()
     # If the new config has a different model provider
     # Or the model config has not been configured yet
     # We need to:
     # 1. Reload the llama_index settings
     # 2. Reset the index
-    init_settings()
+    EnvConfigManager.update(config, new_config, rollback_on_failure=True)
+
+    # We won't rollback the changes if the index reset fails
     if (new_config.model_provider != config.model_provider) or not config.configured:
         reset_index()
 

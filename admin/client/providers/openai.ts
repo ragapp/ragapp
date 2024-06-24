@@ -2,7 +2,7 @@ import { z } from "zod";
 import { BaseConfigSchema } from "./base";
 
 export const OpenAIConfigSchema = BaseConfigSchema.extend({
-  model_provider: z.literal("openai").nullable().optional(),
+  model_provider: z.literal("openai"),
   openai_api_key: z
     .string()
     .nullable()

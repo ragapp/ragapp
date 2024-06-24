@@ -24,9 +24,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { AzureOpenAIForm } from "./providers/azureOpenai";
 import { GeminiForm } from "./providers/gemini";
 import { OllamaForm } from "./providers/ollama";
@@ -41,37 +40,58 @@ export const ModelConfig = ({
   sectionDescription: string;
   onConfigChange: () => void;
 }) => {
-  const form = useForm({
-    resolver: zodResolver(ModelConfigSchema),
-  });
-
-  const { data, error, isLoading } = useQuery("modelConfig", fetchModelConfig, {
+  const {
+    data,
+    isLoading: isFetching,
+    refetch,
+    isRefetching,
+  } = useQuery("modelConfig", fetchModelConfig, {
     refetchOnWindowFocus: false,
   });
+  const form = useForm({
+    resolver: zodResolver(ModelConfigSchema),
+    defaultValues: {
+      ...getDefaultProviderConfig("openai"),
+    },
+    values: data,
+  });
 
-  useEffect(() => {
-    if (data) {
-      form.reset(data);
-    }
-  }, [data, form]);
-
-  async function onSubmit(data: any) {
-    try {
-      const updateResult = await updateModelConfig(data);
-      if (updateResult) {
+  const { mutate: updateConfig, isLoading: isSubmitting } = useMutation(
+    updateModelConfig,
+    {
+      onError: (error: unknown) => {
+        console.error(error);
+        toast({
+          title: "Failed to update model config",
+          variant: "destructive",
+        });
+        // Fetch the model config again to reset the form
+        refetch().then(() => {
+          form.reset(data);
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: "Model config updated successfully",
+        });
+        refetch();
         onConfigChange();
+      },
+    },
+  );
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    // Run zod form validation
+    await form.trigger().then((isValid) => {
+      if (isValid) {
+        updateConfig(form.getValues());
       }
-      toast({
-        title: "Model config updated successfully",
-      });
-    } catch (err) {
-      console.error(err);
-      toast({
-        title: "Failed to update model config",
-        variant: "destructive",
-      });
-    }
+    });
   }
+
+  const isLoading = isFetching || isRefetching || isSubmitting;
 
   const getModelForm = (form: any, defaultValues: any) => {
     switch (defaultValues.model_provider ?? "") {
@@ -101,15 +121,13 @@ export const ModelConfig = ({
 
   return (
     <ExpandableSection
+      isLoading={isLoading}
       name="update-model"
       title={sectionTitle}
       description={sectionDescription}
     >
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(() => onSubmit(form.getValues()))}
-          className="space-y-4 mb-4"
-        >
+        <form onSubmit={handleSubmit} className="space-y-4 mb-4">
           <FormField
             control={form.control}
             name="model_provider"
@@ -144,7 +162,7 @@ export const ModelConfig = ({
 
           {getModelForm(form, form.getValues())}
           <div className="mt-4">
-            <SubmitButton isSubmitting={form.formState.isSubmitting} />
+            <SubmitButton isSubmitting={isSubmitting} />
           </div>
         </form>
       </Form>
