@@ -11,7 +11,7 @@ class ImageGeneratorToolConfig(BaseModel):
 
 class ImageGeneratorTool(BaseModel):
     config_id: ClassVar[str] = "img_gen"
-    name: Literal["img_gen"] = "image_generator"
+    name: Literal["image_generator"] = "image_generator"
     tool_type: Literal["local"] = "local"
     label: Literal["Image Generator"] = "Image Generator"
     description: str = (
