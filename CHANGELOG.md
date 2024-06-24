@@ -1,5 +1,12 @@
 # ragbox
 
+## 0.0.11
+
+### Patch Changes
+
+- 1ceec37: Bump create-llama version to 0.1.13
+- 1ceec37: Add image generator tool
+
 ## 0.0.10
 
 ### Patch Changes
