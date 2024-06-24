@@ -60,6 +60,7 @@ def update_model_config(
     # 2. Reset the index
     EnvConfigManager.update(config, new_config, rollback_on_failure=True)
 
+    # We won't rollback the changes if the index reset fails
     if (new_config.model_provider != config.model_provider) or not config.configured:
         reset_index()
 
