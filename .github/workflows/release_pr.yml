@@ -47,12 +47,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Tag and Push Release
-        if: steps.changesets.outputs.hasChangesets == 'false'
-        run: |
-          # version is already in package.json - just tag and push
-          new_version=$(jq -r '.version' < package.json)
-          git tag v${new_version}
-          git push origin v${new_version}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Tag and Push Release
+      #   if: steps.changesets.outputs.hasChangesets == 'false'
+      #   run: |
+      #     # version is already in package.json - just tag and push
+      #     new_version=$(jq -r '.version' < package.json)
+      #     git tag v${new_version}
+      #     git push origin v${new_version}
+      #     # TODO: trigger job 'release_tagged_image' (is not triggered by git push)
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
