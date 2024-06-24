@@ -2,7 +2,7 @@ import { z } from "zod";
 import { BaseConfigSchema } from "./base";
 
 export const GeminiConfigSchema = BaseConfigSchema.extend({
-  model_provider: z.literal("gemini").nullable().optional(),
+  model_provider: z.literal("gemini"),
   google_api_key: z
     .string()
     .nullable()
