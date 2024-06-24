@@ -127,10 +127,7 @@ export const ModelConfig = ({
       description={sectionDescription}
     >
       <Form {...form}>
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 mb-4"
-        >
+        <form onSubmit={handleSubmit} className="space-y-4 mb-4">
           <FormField
             control={form.control}
             name="model_provider"
