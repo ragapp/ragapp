@@ -1,6 +1,7 @@
 import logging
 from src.models.base_env import BaseEnvConfig
 from create_llama.backend.app.settings import init_settings
+from src.controllers.system_prompt import update_system_prompts
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,8 @@ class EnvConfigManager:
         try:
             new_config.to_runtime_env()
             new_config.to_env_file()
+            # Update the system prompts because the custom prompts might have changed
+            update_system_prompts()
             init_settings()
         except Exception as e:
             logger.error(
@@ -38,5 +41,7 @@ class EnvConfigManager:
                 # Restore the backup config
                 backup_config.to_runtime_env()
                 backup_config.to_env_file()
+                # Update the system prompts because the custom prompts have rolled back
+                update_system_prompts()
                 init_settings()
             raise e

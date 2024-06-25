@@ -33,7 +33,7 @@ export const ChatConfig = ({}: {}) => {
   const form = useForm<ChatConfigFormType>({
     resolver: zodResolver(ChatConfigSchema),
     defaultValues: {
-      system_prompt: "",
+      custom_prompt: "",
       conversation_starters: [],
     },
     values: data,
@@ -78,7 +78,7 @@ export const ChatConfig = ({}: {}) => {
           <FormField
             disabled={isLoading}
             control={form.control}
-            name="system_prompt"
+            name="custom_prompt"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Custom Prompt</FormLabel>
