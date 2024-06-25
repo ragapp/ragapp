@@ -4,10 +4,10 @@ from src.models.base_env import BaseEnvConfig, NewlineListEnv
 
 
 class ChatConfig(BaseEnvConfig):
-    system_prompt: str | None = Field(
+    custom_prompt: str | None = Field(
         default="You are a helpful assistant who helps users with their questions.",
-        description="The system prompt to use for the LLM.",
-        env="SYSTEM_PROMPT",
+        description="Custom system prompt",
+        env="CUSTOM_PROMPT",
         preprocess=True,
     )
     conversation_starters: NewlineListEnv | str | None = Field(
@@ -21,15 +21,17 @@ class ChatConfig(BaseEnvConfig):
         extra = "ignore"
         json_schema_extra = {
             "example": {
-                "system_prompt": "You are a helpful assistant who helps users with their questions.",
+                "custom_prompt": "You are a helpful assistant who helps users with their questions.",
                 "conversation_starters": "What is the meaning of life?\nTell me a joke.",
             }
         }
 
-    @field_validator("system_prompt", mode="before")
-    def preprocess_system_prompt(cls, value):
+    @field_validator("custom_prompt", mode="before")
+    def preprocess_custom_prompt(cls, value):
         """
-        To convert empty string prompt to None automatically
+        To convert empty string prompt to None automatically.
+        The system prompt could include custom prompts from the enabled tools.
+        We will ignore the custom prompts for the user in the system prompt.
         """
         if value == "":
             return None

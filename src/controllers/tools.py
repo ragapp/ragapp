@@ -1,5 +1,6 @@
 import os
 import dotenv
+import re
 import yaml
 from pydantic import Field, validator
 from pydantic_settings import BaseSettings
@@ -12,7 +13,7 @@ from src.models.tools import (
     E2BInterpreterTool,
     Tools,
 )
-from src.constants import TOOL_CONFIG_FILE, ENV_FILE_PATH
+from src.constants import TOOL_CONFIG_FILE, ENV_FILE_PATH, TOOL_CONFIG_FILE
 from src.models.tools import (
     DuckDuckGoTool,
     WikipediaTool,
@@ -20,7 +21,7 @@ from src.models.tools import (
     ImageGeneratorTool,
     Tools,
 )
-from src.constants import TOOL_CONFIG_FILE
+from src.controllers.system_prompt import SystemPromptManager
 
 
 class ToolsManager:
@@ -62,6 +63,8 @@ class ToolsManager:
         else:
             if tool.config_id in self.config[tool.tool_type]:
                 self.config[tool.tool_type].pop(tool.config_id)
+        # Update the system prompts because the tool custom prompts have been updated
+        SystemPromptManager.update_system_prompts(tools=self.get_tools())
         self._update_config_file()
 
     @staticmethod
