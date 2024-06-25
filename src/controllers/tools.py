@@ -21,7 +21,7 @@ from src.models.tools import (
     ImageGeneratorTool,
     Tools,
 )
-from src.controllers.system_prompt import update_system_prompts
+from src.controllers.system_prompt import SystemPromptManager
 
 
 class ToolsManager:
@@ -53,55 +53,6 @@ class ToolsManager:
         tools = Tools.from_config(self.config)
         return tools
 
-    def _update_env(self, env_name: str, env_value: str):
-        """
-        Update the custom prompts to runtime and dotenv file
-        """
-        os.environ[env_name] = env_value
-        dotenv.set_key(ENV_FILE_PATH, env_name, env_value)
-
-    def _update_tool_custom_prompt(self, tool):
-        if hasattr(tool, "custom_prompt"):
-            custom_prompts = os.getenv("TOOL_CUSTOM_PROMPTS", "")
-
-            if f"==={tool.name}===" in custom_prompts:
-                # Replace the old custom prompt (the content between the tool name pattern)
-                # with the new system prompt
-                new_custom_prompts = (
-                    f"==={tool.name}===\n{tool.custom_prompt}\n==={tool.name}==="
-                )
-                # Using regex to replace the old system prompt with the new system prompt
-                custom_prompts = re.sub(
-                    f"==={tool.name}===.*?==={tool.name}===",
-                    new_custom_prompts,
-                    custom_prompts,
-                    flags=re.DOTALL,
-                )
-            else:
-                # Append the new tool custom prompt to the
-                custom_prompts += (
-                    f"\n==={tool.name}===\n{tool.custom_prompt}\n==={tool.name}==="
-                )
-            # Update the tool custom prompt to runtime and dotenv file
-            self._update_env("TOOL_CUSTOM_PROMPTS", custom_prompts)
-        else:
-            raise ValueError(f"Tool {tool.name} does not have custom_prompt attribute")
-
-    def _remove_tool_custom_prompt(self, tool):
-        if hasattr(tool, "custom_prompt"):
-            custom_prompts = os.getenv("TOOL_CUSTOM_PROMPTS", "")
-            # Remove
-            custom_prompts = re.sub(
-                f"==={tool.name}===.*?==={tool.name}===",
-                "",
-                custom_prompts,
-                flags=re.DOTALL,
-            ).strip()
-            # Update the custom prompts to runtime and dotenv file
-            self._update_env("TOOL_CUSTOM_PROMPTS", custom_prompts)
-        else:
-            raise ValueError(f"Tool {tool.name} does not have custom_prompt attribute")
-
     def update_tool(self, tool_name: str, data: Dict):
         tool = self._get_tool(tool_name=tool_name, **data)
         config = data.get("config")
@@ -109,15 +60,11 @@ class ToolsManager:
         # Otherwise, remove it from the config
         if data.get("enabled"):
             self.config[tool.tool_type][tool.config_id] = config
-            if hasattr(tool, "custom_prompt"):
-                self._update_tool_custom_prompt(tool)
         else:
             if tool.config_id in self.config[tool.tool_type]:
                 self.config[tool.tool_type].pop(tool.config_id)
-            if hasattr(tool, "custom_prompt"):
-                self._remove_tool_custom_prompt(tool)
         # Update the system prompts because the tool custom prompts have been updated
-        update_system_prompts()
+        SystemPromptManager.update_system_prompts(tools=self.get_tools())
         self._update_config_file()
 
     @staticmethod

@@ -16,8 +16,7 @@ class E2BInterpreterTool(BaseModel):
     label: Literal["E2B Interpreter"] = "E2B Interpreter"
     custom_prompt: ClassVar[
         str
-    ] = """Instructions:
-- You are a Python interpreter that can run any python code in a secure environment.
+    ] = """- You are a Python interpreter that can run any python code in a secure environment.
 - The python code runs in a Jupyter notebook. Every time you call the 'interpreter' tool, the python code is executed in a separate cell. 
 - You are given tasks to complete and you run python code to solve them.
 - It's okay to make multiple calls to interpreter tool. If you get an error or the result is not what you expected, you can call the tool again. Don't give up too soon!
