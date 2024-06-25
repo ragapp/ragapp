@@ -53,6 +53,13 @@ class ToolsManager:
         tools = Tools.from_config(self.config)
         return tools
 
+    def _update_env(self, env_name: str, env_value: str):
+        """
+        Update the custom prompts to runtime and dotenv file
+        """
+        os.environ[env_name] = env_value
+        dotenv.set_key(ENV_FILE_PATH, env_name, env_value)
+
     def _update_tool_custom_prompt(self, tool):
         if hasattr(tool, "custom_prompt"):
             custom_prompts = os.getenv("TOOL_CUSTOM_PROMPTS", "")
@@ -76,8 +83,7 @@ class ToolsManager:
                     f"\n==={tool.name}===\n{tool.custom_prompt}\n==={tool.name}==="
                 )
             # Update the tool custom prompt to runtime and dotenv file
-            os.environ["TOOL_CUSTOM_PROMPTS"] = custom_prompts
-            dotenv.set_key(ENV_FILE_PATH, "TOOL_CUSTOM_PROMPTS", custom_prompts)
+            self._update_env("TOOL_CUSTOM_PROMPTS", custom_prompts)
         else:
             raise ValueError(f"Tool {tool.name} does not have custom_prompt attribute")
 
@@ -92,8 +98,7 @@ class ToolsManager:
                 flags=re.DOTALL,
             ).strip()
             # Update the custom prompts to runtime and dotenv file
-            os.environ["TOOL_CUSTOM_PROMPTS"] = custom_prompts
-            dotenv.set_key(ENV_FILE_PATH, "TOOL_CUSTOM_PROMPTS", custom_prompts)
+            self._update_env("TOOL_CUSTOM_PROMPTS", custom_prompts)
         else:
             raise ValueError(f"Tool {tool.name} does not have custom_prompt attribute")
 
