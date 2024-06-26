@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BaseConfigSchema } from ".";
+import { BaseConfigSchema } from "./base";
 
 export const GroqConfigSchema = BaseConfigSchema.extend({
   model_provider: z.literal("groq").nullable().optional(),
@@ -16,7 +16,7 @@ export const GroqConfigSchema = BaseConfigSchema.extend({
 export const DEFAULT_GROQ_CONFIG: z.input<typeof GroqConfigSchema> = {
   model_provider: "groq",
   model: "llama3-8b-8192",
-  embedding_model: "text-embedding-3-small",
-  embedding_dim: 1536,
+  embedding_model: "all-mpnet-base-v2",
+  embedding_dim: 768,
   groq_api_key: "",
 };

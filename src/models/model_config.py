@@ -71,8 +71,8 @@ class AzureOpenAIConfig(BaseModel):
 
 # We're using inheritance to flatten all the fields into a single class
 # Todo: Refactor API to nested structure
-class ProviderConfig(
-    BaseSettings,
+class ModelConfig(
+    BaseEnvConfig,
     OpenAIConfig,
     GroqConfig,
     GeminiConfig,
@@ -117,6 +117,8 @@ class ProviderConfig(
             return True
         elif self.model_provider == "azure-openai":
             return True
+        elif self.model_provider == "groq":
+            return self.groq_api_key is not None
         return False
 
     @classmethod
