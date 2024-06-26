@@ -1,0 +1,19 @@
+services:
+  travel_service_agent:
+    image: ragapp/ragapp:latest
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./envs/travel_service.env
+  vietnam_agent:
+    image: ragapp/ragapp:latest
+    ports:
+      - "8001:8000"
+    env_file:
+      - ./envs/vietnam.env
+  thai_agent:
+    image: ragapp/ragapp:latest
+    ports:
+      - "8002:8000"
+    env_file:
+      - ./envs/thai.env
