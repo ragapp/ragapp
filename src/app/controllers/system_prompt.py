@@ -1,6 +1,6 @@
 import os
 import dotenv
-from src.constants import (
+from src.app.constants import (
     DEFAULT_SYSTEM_PROMPT,
     SYSTEM_PROMPT_WITH_TOOLS_TPL,
     ENV_FILE_PATH,
@@ -14,7 +14,7 @@ class SystemPromptManager:
     def get_tool_custom_prompts(tools: list = None) -> str:
         if tools is None:
             # Only import tools_manager if not provided to avoid circular import
-            from src.controllers.tools import tools_manager
+            from src.app.controllers.tools import tools_manager
 
             tools = tools_manager().get_tools()
 

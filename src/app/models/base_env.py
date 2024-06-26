@@ -4,7 +4,7 @@ from dotenv.main import DotEnv
 from typing import List
 from pydantic_settings import BaseSettings
 from pydantic.json_schema import CoreSchema
-from src.constants import ENV_FILE_PATH
+from src.app.constants import ENV_FILE_PATH
 
 
 class NewlineListEnv(List[str]):

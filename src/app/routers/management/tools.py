@@ -3,8 +3,8 @@ from typing import Optional, Annotated, List
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
-from src.controllers.tools import ToolsManager, tools_manager
-from src.models.tools import Tools
+from src.app.controllers.tools import ToolsManager, tools_manager
+from src.app.models.tools import Tools
 
 tools_router = r = APIRouter()
 

@@ -1,0 +1,53 @@
+services:
+  message_queue:
+    build: ./src/message_queue
+    ports:
+      - "8100:8100"
+    environment:
+      - MESSAGE_QUEUE_HOST=0.0.0.0
+      - MESSAGE_QUEUE_PORT=8100
+    networks:
+      - ragapp-network
+
+  control_plane:
+    build: ./src/control_plane
+    ports:
+      - "8001:8001"
+    environment:
+      - OPENAI_API_KEY=
+      - MESSAGE_QUEUE_URL=http://message_queue:8100
+      - CONTROL_PLANE_HOST=control_plane
+      - CONTROL_PLANE_PORT=8001
+      - CONTROL_PLANE_MODEL=gpt-4-turbo
+      - CONTROL_PLANE_ORCHESTRATOR=agent
+    networks:
+      - ragapp-network
+    depends_on:
+      - message_queue
+
+  travel_agent:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config:/app/config
+    environment:
+      - OPENAI_API_KEY=
+      - ENVIRONMENT=dev
+      - CONTROL_PLANE_URL=http://control_plane:8001
+      - MESSAGE_QUEUE_URL=http://message_queue:8100
+      - AGENT_HOST=travel_agent
+      - AGENT_PORT=8000
+      - AGENT_NAME=travel_agent
+      - AGENT_DESCRIPTION=A travel agent that helps users plan their trips. I can suggest places to visit.
+      - AGENT_PROMPT=I'm a travel agent who helps users plan their trips.
+      - SYSTEM_PROMPT=You're a helpful travel agent, you can use duckduckgo tool to search nice places to travel
+    depends_on:
+      - control_plane
+      - message_queue
+    networks:
+      - ragapp-network
+
+networks:
+  ragapp-network-test:
+    driver: bridge

@@ -1,6 +1,6 @@
 from typing import List, Self
 from pydantic import Field, validator, field_validator
-from src.models.base_env import BaseEnvConfig, NewlineListEnv
+from src.app.models.base_env import BaseEnvConfig, NewlineListEnv
 
 
 class ChatConfig(BaseEnvConfig):

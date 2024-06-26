@@ -1,6 +1,6 @@
 import os
-from src.tasks.indexing import index_all
-from src.models.file import File, FileStatus, SUPPORTED_FILE_EXTENSIONS
+from src.app.tasks.indexing import index_all
+from src.app.models.file import File, FileStatus, SUPPORTED_FILE_EXTENSIONS
 
 
 class UnsupportedFileExtensionError(Exception):

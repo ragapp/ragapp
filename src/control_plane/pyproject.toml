@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "control-plane"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+llama-index = "0.10.50"
+llama-index-core = "0.10.50"
+llama-index-agent-openai = "0.2.7"
+llama-agents = "^0.0.3"
+pydantic-settings = "^2.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
