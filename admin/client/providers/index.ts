@@ -2,9 +2,9 @@ import { z } from "zod";
 import { getBaseURL } from "../utils";
 import { AzureOpenAIConfigSchema, DEFAULT_AZURE_OPENAI_CONFIG } from "./azure";
 import { DEFAULT_GEMINI_CONFIG, GeminiConfigSchema } from "./gemini";
+import { DEFAULT_GROQ_CONFIG, GroqConfigSchema } from "./groq";
 import { DEFAULT_OLLAMA_CONFIG, OllamaConfigSchema } from "./ollama";
 import { DEFAULT_OPENAI_CONFIG, OpenAIConfigSchema } from "./openai";
-import { DEFAULT_GROQ_CONFIG, GroqConfigSchema } from "./groq";
 
 export const ModelConfigSchema = z
   .union([
