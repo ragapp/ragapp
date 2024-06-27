@@ -2,7 +2,7 @@ import { z } from "zod";
 import { BaseConfigSchema } from "./base";
 
 export const GroqConfigSchema = BaseConfigSchema.extend({
-  model_provider: z.literal("groq").nullable().optional(),
+  model_provider: z.literal("groq"),
   groq_api_key: z
     .string()
     .nullable()
