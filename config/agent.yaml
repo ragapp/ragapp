@@ -5,12 +5,12 @@ control_plane:
 
 agents:
   - name: dump_agent
-    description: "I'm a storyteller."
+    # A agent will be introduced to the control plane as a function tool call.
+    # so the description is very important.
+    description: "I have a secret, let ask me a question to reveal it."
     port: 8001
     llm_provider: "openai"
     llm_model: "gpt-3.5-turbo"
     # TODO: Looks like the prompt config is not taking effect.
-    # The agent always need a tool to answer.
     prompt: "I can answer using no tool, my secret is: A baby llama is called a 'Cria'"
-    tools:
-      - duckduckgo
+    tools: []
