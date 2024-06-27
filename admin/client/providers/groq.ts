@@ -15,7 +15,7 @@ export const GroqConfigSchema = BaseConfigSchema.extend({
 
 export const DEFAULT_GROQ_CONFIG: z.input<typeof GroqConfigSchema> = {
   model_provider: "groq",
-  model: "llama3-8b-8192",
+  model: "llama3-8b",
   embedding_model: "all-mpnet-base-v2",
   embedding_dim: 768,
   groq_api_key: "",

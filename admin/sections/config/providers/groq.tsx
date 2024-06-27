@@ -18,9 +18,9 @@ export const GroqForm = ({
   defaultValues: any;
 }) => {
   const supportingModels = [
-    "llama3-8b-8192",
-    "llama3-70b-8192",
-    "mixtral-8x7b-32768",
+    "llama3-8b",
+    "llama3-70b",
+    "mixtral-8x7b",
   ];
 
   return (
