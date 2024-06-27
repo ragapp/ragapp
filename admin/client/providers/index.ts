@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getBaseURL } from "../utils";
 import { AzureOpenAIConfigSchema, DEFAULT_AZURE_OPENAI_CONFIG } from "./azure";
 import { DEFAULT_GEMINI_CONFIG, GeminiConfigSchema } from "./gemini";
+import { DEFAULT_GROQ_CONFIG, GroqConfigSchema } from "./groq";
 import { DEFAULT_OLLAMA_CONFIG, OllamaConfigSchema } from "./ollama";
 import { DEFAULT_OPENAI_CONFIG, OpenAIConfigSchema } from "./openai";
 
@@ -11,6 +12,7 @@ export const ModelConfigSchema = z
     GeminiConfigSchema,
     OllamaConfigSchema,
     AzureOpenAIConfigSchema,
+    GroqConfigSchema,
   ])
   .refine((data) => {
     switch (data.model_provider) {
@@ -22,6 +24,8 @@ export const ModelConfigSchema = z
         return OllamaConfigSchema.parse(data);
       case "azure-openai":
         return AzureOpenAIConfigSchema.parse(data);
+      case "groq":
+        return GroqConfigSchema.parse(data);
       default:
         return true;
     }
@@ -46,6 +50,10 @@ export const supportedProviders = [
     name: "Azure OpenAI",
     value: "azure-openai",
   },
+  {
+    name: "Groq",
+    value: "groq",
+  },
 ];
 
 export const getDefaultProviderConfig = (provider: string) => {
@@ -58,6 +66,8 @@ export const getDefaultProviderConfig = (provider: string) => {
       return DEFAULT_GEMINI_CONFIG;
     case "azure-openai":
       return DEFAULT_AZURE_OPENAI_CONFIG;
+    case "groq":
+      return DEFAULT_GROQ_CONFIG;
     default:
       throw new Error(`Provider ${provider} not supported`);
   }

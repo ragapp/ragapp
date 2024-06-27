@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 import { AzureOpenAIForm } from "./providers/azureOpenai";
 import { GeminiForm } from "./providers/gemini";
+import { GroqForm } from "./providers/groq";
 import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
 
@@ -97,6 +98,8 @@ export const ModelConfig = ({
     switch (defaultValues.model_provider ?? "") {
       case "openai":
         return <OpenAIForm form={form} defaultValues={defaultValues} />;
+      case "groq":
+        return <GroqForm form={form} defaultValues={defaultValues} />;
       case "ollama":
         return <OllamaForm form={form} defaultValues={defaultValues} />;
       case "gemini":
