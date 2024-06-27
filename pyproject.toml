@@ -7,15 +7,15 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
-fastapi = "^0.110.1"
+fastapi = "^0.111.0"
 python-dotenv = "^1.0.0"
-llama-index = "0.10.41"
-llama-index-core = "0.10.41"
-llama-index-agent-openai = "0.2.6"
 uvicorn = { version = "^0.23.2", extras = ["standard"] }
 pydantic-settings = "^2.2.1"
 python-multipart = "^0.0.9"
 aiostream = "^0.5.2"
+llama-index = "0.10.50"
+llama-index-core = "0.10.50"
+llama-index-agent-openai = "0.2.7"
 llama-index-vector-stores-chroma = "^0.1.8"
 # llama-index-vector-stores-chroma installs chromadb 0.5.0 which is incompatible with the latest version of numpy 2.0.0 
 chromadb = "0.5.1"
@@ -38,6 +38,7 @@ jsonschema = "^4.22.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.0"
+llama-agents = "^0.0.3"
 
 [build-system]
 requires = ["poetry-core"]

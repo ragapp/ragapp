@@ -1,0 +1,13 @@
+control_plane:
+  port: 8000
+  llm_provider: "openai"
+  llm_model: "gpt-3.5-turbo"
+
+agents:
+  - name: dump_agent
+    description: "I'm a storyteller."
+    port: 8001
+    llm_provider: "openai"
+    llm_model: "gpt-3.5-turbo"
+    prompt: "I can answer using no tool, my secret is: A baby llama is called a 'Cria'"
+    tools: []
