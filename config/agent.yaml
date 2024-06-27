@@ -9,5 +9,8 @@ agents:
     port: 8001
     llm_provider: "openai"
     llm_model: "gpt-3.5-turbo"
+    # TODO: Looks like the prompt config is not taking effect.
+    # The agent always need a tool to answer.
     prompt: "I can answer using no tool, my secret is: A baby llama is called a 'Cria'"
-    tools: []
+    tools:
+      - duckduckgo

@@ -45,7 +45,7 @@ def init_agent_service(config: LlamaAgentConfig):
     llm = init_llm(config.llm_provider, config.llm_model)
     tools = get_tools(config.tools)
 
-    agent = ReActAgent.from_tools(tools=tools, llm=llm)
+    agent = ReActAgent.from_tools(tools=tools, llm=llm, verbose=True)
     message_queue = get_message_queue()
     agent_service = AgentService(
         agent=agent,
@@ -83,5 +83,7 @@ if __name__ == "__main__":
     if not config_file:
         raise ValueError("Config file is required")
     config = LlamaAgentConfig.from_file(file_path=config_file, agent_name=agent_name)
+
+    print(f"agent config: {config}")
 
     asyncio.run(launch_agent(config=config))

@@ -21,7 +21,5 @@ def get_tools(tools: List[str]):
     from create_llama.backend.app.engine.tools import ToolFactory
 
     all_tools = ToolFactory.from_env()
-
-    print(f"Loaded {len(all_tools)} tools")
-
-    return [tool for tool in all_tools if tool.name in tools]
+    # TODO: Filter tools based on the config
+    return all_tools
