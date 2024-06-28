@@ -39,9 +39,9 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ENVIRONMENT=dev
       - AGENT_NAME=travel_agent
-      - AGENT_DESCRIPTION=I can suggest nice places in a country to travel
-      - AGENT_PROMPT=Ask me about places to travel in a country, but i cannot create a plan for the trip.
-      - SYSTEM_PROMPT=You're a helpful travel agent, you can suggest nice places in a country to travel.
+      - AGENT_DESCRIPTION=I can use DuckDuckGo search to find information about a country.
+      - AGENT_PROMPT=Ask me about a country and I will provide you with some information about it.
+      - SYSTEM_PROMPT=You're a helpful travel agent, your task is use DuckDuckGo search to find information about a country. You just need to return the information you find.
     depends_on:
       - control_plane
       - message_queue
@@ -52,8 +52,6 @@ services:
     build: .
     ports:
       - "8002:8002"
-    volumes:
-      - ./config:/app/config
     environment:
       - AGENT_HOST=research_agent
       - AGENT_PORT=8002
@@ -62,9 +60,9 @@ services:
       - ENVIRONMENT=dev
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - AGENT_NAME=research_agent
-      - AGENT_DESCRIPTION=A travel agent that helps users plan their trips. I can help you make a plan for your trip and give you some tips on where to go.
+      - AGENT_DESCRIPTION=I can help you make a plan for your trip and give you some tips on where to go.
       - AGENT_PROMPT=Give me the list of place to visit then i will create a plane for the trip.
-      - SYSTEM_PROMPT=Use the provided information to help the user plan their trip. Your answer should include a list of places to visit, a list of activities to do, and a list of restaurants to eat at.
+      - SYSTEM_PROMPT=You are a smart assistant, you can answer using no additional tools. Use the provided information to help the user plan their trip.
     depends_on:
       - control_plane
       - message_queue
