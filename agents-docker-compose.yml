@@ -19,7 +19,7 @@ services:
       - MESSAGE_QUEUE_URL=http://message_queue:8100
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - CONTROL_PLANE_MODEL=gpt-3.5-turbo
-      - CONTROL_PLANE_ORCHESTRATOR=agent
+      - CONTROL_PLANE_ORCHESTRATOR_TYPE=pipeline
     networks:
       - ragapp-network
     depends_on:
@@ -39,9 +39,9 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ENVIRONMENT=dev
       - AGENT_NAME=travel_agent
-      - AGENT_DESCRIPTION=I'm have some tools to get information about places in a country.
-      - AGENT_PROMPT=Ask me about places in a country.
-      - SYSTEM_PROMPT=You're a helpful travel agent, you can use duckduckgo tool to search nice places in a country to travel
+      - AGENT_DESCRIPTION=I can suggest nice places in a country to travel
+      - AGENT_PROMPT=Ask me about places to travel in a country, but i cannot create a plan for the trip.
+      - SYSTEM_PROMPT=You're a helpful travel agent, you can suggest nice places in a country to travel.
     depends_on:
       - control_plane
       - message_queue

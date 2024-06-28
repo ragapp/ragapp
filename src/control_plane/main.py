@@ -4,11 +4,17 @@ import asyncio
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 from typing import ClassVar
-from llama_agents import ControlPlaneServer, AgentOrchestrator
+from llama_agents import (
+    ControlPlaneServer,
+    AgentOrchestrator,
+    PipelineOrchestrator,
+    ServiceComponent,
+)
 from llama_index.llms.openai import OpenAI
 from llama_index.core.llms.function_calling import FunctionCallingLLM
 from llama_agents.message_queues import SimpleRemoteClientMessageQueue
 from llama_agents.message_consumers import CallableMessageConsumer
+from llama_index.core.query_pipeline import QueryPipeline
 
 
 logger = logging.getLogger(__name__)
@@ -58,6 +64,20 @@ class ControlPlaneConfig(BaseSettings):
         match self.orchestrator_type:
             case "agent":
                 return AgentOrchestrator(llm=self.get_llm())
+            case "pipeline":
+                # Hard-code for a pipeline orchestrator
+                travel_service_components = ServiceComponent(
+                    name="travel_agent",
+                    description="Use this service to get places to travel in a country, but i cannot suggest a plan for the trip",
+                )
+                research_service_components = ServiceComponent(
+                    name="research_agent",
+                    description="Use this service to create a plan for the trip, must provide the list of places to visit",
+                )
+                pipeline = QueryPipeline(
+                    chain=[travel_service_components, research_service_components]
+                )
+                return PipelineOrchestrator(pipeline)
             case _:
                 raise ValueError(f"Unknown orchestrator type: {self.orchestrator_type}")
 
