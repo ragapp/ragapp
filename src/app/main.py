@@ -27,11 +27,8 @@ async def redirect():
         return RedirectResponse(url="/admin/#new")
 
 
-def init_app() -> FastAPI:
-    environment = os.getenv("ENVIRONMENT", "")
-    agent_name = os.getenv("AGENT_NAME", None)
-
-    if agent_name is not None:
+def init_app(use_agent: bool = False) -> FastAPI:
+    if use_agent:
         from src.app.agent_service import init_and_register_agent, AgentServiceConfig
 
         agent_service = asyncio.run(init_and_register_agent(AgentServiceConfig()))
@@ -39,7 +36,7 @@ def init_app() -> FastAPI:
     else:
         app = FastAPI()
 
-    if environment == "dev":
+    if os.getenv("ENVIRONMENT", "") == "dev":
         app.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],

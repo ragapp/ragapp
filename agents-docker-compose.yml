@@ -27,21 +27,17 @@ services:
 
   travel_agent:
     build: .
-    ports:
-      - "8001:8001"
     configs:
-      - source: research_agent_tools_config
+      - source: travel_agent_tools_config
         target: /app/config/tools.yaml
     environment:
-      - AGENT_HOST=travel_agent
-      - AGENT_PORT=8001
+      - AGENT=true
       - CONTROL_PLANE_URL=http://control_plane:8000
       - MESSAGE_QUEUE_URL=http://message_queue:8100
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ENVIRONMENT=dev
-      - AGENT_NAME=travel_agent
-      - AGENT_DESCRIPTION=I can use DuckDuckGo search to find information about a country.
-      - AGENT_PROMPT=Ask me about a country and I will provide you with some information about it.
+      - NAME=travel_agent
+      - DESCRIPTION=I can use DuckDuckGo search to find information about a country.
       - SYSTEM_PROMPT=You're a helpful travel agent, your task is use DuckDuckGo search to find information about a country. You just need to return the information you find.
     depends_on:
       - control_plane
@@ -51,21 +47,17 @@ services:
 
   research_agent:
     build: .
-    ports:
-      - "8002:8002"
     configs:
       - source: research_agent_tools_config
         target: /app/config/tools.yaml
     environment:
-      - AGENT_HOST=research_agent
-      - AGENT_PORT=8002
+      - AGENT=true
       - CONTROL_PLANE_URL=http://control_plane:8000
       - MESSAGE_QUEUE_URL=http://message_queue:8100
-      - ENVIRONMENT=dev
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - AGENT_NAME=research_agent
-      - AGENT_DESCRIPTION=I can help you make a plan for your trip and give you some tips on where to go.
-      - AGENT_PROMPT=Give me the list of place to visit then i will create a plane for the trip.
+      - ENVIRONMENT=dev
+      - NAME=research_agent
+      - DESCRIPTION=I can help you make a plan for your trip and give you some tips on where to go.
       - SYSTEM_PROMPT=You are a smart assistant, you can answer using no additional tools. Use the provided information to help the user plan their trip.
     depends_on:
       - control_plane

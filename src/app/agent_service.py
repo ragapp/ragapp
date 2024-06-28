@@ -8,6 +8,7 @@ from llama_index.llms.openai import OpenAI
 from llama_index.core.settings import Settings
 from llama_agents.message_queues import SimpleRemoteClientMessageQueue
 from llama_agents.types import ChatMessage
+from src.app.utils import get_hostname
 
 
 class AgentServiceConfig(BaseSettings):
@@ -17,8 +18,8 @@ class AgentServiceConfig(BaseSettings):
         description="Description of the agent. To introduce with other agents",
         env="DESCRIPTION",
     )
-    prompt: str = Field(
-        ...,
+    prompt: str | None = Field(
+        default=None,
         description="Prompt to use for the agent",
         env="PROMPT",
     )
@@ -33,10 +34,10 @@ class AgentServiceConfig(BaseSettings):
         description="List of tools to use for the agent",
         env="TOOLS",
     )
-    host: str = Field(default="localhost", env="HOST")
-    port: int = Field(default=8002, env="PORT")
+    host: str = Field(default=get_hostname(), env="HOST")
+    port: int = Field(default=8001, env="PORT")
     control_plane_url: str | None = Field(
-        default="http://localhost:8001",
+        default="http://localhost:8000",
         alias="control_plane_url",
         env="CONTROL_PLANE_URL",
     )
@@ -54,9 +55,6 @@ class AgentServiceConfig(BaseSettings):
         env="MODEL",
     )
 
-    class Config:
-        env_prefix = "AGENT_"
-
 
 def get_agent_service(config: AgentServiceConfig):
     from create_llama.backend.app.engine import get_chat_engine
@@ -72,7 +70,6 @@ def get_agent_service(config: AgentServiceConfig):
         service_name=config.name,
         host=config.host,
         port=config.port,
-        prompt=[ChatMessage.from_str(content=config.prompt, role="system")],
     )
 
     return agent_service
