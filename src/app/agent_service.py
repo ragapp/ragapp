@@ -60,10 +60,8 @@ class AgentServiceConfig(BaseSettings):
 
 def get_agent_service(config: AgentServiceConfig):
     from create_llama.backend.app.engine import get_chat_engine
-    from llama_index.core.agent import ReActAgent
 
-    # agent = ReActAgent.from_tools([], llm=OpenAI())
-    agent = get_chat_engine()
+    agent = get_chat_engine(use_agent=True)
     message_queue = SimpleRemoteClientMessageQueue(
         base_url=config.message_queue_url,
     )

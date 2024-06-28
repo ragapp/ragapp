@@ -29,8 +29,9 @@ services:
     build: .
     ports:
       - "8001:8001"
-    volumes:
-      - ./config:/app/config
+    configs:
+      - source: research_agent_tools_config
+        target: /app/config/tools.yaml
     environment:
       - AGENT_HOST=travel_agent
       - AGENT_PORT=8001
@@ -52,6 +53,9 @@ services:
     build: .
     ports:
       - "8002:8002"
+    configs:
+      - source: research_agent_tools_config
+        target: /app/config/tools.yaml
     environment:
       - AGENT_HOST=research_agent
       - AGENT_PORT=8002
@@ -68,6 +72,17 @@ services:
       - message_queue
     networks:
       - ragapp-network
+
+configs:
+  travel_agent_tools_config:
+    content: |
+      llamahub: {}
+      local:
+        duckduckgo: {}
+  research_agent_tools_config:
+    content: |
+      llamahub: {}
+      local: {}
 
 networks:
   ragapp-network:
