@@ -1,6 +1,7 @@
 import sys
 import logging
 import asyncio
+from fastapi import Request, Response
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 from typing import ClassVar
@@ -13,7 +14,8 @@ from llama_agents import (
 from llama_index.llms.openai import OpenAI
 from llama_index.core.llms.function_calling import FunctionCallingLLM
 from llama_agents.message_queues import SimpleRemoteClientMessageQueue
-from llama_agents.message_consumers import CallableMessageConsumer
+from llama_agents.message_consumers.callable import CallableMessageConsumer
+from llama_agents.message_consumers.remote import RemoteMessageConsumer
 from llama_index.core.query_pipeline import QueryPipeline
 
 
@@ -95,6 +97,16 @@ def get_human_consumer():
     return human_consumer
 
 
+async def task_result_callback(request: Request):
+    """
+    Simple callback function to show the task result
+    """
+    data = await request.json()
+    print(f"Result received: {data}")
+
+    return Response(status_code=204)  # 204 No Content
+
+
 async def launch_control_plane(config: ControlPlaneConfig):
     message_queue = SimpleRemoteClientMessageQueue(base_url=config.message_queue_url)
 
@@ -104,12 +116,17 @@ async def launch_control_plane(config: ControlPlaneConfig):
         host=config.host,
         port=config.port,
     )
+    control_plane.app.add_api_route(
+        "/task-result", task_result_callback, methods=["POST"]
+    )
 
-    human_consumer = get_human_consumer()
+    result_consumer = RemoteMessageConsumer(
+        url=f"http://{config.host}:{config.port}/task-result", message_type="human"
+    )
 
     server = control_plane.launch_server()
     await message_queue.register_consumer(control_plane.as_consumer(remote=True))
-    await message_queue.register_consumer(human_consumer)
+    await message_queue.register_consumer(result_consumer)
     await server
 
 
