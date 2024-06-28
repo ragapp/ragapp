@@ -66,18 +66,19 @@ class ControlPlaneConfig(BaseSettings):
                 return AgentOrchestrator(llm=self.get_llm())
             case "pipeline":
                 # Hard-code for a pipeline orchestrator
-                travel_service_components = ServiceComponent(
-                    name="travel_agent",
-                    description="Use this service to get places to travel in a country, but i cannot suggest a plan for the trip",
-                )
-                research_service_components = ServiceComponent(
-                    name="research_agent",
-                    description="Use this service to create a plan for the trip, must provide the list of places to visit",
-                )
-                pipeline = QueryPipeline(
-                    chain=[travel_service_components, research_service_components]
-                )
-                return PipelineOrchestrator(pipeline)
+                # travel_service_components = ServiceComponent(
+                #     name="travel_agent",
+                #     description="Use this service to get places to travel in a country, but i cannot suggest a plan for the trip",
+                # )
+                # research_service_components = ServiceComponent(
+                #     name="research_agent",
+                #     description="Use this service to create a plan for the trip, must provide the list of places to visit",
+                # )
+                # pipeline = QueryPipeline(
+                #     chain=[travel_service_components, research_service_components]
+                # )
+                # return PipelineOrchestrator(pipeline)
+                raise NotImplementedError("Pipeline orchestrator not implemented yet")
             case _:
                 raise ValueError(f"Unknown orchestrator type: {self.orchestrator_type}")
 

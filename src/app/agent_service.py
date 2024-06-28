@@ -12,7 +12,11 @@ from src.app.utils import get_hostname
 
 
 class AgentServiceConfig(BaseSettings):
-    name: str = Field(..., description="Name of the agent", env="NAME")
+    name: str = Field(
+        default=get_hostname(),
+        description="Name of the agent, default is the current host name",
+        env="NAME",
+    )
     description: str = Field(
         ...,
         description="Description of the agent. To introduce with other agents",

@@ -19,7 +19,7 @@ services:
       - MESSAGE_QUEUE_URL=http://message_queue:8100
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - CONTROL_PLANE_MODEL=gpt-3.5-turbo
-      - CONTROL_PLANE_ORCHESTRATOR_TYPE=pipeline
+      - CONTROL_PLANE_ORCHESTRATOR_TYPE=agent
     networks:
       - ragapp-network
     depends_on:
@@ -36,7 +36,6 @@ services:
       - MESSAGE_QUEUE_URL=http://message_queue:8100
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ENVIRONMENT=dev
-      - NAME=travel_agent
       - DESCRIPTION=I can use DuckDuckGo search to find information about a country.
       - SYSTEM_PROMPT=You're a helpful travel agent, your task is use DuckDuckGo search to find information about a country. You just need to return the information you find.
     depends_on:
@@ -56,7 +55,6 @@ services:
       - MESSAGE_QUEUE_URL=http://message_queue:8100
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ENVIRONMENT=dev
-      - NAME=research_agent
       - DESCRIPTION=I can help you make a plan for your trip and give you some tips on where to go.
       - SYSTEM_PROMPT=You are a smart assistant, you can answer using no additional tools. Use the provided information to help the user plan their trip.
     depends_on:
