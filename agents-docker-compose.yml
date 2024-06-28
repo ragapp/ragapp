@@ -12,12 +12,12 @@ services:
   control_plane:
     build: ./src/control_plane
     ports:
-      - "8001:8001"
+      - "8000:8000"
     environment:
-      - OPENAI_API_KEY=
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - MESSAGE_QUEUE_URL=http://message_queue:8100
       - CONTROL_PLANE_HOST=control_plane
-      - CONTROL_PLANE_PORT=8001
+      - CONTROL_PLANE_PORT=8000
       - CONTROL_PLANE_MODEL=gpt-4-turbo
       - CONTROL_PLANE_ORCHESTRATOR=agent
     networks:
@@ -28,20 +28,43 @@ services:
   travel_agent:
     build: .
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       - ./config:/app/config
     environment:
-      - OPENAI_API_KEY=
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ENVIRONMENT=dev
-      - CONTROL_PLANE_URL=http://control_plane:8001
+      - CONTROL_PLANE_URL=http://control_plane:8000
       - MESSAGE_QUEUE_URL=http://message_queue:8100
       - AGENT_HOST=travel_agent
-      - AGENT_PORT=8000
+      - AGENT_PORT=8001
       - AGENT_NAME=travel_agent
-      - AGENT_DESCRIPTION=A travel agent that helps users plan their trips. I can suggest places to visit.
-      - AGENT_PROMPT=I'm a travel agent who helps users plan their trips.
-      - SYSTEM_PROMPT=You're a helpful travel agent, you can use duckduckgo tool to search nice places to travel
+      - AGENT_DESCRIPTION=I'm have some tools to get information about places in a country.
+      - AGENT_PROMPT=Ask me about places in a country.
+      - SYSTEM_PROMPT=You're a helpful travel agent, you can use duckduckgo tool to search nice places in a country to travel
+    depends_on:
+      - control_plane
+      - message_queue
+    networks:
+      - ragapp-network
+
+  research_agent:
+    build: .
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./config:/app/config
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ENVIRONMENT=dev
+      - CONTROL_PLANE_URL=http://control_plane:8000
+      - MESSAGE_QUEUE_URL=http://message_queue:8100
+      - AGENT_HOST=research_agent
+      - AGENT_PORT=8002
+      - AGENT_NAME=research_agent
+      - AGENT_DESCRIPTION=A travel agent that helps users plan their trips. I can help you make a plan for your trip and give you some tips on where to go.
+      - AGENT_PROMPT=Ask me about places to travel.
+      - SYSTEM_PROMPT=Use the provided information to help the user plan their trip. Your answer should include a list of places to visit, a list of activities to do, and a list of restaurants to eat at.
     depends_on:
       - control_plane
       - message_queue
@@ -49,5 +72,5 @@ services:
       - ragapp-network
 
 networks:
-  ragapp-network-test:
+  ragapp-network:
     driver: bridge

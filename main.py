@@ -9,8 +9,8 @@ if __name__ == "__main__":
     import uvicorn
     from src.app.main import init_app
 
-    app_host = os.getenv("APP_HOST", "0.0.0.0")
-    app_port = int(os.getenv("APP_PORT", "8000"))
+    app_host = os.getenv("AGENT_HOST", os.getenv("APP_HOST", "0.0.0.0"))
+    app_port = int(os.getenv("AGENT_PORT", os.getenv("APP_PORT", 8000)))
 
     app = init_app()
 
