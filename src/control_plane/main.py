@@ -8,6 +8,7 @@ from llama_agents import ControlPlaneServer, AgentOrchestrator
 from llama_index.llms.openai import OpenAI
 from llama_index.core.llms.function_calling import FunctionCallingLLM
 from llama_agents.message_queues import SimpleRemoteClientMessageQueue
+from llama_agents.message_consumers import CallableMessageConsumer
 
 
 logger = logging.getLogger(__name__)
@@ -61,6 +62,18 @@ class ControlPlaneConfig(BaseSettings):
                 raise ValueError(f"Unknown orchestrator type: {self.orchestrator_type}")
 
 
+# Just create a simple consumer that prints the result directly in control plane
+def get_human_consumer():
+    def handle_result(message) -> None:
+        logger.info(f"Result received: {message}")
+
+    human_consumer = CallableMessageConsumer(
+        handler=handle_result, message_type="human"
+    )
+
+    return human_consumer
+
+
 async def launch_control_plane(config: ControlPlaneConfig):
     message_queue = SimpleRemoteClientMessageQueue(base_url=config.message_queue_url)
 
@@ -71,8 +84,11 @@ async def launch_control_plane(config: ControlPlaneConfig):
         port=config.port,
     )
 
+    human_consumer = get_human_consumer()
+
     server = control_plane.launch_server()
     await message_queue.register_consumer(control_plane.as_consumer(remote=True))
+    await message_queue.register_consumer(human_consumer)
     await server
 
 

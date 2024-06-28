@@ -4,7 +4,7 @@ services:
     ports:
       - "8100:8100"
     environment:
-      - MESSAGE_QUEUE_HOST=0.0.0.0
+      - MESSAGE_QUEUE_HOST=message_queue
       - MESSAGE_QUEUE_PORT=8100
     networks:
       - ragapp-network
@@ -14,11 +14,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - MESSAGE_QUEUE_URL=http://message_queue:8100
       - CONTROL_PLANE_HOST=control_plane
       - CONTROL_PLANE_PORT=8000
-      - CONTROL_PLANE_MODEL=gpt-4-turbo
+      - MESSAGE_QUEUE_URL=http://message_queue:8100
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CONTROL_PLANE_MODEL=gpt-3.5-turbo
       - CONTROL_PLANE_ORCHESTRATOR=agent
     networks:
       - ragapp-network
@@ -32,12 +32,12 @@ services:
     volumes:
       - ./config:/app/config
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ENVIRONMENT=dev
-      - CONTROL_PLANE_URL=http://control_plane:8000
-      - MESSAGE_QUEUE_URL=http://message_queue:8100
       - AGENT_HOST=travel_agent
       - AGENT_PORT=8001
+      - CONTROL_PLANE_URL=http://control_plane:8000
+      - MESSAGE_QUEUE_URL=http://message_queue:8100
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ENVIRONMENT=dev
       - AGENT_NAME=travel_agent
       - AGENT_DESCRIPTION=I'm have some tools to get information about places in a country.
       - AGENT_PROMPT=Ask me about places in a country.
@@ -55,15 +55,15 @@ services:
     volumes:
       - ./config:/app/config
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ENVIRONMENT=dev
-      - CONTROL_PLANE_URL=http://control_plane:8000
-      - MESSAGE_QUEUE_URL=http://message_queue:8100
       - AGENT_HOST=research_agent
       - AGENT_PORT=8002
+      - CONTROL_PLANE_URL=http://control_plane:8000
+      - MESSAGE_QUEUE_URL=http://message_queue:8100
+      - ENVIRONMENT=dev
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - AGENT_NAME=research_agent
       - AGENT_DESCRIPTION=A travel agent that helps users plan their trips. I can help you make a plan for your trip and give you some tips on where to go.
-      - AGENT_PROMPT=Ask me about places to travel.
+      - AGENT_PROMPT=Give me the list of place to visit then i will create a plane for the trip.
       - SYSTEM_PROMPT=Use the provided information to help the user plan their trip. Your answer should include a list of places to visit, a list of activities to do, and a list of restaurants to eat at.
     depends_on:
       - control_plane

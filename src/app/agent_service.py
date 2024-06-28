@@ -7,6 +7,7 @@ from llama_agents import AgentService
 from llama_index.llms.openai import OpenAI
 from llama_index.core.settings import Settings
 from llama_agents.message_queues import SimpleRemoteClientMessageQueue
+from llama_agents.types import ChatMessage
 
 
 class AgentServiceConfig(BaseSettings):
@@ -73,6 +74,7 @@ def get_agent_service(config: AgentServiceConfig):
         service_name=config.name,
         host=config.host,
         port=config.port,
+        prompt=[ChatMessage.from_str(content=config.prompt, role="system")],
     )
 
     return agent_service
