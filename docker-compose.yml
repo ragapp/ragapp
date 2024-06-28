@@ -40,7 +40,7 @@ services:
 
   ragapp:
     build: .
-    image: ragapp/ragapp:latest
+    image: effectz-ai/ragapp:latest
     ports:
       - "8000:8000"
     volumes:

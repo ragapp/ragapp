@@ -1,4 +1,4 @@
-<p align="center"><img alt="Logo - RAGapp" src="docs/logo.png"></p>
+<p align="center"><img alt="Logo - EffectZ" src="docs/logo.png"></p>
 
 <p align="center"><strong>The easiest way to use Agentic RAG in any enterprise.</strong></p>
 
@@ -19,7 +19,7 @@
 To run, start a docker container with our image:
 
 ```shell
-docker run -p 8000:8000 ragapp/ragapp
+docker run -p 8000:8000 effectz-ai/ragapp
 ```
 
 Then, access the Admin UI at http://localhost:8000/admin to configure your RAGapp.
