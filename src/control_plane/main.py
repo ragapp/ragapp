@@ -51,9 +51,6 @@ class ControlPlaneConfig(BaseSettings):
 
     _llm: FunctionCallingLLM = None
 
-    class Config:
-        env_prefix = "CONTROL_PLANE_"
-
     def get_llm(self):
         # TODO: Update for other LLM providers later
         if self._llm is None:

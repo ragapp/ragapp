@@ -14,12 +14,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - CONTROL_PLANE_HOST=control_plane
-      - CONTROL_PLANE_PORT=8000
+      - HOST=control_plane
+      - PORT=8000
       - MESSAGE_QUEUE_URL=http://message_queue:8100
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - CONTROL_PLANE_MODEL=gpt-3.5-turbo
-      - CONTROL_PLANE_ORCHESTRATOR_TYPE=agent
+      - MODEL=gpt-3.5-turbo
+      - ORCHESTRATOR_TYPE=agent
     networks:
       - ragapp-network
     depends_on:
