@@ -56,6 +56,9 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
