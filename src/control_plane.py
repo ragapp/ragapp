@@ -2,6 +2,7 @@ import sys
 import logging
 import asyncio
 from fastapi import Request, Response
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 from typing import ClassVar
@@ -52,11 +53,19 @@ async def launch_control_plane(config: ControlPlaneConfig):
         host=config.host,
         port=config.port,
     )
-    control_plane.app.add_api_route(
-        "/task-result", task_result_callback, methods=["POST"]
+
+    control_plane.app.add_api_route("/status", control_plane.home, methods=["GET"])
+
+    # Add chat endpoint
+    control_plane.app.include_router(
+        agent_chat_router, prefix="/api/chat", tags=["Chat"]
     )
 
-    control_plane.app.include_router(agent_chat_router, prefix="/chat", tags=["Chat"])
+    # Mount the create-llama front-end static files
+    control_plane.app.mount(
+        "",
+        StaticFiles(directory="static", check_dir=False, html=True),
+    )
 
     result_consumer = RemoteMessageConsumer(
         url=f"http://{config.host}:{config.port}/task-result", message_type="human"
