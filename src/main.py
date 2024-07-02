@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from src.app.constants import ENV_FILE_PATH
+from src.constants import ENV_FILE_PATH
 
 load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False)
 
@@ -14,11 +14,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from create_llama.backend.app.settings import init_settings
 from create_llama.backend.app.api.routers.chat import chat_router
-from src.app.routers.management.config import config_router
-from src.app.routers.management.files import files_router
-from src.app.routers.management.tools import tools_router
-from src.app.routers.management.loader import loader_router
-from src.app.models.model_config import ModelConfig
+from src.routers.management.config import config_router
+from src.routers.management.files import files_router
+from src.routers.management.tools import tools_router
+from src.routers.management.loader import loader_router
+from src.models.model_config import ModelConfig
 
 init_settings()
 
@@ -35,7 +35,7 @@ async def redirect():
 
 def init_app(use_agent: bool = False) -> FastAPI:
     if use_agent:
-        from src.app.agent_service import init_and_register_agent, AgentServiceConfig
+        from src.agent_service import init_and_register_agent, AgentServiceConfig
 
         agent_service = asyncio.run(init_and_register_agent(AgentServiceConfig()))
         app = agent_service._app
@@ -85,7 +85,7 @@ def init_app(use_agent: bool = False) -> FastAPI:
 
 if __name__ == "__main__":
     import uvicorn
-    from src.app.main import init_app
+    from src.main import init_app
 
     is_agent = os.getenv("AGENT", "").lower() == "true"
     app_host = os.getenv("APP_HOST", "0.0.0.0")

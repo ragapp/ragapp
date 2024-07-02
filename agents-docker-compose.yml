@@ -2,7 +2,7 @@ services:
   message_queue:
     image: ragapp/ragapp
     build: .
-    command: ["python", "src/message_queue/main.py"]
+    command: ["python", "src/message_queue.py"]
     ports:
       - "8100:8100"
     environment:
@@ -14,7 +14,7 @@ services:
   control_plane:
     image: ragapp/ragapp
     build: .
-    command: ["python", "src/control_plane/main.py"]
+    command: ["python", "src/control_plane.py"]
     ports:
       - "8000:8000"
     environment:
@@ -35,7 +35,7 @@ services:
     configs:
       - source: travel_agent_tools_config
         target: /app/config/tools.yaml
-    command: ["python", "src/app/main.py"]
+    command: ["python", "src/main.py"]
     environment:
       - AGENT=true
       - PORT=8000 # Specify the port explicitly to register the agent with other services
@@ -57,7 +57,7 @@ services:
     configs:
       - source: research_agent_tools_config
         target: /app/config/tools.yaml
-    command: ["python", "src/app/main.py"]
+    command: ["python", "src/main.py"]
     environment:
       - AGENT=true
       - PORT=8000 # Specify the port explicitly to register the agent with other services

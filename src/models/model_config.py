@@ -1,7 +1,7 @@
 from typing import Any, Self
 from pydantic import Field, BaseModel, computed_field
 from pydantic_settings import BaseSettings
-from src.app.models.base_env import BaseEnvConfig
+from src.models.base_env import BaseEnvConfig
 
 
 class OpenAIConfig(BaseModel):

@@ -6,22 +6,22 @@ from pydantic import Field, validator
 from pydantic_settings import BaseSettings
 from typing import Dict, Tuple, List
 
-from src.app.models.tools import (
+from src.models.tools import (
     DuckDuckGoTool,
     WikipediaTool,
     OpenAPITool,
     E2BInterpreterTool,
     Tools,
 )
-from src.app.constants import TOOL_CONFIG_FILE, ENV_FILE_PATH, TOOL_CONFIG_FILE
-from src.app.models.tools import (
+from src.constants import TOOL_CONFIG_FILE, ENV_FILE_PATH, TOOL_CONFIG_FILE
+from src.models.tools import (
     DuckDuckGoTool,
     WikipediaTool,
     OpenAPITool,
     ImageGeneratorTool,
     Tools,
 )
-from src.app.controllers.system_prompt import SystemPromptManager
+from src.controllers.system_prompt import SystemPromptManager
 
 
 class ToolsManager:

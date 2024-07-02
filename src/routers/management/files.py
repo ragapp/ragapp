@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile
 from fastapi.responses import JSONResponse
-from src.app.models.file import File
-from src.app.controllers.files import FileHandler, UnsupportedFileExtensionError
+from src.models.file import File
+from src.controllers.files import FileHandler, UnsupportedFileExtensionError
 
 files_router = r = APIRouter()
 

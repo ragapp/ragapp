@@ -5,8 +5,8 @@ from pydantic import Field, validator
 from pydantic_settings import BaseSettings
 from typing import Dict, Tuple, List
 
-from src.app.models.loader import LoaderConfig, FileLoader
-from src.app.constants import LOADER_CONFIG_FILE
+from src.models.loader import LoaderConfig, FileLoader
+from src.constants import LOADER_CONFIG_FILE
 
 
 class LoaderManager:
