@@ -55,7 +55,7 @@ export const GeminiForm = ({
       />
       <ModelForm
         form={form}
-        defaultValues={defaultValues}
+        defaultValue={defaultValues.model}
         supportedModels={supportingModels}
       />
     </>

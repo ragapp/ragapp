@@ -54,14 +54,19 @@ def update_model_config(
     config: ModelConfig = Depends(ModelConfig.get_config),
 ):
     # If the new config has a different model provider
-    # Or the model config has not been configured yet
+    # or embedding model
+    # or the model config has not been configured yet
     # We need to:
     # 1. Reload the llama_index settings
     # 2. Reset the index
     EnvConfigManager.update(config, new_config, rollback_on_failure=True)
 
     # We won't rollback the changes if the index reset fails
-    if (new_config.model_provider != config.model_provider) or not config.configured:
+    if (
+        (new_config.model_provider != config.model_provider)
+        or (new_config.embedding_model != config.embedding_model)
+        or not config.configured
+    ):
         reset_index()
 
     # Response with the updated config
