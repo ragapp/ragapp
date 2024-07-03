@@ -17,33 +17,33 @@ import { UseFormReturn } from "react-hook-form";
 const DEFAULT_TITLE = "Model";
 const DEFAULT_DESCRIPTION =
   "Select a model to chat with. If you are not sure, leave it as is.";
-const DEFAULT_MODEL_FIELD_NAME = "model";
+const DEFAULT_NAME = "model";
 
 export const ModelForm = ({
   form,
   title,
   description,
-  model_field_name,
-  defaultValues,
+  name,
+  defaultValue,
   supportedModels,
 }: {
   form: UseFormReturn;
   title?: string;
   description?: string;
-  model_field_name?: string;
-  defaultValues: any;
+  name?: string;
+  defaultValue: any;
   supportedModels: string[];
 }) => {
   return (
     <FormField
       control={form.control}
-      name={model_field_name ?? DEFAULT_MODEL_FIELD_NAME}
+      name={name ?? DEFAULT_NAME}
       render={({ field }) => (
         <FormItem>
           <FormLabel>{title ?? DEFAULT_TITLE}</FormLabel>
           <FormControl>
             <Select
-              defaultValue={defaultValues.model ?? supportedModels[0]}
+              defaultValue={defaultValue ?? supportedModels[0]}
               onValueChange={field.onChange}
               {...field}
             >

@@ -50,18 +50,18 @@ export const OpenAIForm = ({
         <div className="w-1/2">
           <ModelForm
             form={form}
-            defaultValues={defaultValues}
+            defaultValue={defaultValues.model}
             supportedModels={supportingModels}
           />
         </div>
         <div className="w-1/2">
           <ModelForm
             form={form}
-            defaultValues={defaultValues}
+            defaultValue={defaultValues.embedding_model}
             supportedModels={embeddingModels}
             title="Embedding Model"
             description="Select a text embedding model to embed text."
-            model_field_name="embedding_model"
+            name="embedding_model"
           />
         </div>
       </div>

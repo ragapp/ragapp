@@ -121,7 +121,7 @@ export const OllamaForm = ({
         <>
           <ModelForm
             form={form}
-            defaultValues={defaultValues}
+            defaultValue={defaultValues.model}
             supportedModels={getLLMModels(models ?? [])}
           />
           <FormMessage>
@@ -140,7 +140,7 @@ export const OllamaForm = ({
       ) : (
         <ModelForm
           form={form}
-          defaultValues={defaultValues}
+          defaultValue={defaultValues.model}
           supportedModels={getLLMModels(models ?? [])}
         />
       )}
