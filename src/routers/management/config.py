@@ -53,7 +53,7 @@ def update_model_config(
     new_config: ModelConfig,
     config: ModelConfig = Depends(ModelConfig.get_config),
 ):
-    # If the new config has a different model provider 
+    # If the new config has a different model provider
     # or embedding model
     # or the model config has not been configured yet
     # We need to:
