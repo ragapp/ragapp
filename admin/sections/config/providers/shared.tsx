@@ -15,7 +15,8 @@ import {
 import { UseFormReturn } from "react-hook-form";
 
 const DEFAULT_TITLE = "Model";
-const DEFAULT_DESCRIPTION = "Select a model to chat with. If you are not sure, leave it as is.";
+const DEFAULT_DESCRIPTION =
+  "Select a model to chat with. If you are not sure, leave it as is.";
 const DEFAULT_MODEL_FIELD_NAME = "model";
 
 export const ModelForm = ({

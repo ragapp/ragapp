@@ -6,10 +6,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { UseFormReturn } from "react-hook-form";
 import { ModelForm } from "./shared";
-import { Input } from "@/components/ui/input";
 
 export const OpenAIForm = ({
   form,
@@ -73,7 +73,9 @@ export const OpenAIForm = ({
             <FormLabel>OpenAI API Base URL</FormLabel>
             <FormControl>
               <Input
-                placeholder={defaultValues.openai_api_base ?? "https://api.openai.com/v1"}
+                placeholder={
+                  defaultValues.openai_api_base ?? "https://api.openai.com/v1"
+                }
                 {...field}
               />
             </FormControl>
