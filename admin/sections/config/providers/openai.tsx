@@ -18,6 +18,7 @@ export const OpenAIForm = ({
   defaultValues: any;
 }) => {
   const supportingModels = ["gpt-3.5-turbo", "gpt-4", "gpt-4o"];
+  const embeddingModels = ["text-embedding-3-small", "text-embedding-3-large"];
 
   return (
     <>
@@ -44,11 +45,25 @@ export const OpenAIForm = ({
           </FormItem>
         )}
       />
-      <ModelForm
-        form={form}
-        defaultValues={defaultValues}
-        supportedModels={supportingModels}
-      />
+      <div className="flex space-x-4">
+        <div className="w-1/2">
+          <ModelForm
+            form={form}
+            defaultValues={defaultValues}
+            supportedModels={supportingModels}
+          />
+        </div>
+        <div className="w-1/2">
+          <ModelForm
+            form={form}
+            defaultValues={defaultValues}
+            supportedModels={embeddingModels}
+            title="Embedding Model"
+            description="Select a text embedding model to embed text."
+            model_field_name="embedding_model"
+          />
+        </div>
+      </div>
     </>
   );
 };
