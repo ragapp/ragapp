@@ -10,6 +10,11 @@ class OpenAIConfig(BaseModel):
         description="The OpenAI API key to use",
         env="OPENAI_API_KEY",
     )
+    openai_api_base: str | None = Field(
+        default=None,
+        description="The base URL for the OpenAI API",
+        env="OPENAI_API_BASE",
+    )
 
 
 class GeminiConfig(BaseModel):
