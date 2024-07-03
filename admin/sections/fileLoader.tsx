@@ -75,10 +75,10 @@ export const FileLoaderConfig = () => {
                   />
                 </FormControl>
                 <div>
-                  <FormLabel className="font-normal">Use Llama Parse</FormLabel>
+                  <FormLabel className="font-normal">Use LlamaParse</FormLabel>
                   <FormMessage />
                   <FormDescription>
-                    Use Llama Parse to efficiency parse the pdf file
+                    Use LlamaParse to efficiency parse the pdf file
                   </FormDescription>
                 </div>
               </FormItem>

@@ -1,8 +1,10 @@
 import { File, fetchFiles, removeFile, uploadFile } from "@/client/files";
+import { getLlamaCloudConfig, updateLlamaCloudConfig } from "@/client/llamacloud";
 import { Button } from "@/components/ui/button";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
@@ -11,14 +13,46 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { LoaderCircle } from "lucide-react";
+import { Edit, ExternalLink, LoaderCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useMutation, useQuery } from "react-query";
+import {
+  LlamaCloudConfigDialog,
+  LlamaCloudConfigForm,
+} from "./config/llamacloud";
 import { FileLoaderConfig } from "./fileLoader";
+import { useForm } from "react-hook-form";
 
 export const Knowledge = () => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [ files, setFiles ] = useState<File[]>([]);
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ isSubmitting, setIsSubmitting ] = useState(false);
+
+  const [ llamacloudDialogOpen, setLlamacloudDialogOpen ] = useState(false);
+  const { data, refetch } = useQuery("LlamaCloudConfig", getLlamaCloudConfig, {
+    refetchOnWindowFocus: false,
+  });
+  const { mutate: updateConfig } = useMutation(
+    updateLlamaCloudConfig,
+    {
+      onError: (error: unknown) => {
+        console.error(error);
+        toast({
+          title: "Failed to update chat config",
+          variant: "destructive",
+        });
+        form.reset();
+      },
+      onSuccess: () => {
+        setLlamacloudDialogOpen(false);
+        refetch();
+      },
+    },
+  );
+  const form = useForm({
+    values: data,
+  });
+  const useLlamaCloud = !!data?.use_llama_cloud;
 
   async function handleRemoveFiles(toRemoveFiles: File[], setSubmit?: boolean) {
     console.log("Removing files:", toRemoveFiles);
@@ -64,7 +98,7 @@ export const Knowledge = () => {
       status: "toUpload",
       blob: file,
     }));
-    setFiles((prevFiles) => [...prevFiles, ...toUploadFiles]);
+    setFiles((prevFiles) => [ ...prevFiles, ...toUploadFiles ]);
     return toUploadFiles;
   }
 
@@ -106,7 +140,7 @@ export const Knowledge = () => {
             return f;
           });
         });
-        await handleRemoveFiles([file], false);
+        await handleRemoveFiles([ file ], false);
       }
     }
   }
@@ -152,23 +186,88 @@ export const Knowledge = () => {
     }
 
     handleFetchFiles();
-  }, [toast]);
+  }, [ toast ]);
+
+  const onCheckedChange = (checked: boolean) => {
+    if (checked) {
+      setLlamacloudDialogOpen(true);
+    } else {
+      updateConfig({ use_llama_cloud: false });
+    }
+  }
 
   return (
     <ExpandableSection
       name="knowledge"
       title={"Knowledge"}
-      description="Upload your own data to chat with"
+      description="Manage your own data to chat with. You can consider using LlamaCloud for hosting your data."
       open
     >
-      <ListFiles
-        files={files}
-        handleRemoveFiles={handleRemoveFiles}
-        isSubmitting={isSubmitting}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Switch
+            checked={useLlamaCloud}
+            onCheckedChange={onCheckedChange}
+            id="use-llamacloud"
+          />
+          <Label htmlFor="use-llamacloud">Use LlamaCloud</Label>
+        </div>
+        {useLlamaCloud && (
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setLlamacloudDialogOpen(true)}
+          >
+            Edit Configuration
+            <Edit className="ml-2 h-4 w-4" />
+          </Button>
+        )}
+      </div>
+
+      {useLlamaCloud && (
+        <div className="space-y-4">
+          <LlamaCloudConfigForm form={form} viewOnly />
+          <div className="space-y-2 mt-2">
+            <div className="font-medium">
+              Success connected to LlamaCloud 🎉
+            </div>
+            <Button
+              asChild
+              className="bg-green-500 hover:bg-green-600"
+              size="sm"
+            >
+              <a href="#" target="_blank">
+                Configure Data Sources <ExternalLink className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      )}
+      {!useLlamaCloud && (
+        <div>
+          <div className="border-b mb-2 border-gray-300 pt-4 pb-4"></div>
+          <h4 className="text-lg font-semibold mb-4">Upload files to RagApp</h4>
+          <div className="space-y-4">
+            <UploadFile
+              processUpload={processUpload}
+              isSubmitting={isSubmitting}
+            />
+            <ListFiles
+              files={files}
+              handleRemoveFiles={handleRemoveFiles}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+          <div className="border-b mb-2 border-gray-300 pt-4 pb-4"></div>
+          <FileLoaderConfig />
+        </div>
+      )}
+      <LlamaCloudConfigDialog
+        open={llamacloudDialogOpen}
+        setOpen={setLlamacloudDialogOpen}
+        defaultConfig={data}
+        refetch={refetch}
       />
-      <UploadFile processUpload={processUpload} isSubmitting={isSubmitting} />
-      <div className="border-b mb-2 border-gray-300 pt-4 pb-4"></div>
-      <FileLoaderConfig />
     </ExpandableSection>
   );
 };
@@ -201,7 +300,7 @@ const ListFiles = ({
                   </div>
                   <button
                     className="text-gray-500 text-sm w-2"
-                    onClick={() => handleRemoveFiles([file])}
+                    onClick={() => handleRemoveFiles([ file ])}
                     disabled={isSubmitting}
                   >
                     {file.status === "uploaded" || file.status === "failed" ? (
@@ -233,7 +332,7 @@ const UploadFile = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="grid mt-10 w-full max-w-sm items-center gap-1.5">
+    <div className="grid w-full max-w-sm items-center gap-1.5">
       <Input
         ref={inputRef}
         id="upload-knowledge-files"
@@ -245,20 +344,19 @@ const UploadFile = ({
           e.target.value = ""; // Clear the input value
         }}
       />
-      {!isSubmitting && (
-        <Label htmlFor="upload-knowledge-files">
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              if (!isSubmitting) {
-                inputRef.current?.click();
-              }
-            }}
-          >
-            Upload Files
-          </Button>
-        </Label>
-      )}
+      <Label htmlFor="upload-knowledge-files">
+        <Button
+          disabled={isSubmitting}
+          onClick={(e) => {
+            e.preventDefault();
+            if (!isSubmitting) {
+              inputRef.current?.click();
+            }
+          }}
+        >
+          Upload Files
+        </Button>
+      </Label>
     </div>
   );
 };
