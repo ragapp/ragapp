@@ -1,5 +1,13 @@
 # ragbox
 
+## 0.0.12
+
+### Patch Changes
+
+- d901b4e: Add embedding model and base api config for OpenAI provider
+- debfe4e: Add loading state to forms
+- 0342480: Add custom tool prompt to system prompt
+
 ## 0.0.11
 
 ### Patch Changes
