@@ -2,9 +2,9 @@ import { getBaseURL } from "./utils";
 
 export type LlamaCloudConfig = {
   use_llama_cloud: boolean;
-  llamacloud_index_name: string;
-  llamacloud_project_name: string;
-  llamacloud_api_key: string;
+  llama_cloud_index_name: string;
+  llama_cloud_project_name: string;
+  llama_cloud_api_key: string;
   llamacloud_dashboard_url: string;
 };
 

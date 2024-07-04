@@ -76,7 +76,7 @@ export function LlamaCloudConfigForm({
           <FormField
             disabled={viewOnly}
             control={form.control}
-            name="llamacloud_index_name"
+            name="llama_cloud_index_name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Index Name (*)</FormLabel>
@@ -93,7 +93,7 @@ export function LlamaCloudConfigForm({
           <FormField
             disabled={viewOnly}
             control={form.control}
-            name="llamacloud_project_name"
+            name="llama_cloud_project_name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Project Name (*)</FormLabel>
@@ -110,7 +110,7 @@ export function LlamaCloudConfigForm({
           <FormField
             disabled={viewOnly}
             control={form.control}
-            name="llamacloud_api_key"
+            name="llama_cloud_api_key"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>API Key (*)</FormLabel>
