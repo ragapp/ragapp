@@ -21,7 +21,7 @@ const SUPPORTED_MODELS = [
   "Llama-3-70B-Instruct",
   "Mixtral-8x7B-Instruct-v0.1",
   "mistral-large-32k-france",
-  "CodeLlama-2"
+  "CodeLlama-2",
 ];
 
 const EMBEDDING_MODELS = [
@@ -29,7 +29,7 @@ const EMBEDDING_MODELS = [
   "text-embedding-ada-002-france",
   "jina-embeddings-v2-base-de",
   "jina-embeddings-v2-base-code",
-  "text-embedding-bge-m3"
+  "text-embedding-bge-m3",
 ];
 
 export const TSystemsForm = ({
@@ -39,7 +39,6 @@ export const TSystemsForm = ({
   form: UseFormReturn;
   defaultValues: any;
 }) => {
-
   return (
     <>
       <FormField
@@ -55,9 +54,7 @@ export const TSystemsForm = ({
                 {...field}
               />
             </FormControl>
-            <FormDescription>
-              Enter your API key for the LLMHub
-            </FormDescription>
+            <FormDescription>Enter your API key for the LLMHub</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -90,7 +87,8 @@ export const TSystemsForm = ({
             <FormControl>
               <Input
                 placeholder={
-                  defaultValues.t_systems_llmhub_api_base ?? "https://llm-server.llmhub.t-systems.net/v2"
+                  defaultValues.t_systems_llmhub_api_base ??
+                  "https://llm-server.llmhub.t-systems.net/v2"
                 }
                 {...field}
               />
