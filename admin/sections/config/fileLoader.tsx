@@ -245,7 +245,7 @@ const FileLoaderConfig = () => {
                   <FormLabel className="font-normal">Use LlamaParse</FormLabel>
                   <FormMessage />
                   <FormDescription>
-                    Use LlamaParse to efficiency parse the pdf file
+                    Use LlamaParse to efficiently parse PDF files
                   </FormDescription>
                 </div>
               </FormItem>
@@ -257,12 +257,12 @@ const FileLoaderConfig = () => {
               name="llama_cloud_api_key"
               render={({ field }) => (
                 <FormItem className="ml-6">
-                  <FormLabel>Llama Cloud API Key</FormLabel>
+                  <FormLabel>LlamaCloud API Key</FormLabel>
                   <FormControl>
                     <PasswordInput {...field} />
                   </FormControl>
                   <FormDescription>
-                    Enter the API key for Llama Cloud to use Llama Parse
+                    Enter the API key for LlamaCloud to use LlamaParse
                   </FormDescription>
                 </FormItem>
               )}
