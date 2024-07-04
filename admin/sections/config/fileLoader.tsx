@@ -32,6 +32,8 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 
+const SUPPORTED_FILE_EXTENSIONS = ["txt", "pdf", "csv"];
+
 export const KnowledgeFileSection = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -346,19 +348,24 @@ const UploadFile = ({
           e.target.value = ""; // Clear the input value
         }}
       />
-      <Label htmlFor="upload-knowledge-files">
-        <Button
-          disabled={isSubmitting}
-          onClick={(e) => {
-            e.preventDefault();
-            if (!isSubmitting) {
-              inputRef.current?.click();
-            }
-          }}
-        >
-          Upload Files
-        </Button>
-      </Label>
+      <div className="flex items-center space-x-2">
+        <Label htmlFor="upload-knowledge-files">
+          <Button
+            disabled={isSubmitting}
+            onClick={(e) => {
+              e.preventDefault();
+              if (!isSubmitting) {
+                inputRef.current?.click();
+              }
+            }}
+          >
+            Upload Files
+          </Button>
+        </Label>
+        <span className="font-medium text-sm">
+          Supported file types: {SUPPORTED_FILE_EXTENSIONS.join(", ")}
+        </span>
+      </div>
     </div>
   );
 };
