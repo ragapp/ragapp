@@ -66,10 +66,28 @@ class AzureOpenAIConfig(BaseModel):
     )
 
 
+class TSystemsConfig(BaseModel):
+    t_systems_llmhub_api_key: str | None = Field(
+        default=None,
+        description="The T-Systems LLMHub API key to use",
+        env="T_SYSTEMS_LLMHUB_API_KEY",
+    )
+    t_systems_llmhub_api_base: str | None = Field(
+        default="https://llm-server.llmhub.t-systems.net/v2",
+        description="The base URL for the T-Systems LLMHub API",
+        env="T_SYSTEMS_LLMHUB_BASE_URL",
+    )
+
+
 # We're using inheritance to flatten all the fields into a single class
 # Todo: Refactor API to nested structure
 class ModelConfig(
-    BaseEnvConfig, OpenAIConfig, GeminiConfig, OllamaConfig, AzureOpenAIConfig
+    BaseEnvConfig,
+    OpenAIConfig,
+    GeminiConfig,
+    OllamaConfig,
+    AzureOpenAIConfig,
+    TSystemsConfig,
 ):
     model_provider: str | None = Field(
         default=None,
@@ -109,6 +127,8 @@ class ModelConfig(
             return True
         elif self.model_provider == "azure-openai":
             return True
+        elif self.model_provider == "t-systems":
+            return self.t_systems_llmhub_api_key is not None
         return False
 
     @classmethod
