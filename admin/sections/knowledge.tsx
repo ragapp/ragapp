@@ -1,4 +1,5 @@
 import {
+  LlamaCloudConfigFormType,
   getLlamaCloudConfig,
   updateLlamaCloudConfig,
 } from "@/client/llamacloud";
@@ -47,7 +48,7 @@ export const Knowledge = () => {
       },
     },
   );
-  const form = useForm({ values: llamacloudConfig });
+  const form = useForm<LlamaCloudConfigFormType>({ values: llamacloudConfig });
   const useLlamaCloud = !!llamacloudConfig?.use_llama_cloud;
 
   const onSwitchKnowledge = (checked: boolean) => {
@@ -95,7 +96,7 @@ export const Knowledge = () => {
             className="bg-green-500 hover:bg-green-600 mt-2"
             size="sm"
           >
-            <a href="#" target="_blank">
+            <a href="https://cloud.llamaindex.ai" target="_blank">
               Configure Data Sources <ExternalLink className="ml-2 h-4 w-4" />
             </a>
           </Button>
