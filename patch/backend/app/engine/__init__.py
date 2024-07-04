@@ -5,7 +5,11 @@ from app.engine.tools import ToolFactory
 from app.engine.index import get_index
 
 
-def get_chat_engine():
+def get_chat_engine(use_agent: bool = False):
+    """
+    Args:
+        use_agent: Whether to use the agent if tools are not provided
+    """
     top_k = int(os.getenv("TOP_K", "3"))
     system_prompt = os.getenv("SYSTEM_PROMPT")
 
@@ -16,7 +20,7 @@ def get_chat_engine():
     tools = ToolFactory.from_env()
 
     # Use the context chat engine if no tools are provided
-    if len(tools) == 0:
+    if len(tools) == 0 and not use_agent:
         from llama_index.core.chat_engine import CondensePlusContextChatEngine
 
         return CondensePlusContextChatEngine.from_defaults(
