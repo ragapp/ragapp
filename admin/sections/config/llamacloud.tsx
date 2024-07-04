@@ -1,4 +1,4 @@
-import { LlamaCloudConfig, updateLlamaCloudConfig } from "@/client/llamacloud";
+import { LlamaCloudConfig } from "@/client/llamacloud";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,51 +19,26 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { toast } from "@/components/ui/use-toast";
 import { UseFormReturn, useForm } from "react-hook-form";
-import { useMutation } from "react-query";
 
 export function LlamaCloudConfigDialog({
   open,
   setOpen,
   defaultConfig,
-  refetch,
+  updateConfig,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
   defaultConfig?: LlamaCloudConfig;
-  refetch: () => void;
+  updateConfig: (data: Partial<LlamaCloudConfig>) => void;
 }) {
-
-  const form = useForm({
-    values: defaultConfig,
-  });
-
-  const { mutate: updateConfig } = useMutation(
-    updateLlamaCloudConfig,
-    {
-      onError: (error: unknown) => {
-        console.error(error);
-        toast({
-          title: "Failed to update chat config",
-          variant: "destructive",
-        });
-        form.reset();
-      },
-      onSuccess: () => {
-        setOpen(false);
-        refetch();
-      },
-    },
-  );
-
-  const handleSubmit = () => {
+  const form = useForm({ values: defaultConfig });
+  const connectLlamaCloud = () => {
     updateConfig({
       ...form.getValues(),
       use_llama_cloud: true,
     });
-  }
-
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
@@ -80,7 +55,7 @@ export function LlamaCloudConfigDialog({
           <Button variant="secondary" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>Connect LLamaCloud</Button>
+          <Button onClick={connectLlamaCloud}>Connect LLamaCloud</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -89,32 +64,22 @@ export function LlamaCloudConfigDialog({
 
 export function LlamaCloudConfigForm({
   viewOnly,
-  // defaultConfig,
   form,
 }: {
   viewOnly?: boolean;
-  // defaultConfig?: LlamaCloudConfig;
   form: UseFormReturn<LlamaCloudConfig, any, undefined>;
 }) {
-  const isLoading = false;
-  const isSuccess = true;
-
-  // console.log({defaultConfig})
-
   return (
     <div className="mt-4">
       <Form {...form}>
-        <form
-          // onSubmit={handleSubmit}
-          className="space-y-4 mb-2"
-        >
+        <form className="space-y-4 mb-2">
           <FormField
-            disabled={isLoading || viewOnly}
+            disabled={viewOnly}
             control={form.control}
             name="llamacloud_index_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>LlamaCloud Index Name (*)</FormLabel>
+                <FormLabel>Index Name (*)</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -126,12 +91,12 @@ export function LlamaCloudConfigForm({
             )}
           />
           <FormField
-            disabled={isLoading || viewOnly}
+            disabled={viewOnly}
             control={form.control}
             name="llamacloud_project_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>LlamaCloud Project Name (*)</FormLabel>
+                <FormLabel>Project Name (*)</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -143,12 +108,12 @@ export function LlamaCloudConfigForm({
             )}
           />
           <FormField
-            disabled={isLoading || viewOnly}
+            disabled={viewOnly}
             control={form.control}
             name="llamacloud_api_key"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Llamacloud API Key (*)</FormLabel>
+                <FormLabel>API Key (*)</FormLabel>
                 <FormControl>
                   <PasswordInput placeholder={"llx-xxx"} showCopy {...field} />
                 </FormControl>
