@@ -247,7 +247,7 @@ const FileLoaderConfig = () => {
                   <FormLabel className="font-normal">Use LlamaParse</FormLabel>
                   <FormMessage />
                   <FormDescription>
-                    Use LlamaParse to efficiently parse PDF files
+                    Use LLamaParse to efficiently parse files
                   </FormDescription>
                 </div>
               </FormItem>
