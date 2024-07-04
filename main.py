@@ -1,23 +1,23 @@
+from fastapi.middleware.cors import CORSMiddleware
+from src.models.model_config import ModelConfig
+from src.routers.management.loader import loader_router
+from src.routers.management.tools import tools_router
+from src.routers.management.llamacloud import llamacloud_router
+from src.routers.management.files import files_router
+from src.routers.management.config import config_router
+from create_llama.backend.app.api.routers.chat import chat_router
+from create_llama.backend.app.settings import init_settings
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse, FileResponse
+from fastapi import FastAPI
+import uvicorn
+import logging
+import os
 from dotenv import load_dotenv
 from src.constants import ENV_FILE_PATH
 
 load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False)
 
-import os
-import logging
-import uvicorn
-from fastapi import FastAPI
-from fastapi.responses import RedirectResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
-from create_llama.backend.app.settings import init_settings
-from create_llama.backend.app.api.routers.chat import chat_router
-from src.routers.management.config import config_router
-from src.routers.management.files import files_router
-from src.routers.management.llamacloud import llamacloud_router
-from src.routers.management.tools import tools_router
-from src.routers.management.loader import loader_router
-from src.models.model_config import ModelConfig
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 init_settings()
@@ -35,10 +35,14 @@ if environment == "dev":
 # Add chat router from create_llama/backend
 app.include_router(chat_router, prefix="/api/chat", tags=["Chat"])
 app.include_router(config_router, prefix="/api/management/config")
-app.include_router(tools_router, prefix="/api/management/tools", tags=["Agent"])
-app.include_router(files_router, prefix="/api/management/files", tags=["Knowledge"])
-app.include_router(llamacloud_router, prefix="/api/management/llamacloud", tags=["Llamacloud"])
-app.include_router(loader_router, prefix="/api/management/loader", tags=["Knowledge"])
+app.include_router(
+    tools_router, prefix="/api/management/tools", tags=["Agent"])
+app.include_router(
+    files_router, prefix="/api/management/files", tags=["Knowledge"])
+app.include_router(llamacloud_router,
+                   prefix="/api/management/llamacloud", tags=["Llamacloud"])
+app.include_router(
+    loader_router, prefix="/api/management/loader", tags=["Knowledge"])
 
 
 @app.get("/")
