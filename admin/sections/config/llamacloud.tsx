@@ -1,4 +1,8 @@
-import { LlamaCloudConfig } from "@/client/llamacloud";
+import {
+  LlamaCloudConfig,
+  LlamaCloudConfigFormType,
+  LlamaCloudConfigSchema,
+} from "@/client/llamacloud";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { UseFormReturn, useForm } from "react-hook-form";
 
 export function LlamaCloudConfigDialog({
@@ -32,15 +37,27 @@ export function LlamaCloudConfigDialog({
   defaultConfig?: LlamaCloudConfig;
   updateConfig: (data: Partial<LlamaCloudConfig>) => void;
 }) {
-  const form = useForm({ values: defaultConfig });
+  const form = useForm<LlamaCloudConfigFormType>({
+    resolver: zodResolver(LlamaCloudConfigSchema),
+    values: defaultConfig,
+  });
   const connectLlamaCloud = () => {
     updateConfig({
       ...form.getValues(),
       use_llama_cloud: true,
     });
   };
+  const isDisabled = !form.formState.isValid;
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) {
+          form.reset();
+        }
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-green-500">
@@ -55,7 +72,9 @@ export function LlamaCloudConfigDialog({
           <Button variant="secondary" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={connectLlamaCloud}>Connect LLamaCloud</Button>
+          <Button disabled={isDisabled} onClick={connectLlamaCloud}>
+            Connect LLamaCloud
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -67,7 +86,11 @@ export function LlamaCloudConfigForm({
   form,
 }: {
   viewOnly?: boolean;
-  form: UseFormReturn<LlamaCloudConfig, any, undefined>;
+  form: UseFormReturn<
+    Omit<LlamaCloudConfig, "use_llama_cloud">,
+    any,
+    undefined
+  >;
 }) {
   return (
     <div className="mt-4">
