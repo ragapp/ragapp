@@ -14,7 +14,7 @@ class FileLoader(BaseModel):
     )
     llama_cloud_api_key: str | None = Field(
         default=None,
-        description="API key for Llama Parse.",
+        description="API key for LlamaParse.",
     )
 
     def __init__(self, **data):
