@@ -21,7 +21,6 @@ def update_llamacloud_config(
     new_config: LlamaCloudConfig,
     config: LlamaCloudConfig = Depends(LlamaCloudConfig.get_config),
 ):
-    print(new_config)
     EnvConfigManager.update(config, new_config, rollback_on_failure=True)
     return JSONResponse(
         {

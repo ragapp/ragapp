@@ -43,7 +43,7 @@ export const Knowledge = () => {
         setLlamacloudDialogOpen(false);
         refetch();
         toast({
-          title: `Successfully ${body.use_llama_cloud ? "connect" : "disconnect"} LlamaCloud`,
+          title: `Successfully ${body.use_llama_cloud ? "connected" : "disconnected"} LlamaCloud`,
         });
       },
     },
