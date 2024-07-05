@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.14
+
+### Patch Changes
+
+- 6c7f7aa: Add support for LlamaCloud
+
 ## 0.0.13
 
 ### Patch Changes
