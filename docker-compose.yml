@@ -42,7 +42,7 @@ services:
     build: .
     image: ragapp/ragapp:latest
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       - ./config:/app/config
       - ./data:/app/data
