@@ -16,7 +16,6 @@ pydantic-settings = "^2.2.1"
 python-multipart = "^0.0.9"
 aiostream = "^0.5.2"
 llama-index-vector-stores-chroma = "^0.1.8"
-# llama-index-vector-stores-chroma installs chromadb 0.5.0 which is incompatible with the latest version of numpy 2.0.0
 chromadb = "0.5.1"
 llama-index-embeddings-gemini = "^0.1.6"
 llama-index-llms-gemini = "^0.1.10"
