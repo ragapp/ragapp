@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.15
+
+### Patch Changes
+
+- b7b1f7f: Bump llama-index version to 0.10.53
+
 ## 0.0.14
 
 ### Patch Changes
