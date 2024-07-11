@@ -13,7 +13,7 @@ class E2BInterpreterTool(BaseModel):
     config_id: ClassVar[str] = "interpreter"
     name: Literal["interpreter"] = "interpreter"
     tool_type: Literal["local"] = "local"
-    label: Literal["E2B Interpreter"] = "E2B Interpreter"
+    label: Literal["Code Interpreter"] = "Code Interpreter"
     custom_prompt: ClassVar[
         str
     ] = """- You are a Python interpreter that can run any python code in a secure environment.

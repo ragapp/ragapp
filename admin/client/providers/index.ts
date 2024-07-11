@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getBaseURL } from "../utils";
 import { AzureOpenAIConfigSchema, DEFAULT_AZURE_OPENAI_CONFIG } from "./azure";
 import { DEFAULT_GEMINI_CONFIG, GeminiConfigSchema } from "./gemini";
+import { DEFAULT_MISTRAL_CONFIG, MistralConfigSchema } from "./mistral";
 import { DEFAULT_OLLAMA_CONFIG, OllamaConfigSchema } from "./ollama";
 import { DEFAULT_OPENAI_CONFIG, OpenAIConfigSchema } from "./openai";
 import { DEFAULT_TSYSTEMS_CONFIG, TSystemsConfigSchema } from "./t-systems";
@@ -13,6 +14,7 @@ export const ModelConfigSchema = z
     OllamaConfigSchema,
     AzureOpenAIConfigSchema,
     TSystemsConfigSchema,
+    MistralConfigSchema,
   ])
   .refine((data) => {
     switch (data.model_provider) {
@@ -26,6 +28,8 @@ export const ModelConfigSchema = z
         return AzureOpenAIConfigSchema.parse(data);
       case "t-systems":
         return TSystemsConfigSchema.parse(data);
+      case "mistral":
+        return MistralConfigSchema.parse(data);
       default:
         return true;
     }
@@ -54,6 +58,10 @@ export const supportedProviders = [
     name: "T-Systems LLMHub",
     value: "t-systems",
   },
+  {
+    name: "Mistral AI",
+    value: "mistral",
+  },
 ];
 
 export const getDefaultProviderConfig = (provider: string) => {
@@ -68,6 +76,8 @@ export const getDefaultProviderConfig = (provider: string) => {
       return DEFAULT_AZURE_OPENAI_CONFIG;
     case "t-systems":
       return DEFAULT_TSYSTEMS_CONFIG;
+    case "mistral":
+      return DEFAULT_MISTRAL_CONFIG;
     default:
       throw new Error(`Provider ${provider} not supported`);
   }

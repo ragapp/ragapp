@@ -5,6 +5,8 @@ storage/
 
 **/.env
 
+**/.mypy_cache/
+
 data/
 node_modules/
 create_llama/
