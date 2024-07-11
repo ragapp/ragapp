@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.16
+
+### Patch Changes
+
+- ade3163: Add Mistral AI provider
+
 ## 0.0.15
 
 ### Patch Changes
