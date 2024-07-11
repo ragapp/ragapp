@@ -79,6 +79,14 @@ class TSystemsConfig(BaseModel):
     )
 
 
+class MistralConfig(BaseModel):
+    mistral_api_key: str | None = Field(
+        default=None,
+        description="The Mistral API key to use",
+        env="MISTRAL_API_KEY",
+    )
+
+
 # We're using inheritance to flatten all the fields into a single class
 # Todo: Refactor API to nested structure
 class ModelConfig(
@@ -88,6 +96,7 @@ class ModelConfig(
     OllamaConfig,
     AzureOpenAIConfig,
     TSystemsConfig,
+    MistralConfig,
 ):
     model_provider: str | None = Field(
         default=None,
@@ -109,7 +118,7 @@ class ModelConfig(
         extra = "ignore"
         protected_namespaces = ("settings_",)
 
-    def model_post_init(self, __context: dict[str, any]) -> None:
+    def model_post_init(self, __context: dict[str, Any]) -> None:
         # llama_index will be conflicted if the AZURE_OPENAI_API_KEY and OPENAI_API_KEY are used together.
         # so we must clean OPENAI_API_KEY if the model_provider is azure-openai
         # Todo: Refactor API to nested structure, clean the unused fields in the respective classes
@@ -117,20 +126,23 @@ class ModelConfig(
             self.openai_api_key = None
 
     @computed_field
-    @property
     def configured(self) -> bool:
-        if self.model_provider == "openai":
-            return self.openai_api_key is not None
-        elif self.model_provider == "gemini":
-            return self.google_api_key is not None
-        elif self.model_provider == "ollama":
-            return True
-        elif self.model_provider == "azure-openai":
-            return True
-        elif self.model_provider == "t-systems":
-            return self.t_systems_llmhub_api_key is not None
-        return False
+        match self.model_provider:
+            case "openai":
+                return self.openai_api_key is not None
+            case "gemini":
+                return self.google_api_key is not None
+            case "ollama":
+                return True
+            case "azure-openai":
+                return True
+            case "t-systems":
+                return self.t_systems_llmhub_api_key is not None
+            case "mistral":
+                return self.mistral_api_key is not None
+            case _:
+                return False
 
     @classmethod
-    def get_config(cls) -> Self:
+    def get_config(cls) -> "ModelConfig":
         return ModelConfig()
