@@ -35,11 +35,8 @@ export const MistralForm = ({
               />
             </FormControl>
             <FormDescription>
-              You can get your API key from {" "}
-              <a
-                href="https://console.mistral.ai/api-keys/"
-                target="_blank"
-              >
+              You can get your API key from{" "}
+              <a href="https://console.mistral.ai/api-keys/" target="_blank">
                 https://console.mistral.ai/api-keys/
               </a>
             </FormDescription>

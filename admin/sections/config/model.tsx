@@ -28,10 +28,10 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 import { AzureOpenAIForm } from "./providers/azureOpenai";
 import { GeminiForm } from "./providers/gemini";
+import { MistralForm } from "./providers/mistral";
 import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
 import { TSystemsForm } from "./providers/t-systems";
-import { MistralForm } from "./providers/mistral";
 
 export const ModelConfig = ({
   sectionTitle,
@@ -128,7 +128,7 @@ export const ModelConfig = ({
   };
 
   return (
-    (configured !== undefined && (
+    configured !== undefined && (
       <ExpandableSection
         open={configured ? undefined : true}
         isLoading={isLoading}
@@ -155,7 +155,10 @@ export const ModelConfig = ({
                       </SelectTrigger>
                       <SelectContent>
                         {supportedProviders.map((provider) => (
-                          <SelectItem key={provider.value} value={provider.value}>
+                          <SelectItem
+                            key={provider.value}
+                            value={provider.value}
+                          >
                             {provider.name}
                           </SelectItem>
                         ))}
@@ -177,6 +180,6 @@ export const ModelConfig = ({
           </form>
         </Form>
       </ExpandableSection>
-    ))
+    )
   );
 };
