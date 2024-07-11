@@ -36,10 +36,12 @@ import { MistralForm } from "./providers/mistral";
 export const ModelConfig = ({
   sectionTitle,
   sectionDescription,
+  configured,
   onConfigChange,
 }: {
   sectionTitle: string;
   sectionDescription: string;
+  configured?: boolean;
   onConfigChange: () => void;
 }) => {
   const {
@@ -126,52 +128,55 @@ export const ModelConfig = ({
   };
 
   return (
-    <ExpandableSection
-      isLoading={isLoading}
-      name="update-model"
-      title={sectionTitle}
-      description={sectionDescription}
-    >
-      <Form {...form}>
-        <form onSubmit={handleSubmit} className="space-y-4 mb-4">
-          <FormField
-            control={form.control}
-            name="model_provider"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Model Provider</FormLabel>
-                <FormControl>
-                  <Select
-                    defaultValue={form.getValues().model_provider ?? "openai"}
-                    onValueChange={changeModelProvider}
-                    {...field}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="OpenAI" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {supportedProviders.map((provider) => (
-                        <SelectItem key={provider.value} value={provider.value}>
-                          {provider.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormDescription>
-                  Select a model provider to chat with. If you are not sure,
-                  leave it as default.
-                </FormDescription>
-              </FormItem>
-            )}
-          />
+    (configured !== undefined && (
+      <ExpandableSection
+        open={configured ? undefined : true}
+        isLoading={isLoading}
+        name="update-model"
+        title={sectionTitle}
+        description={sectionDescription}
+      >
+        <Form {...form}>
+          <form onSubmit={handleSubmit} className="space-y-4 mb-4">
+            <FormField
+              control={form.control}
+              name="model_provider"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Model Provider</FormLabel>
+                  <FormControl>
+                    <Select
+                      defaultValue={form.getValues().model_provider ?? "openai"}
+                      onValueChange={changeModelProvider}
+                      {...field}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="OpenAI" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {supportedProviders.map((provider) => (
+                          <SelectItem key={provider.value} value={provider.value}>
+                            {provider.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription>
+                    Select a model provider to chat with. If you are not sure,
+                    leave it as default.
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
 
-          {getModelForm(form, form.getValues())}
-          <div className="mt-4">
-            <SubmitButton isSubmitting={isSubmitting} />
-          </div>
-        </form>
-      </Form>
-    </ExpandableSection>
+            {getModelForm(form, form.getValues())}
+            <div className="mt-4">
+              <SubmitButton isSubmitting={isSubmitting} />
+            </div>
+          </form>
+        </Form>
+      </ExpandableSection>
+    ))
   );
 };

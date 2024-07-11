@@ -5,7 +5,7 @@ const ExpandableSection = ({
   name,
   title,
   description,
-  open = true,
+  open,
   children,
   isLoading,
 }: {
@@ -25,7 +25,7 @@ const ExpandableSection = ({
     );
     const savedState = expandable ? expandable[name] : undefined;
 
-    if (savedState !== undefined) {
+    if (savedState !== undefined && open === undefined) {
       setIsOpen(savedState === "open");
     } else {
       setIsOpen(open ?? false);

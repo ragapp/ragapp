@@ -74,6 +74,7 @@ export default function Home() {
                     ? "Change to a different model or use another provider"
                     : "Set up an AI model to start the app."
                 }
+                configured={configured}
                 onConfigChange={handleModelConfigChange}
               />
               {configured && (
