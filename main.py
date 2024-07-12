@@ -3,21 +3,25 @@ from src.constants import ENV_FILE_PATH
 
 load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False)
 
-import os
+# flake8: noqa
 import logging
+import os
+
 import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from create_llama.backend.app.settings import init_settings
+
 from create_llama.backend.app.api.routers.chat import chat_router
+from create_llama.backend.app.settings import init_settings
+from src.models.model_config import ModelConfig
 from src.routers.management.config import config_router
 from src.routers.management.files import files_router
 from src.routers.management.llamacloud import llamacloud_router
-from src.routers.management.tools import tools_router
 from src.routers.management.loader import loader_router
-from src.models.model_config import ModelConfig
-from fastapi.middleware.cors import CORSMiddleware
+from src.routers.management.reranker import reranker_router
+from src.routers.management.tools import tools_router
 
 app = FastAPI()
 init_settings()
@@ -41,6 +45,9 @@ app.include_router(
     llamacloud_router, prefix="/api/management/llamacloud", tags=["Llamacloud"]
 )
 app.include_router(loader_router, prefix="/api/management/loader", tags=["Knowledge"])
+app.include_router(
+    reranker_router, prefix="/api/management/reranker", tags=["Reranker"]
+)
 
 
 @app.get("/")

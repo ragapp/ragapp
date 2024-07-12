@@ -1,6 +1,7 @@
-import os
 from typing import Self
+
 from pydantic import Field
+
 from src.models.base_env import BaseEnvConfig
 
 
@@ -28,4 +29,4 @@ class LlamaCloudConfig(BaseEnvConfig):
 
     @classmethod
     def get_config(cls) -> Self:
-        return LlamaCloudConfig()
+        return cls()

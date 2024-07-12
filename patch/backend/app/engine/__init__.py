@@ -1,13 +1,24 @@
 import os
-from llama_index.core.settings import Settings
-from llama_index.core.agent import AgentRunner
-from app.engine.tools import ToolFactory
+
 from app.engine.index import get_index
+from app.engine.reranker import get_reranker
+from app.engine.tools import ToolFactory
+from llama_index.core.settings import Settings
+
+# Top k for retrieval
+DEFAULT_TOP_K = 3
+# Max top k for retrieval if reranker is enabled
+DEFAULT_MAX_TOP_K = 20
 
 
 def get_chat_engine():
-    top_k = int(os.getenv("TOP_K", "3"))
     system_prompt = os.getenv("SYSTEM_PROMPT")
+    node_postprocessors = []
+
+    top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
+    if os.getenv("RERANK_PROVIDER") is not None:
+        top_k = max(top_k, DEFAULT_MAX_TOP_K)
+        node_postprocessors.append(get_reranker())
 
     index = get_index()
     if index is None:
@@ -20,7 +31,8 @@ def get_chat_engine():
         from llama_index.core.chat_engine import CondensePlusContextChatEngine
 
         return CondensePlusContextChatEngine.from_defaults(
-            retriever=index.as_retriever(top_k=top_k),
+            retriever=index.as_retriever(similarity_top_k=top_k),
+            node_postprocessors=node_postprocessors,
             system_prompt=system_prompt,
             llm=Settings.llm,
         )
@@ -30,12 +42,15 @@ def get_chat_engine():
 
         # Add the query engine tool to the list of tools
         query_engine_tool = QueryEngineTool.from_defaults(
-            query_engine=index.as_query_engine(similarity_top_k=top_k)
+            query_engine=index.as_query_engine(
+                similarity_top_k=top_k,
+                node_postprocessors=node_postprocessors,
+            )
         )
-        tools.append(query_engine_tool)
+        tools.append(query_engine_tool)  # type: ignore
         return AgentRunner.from_llm(
             llm=Settings.llm,
-            tools=tools,
+            tools=tools,  # type: ignore
             system_prompt=system_prompt,
             verbose=True,  # Show agent logs to console
         )
