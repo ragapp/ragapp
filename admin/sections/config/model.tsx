@@ -32,6 +32,7 @@ import { MistralForm } from "./providers/mistral";
 import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
 import { TSystemsForm } from "./providers/t-systems";
+import { GroqForm } from "./providers/groq";
 
 export const ModelConfig = ({
   sectionTitle,
@@ -111,6 +112,8 @@ export const ModelConfig = ({
         return <TSystemsForm form={form} defaultValues={defaultValues} />;
       case "mistral":
         return <MistralForm form={form} defaultValues={defaultValues} />;
+      case "groq":
+        return <GroqForm form={form} defaultValues={defaultValues} />;
       default:
         return null;
     }
