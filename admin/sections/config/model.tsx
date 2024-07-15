@@ -28,11 +28,11 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 import { AzureOpenAIForm } from "./providers/azureOpenai";
 import { GeminiForm } from "./providers/gemini";
+import { GroqForm } from "./providers/groq";
 import { MistralForm } from "./providers/mistral";
 import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
 import { TSystemsForm } from "./providers/t-systems";
-import { GroqForm } from "./providers/groq";
 
 export const ModelConfig = ({
   sectionTitle,
