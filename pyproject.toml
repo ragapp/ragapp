@@ -36,6 +36,8 @@ llama-index-llms-openai-like = "^0.1.3"
 llama-index-indices-managed-llama-cloud = "^0.2.1"
 llama-index-embeddings-mistralai = "^0.1.4"
 llama-index-llms-mistralai = "^0.1.17"
+llama-index-llms-groq = "^0.1.4"
+llama-index-embeddings-fastembed = "^0.1.6"
 
 
 [tool.poetry.group.dev.dependencies]
