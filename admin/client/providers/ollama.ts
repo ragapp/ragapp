@@ -5,9 +5,22 @@ export const OllamaConfigSchema = BaseConfigSchema.extend({
   model_provider: z.literal("ollama"),
   ollama_base_url: z
     .string()
+    .trim()
     .default("http://host.docker.internal:11434")
-    .nullable()
-    .optional(),
+    .refine(
+      (value) => {
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      { message: "Invalid URL" },
+    )
+    .refine((value) => !value.endsWith("/"), {
+      message: "URL should not end with a trailing slash",
+    }),
   ollama_request_timeout: z.coerce
     .number()
     .default(120.0)
