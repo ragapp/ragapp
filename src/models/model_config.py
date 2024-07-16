@@ -1,6 +1,7 @@
-from typing import Any, Self
-from pydantic import Field, BaseModel, computed_field
-from pydantic_settings import BaseSettings
+from typing import Any
+
+from pydantic import BaseModel, Field, computed_field
+
 from src.models.base_env import BaseEnvConfig
 
 
@@ -87,6 +88,14 @@ class MistralConfig(BaseModel):
     )
 
 
+class GroqConfig(BaseModel):
+    groq_api_key: str | None = Field(
+        default=None,
+        description="The Groq API key to use",
+        env="GROQ_API_KEY",
+    )
+
+
 # We're using inheritance to flatten all the fields into a single class
 # Todo: Refactor API to nested structure
 class ModelConfig(
@@ -97,6 +106,7 @@ class ModelConfig(
     AzureOpenAIConfig,
     TSystemsConfig,
     MistralConfig,
+    GroqConfig,
 ):
     model_provider: str | None = Field(
         default=None,
@@ -140,6 +150,8 @@ class ModelConfig(
                 return self.t_systems_llmhub_api_key is not None
             case "mistral":
                 return self.mistral_api_key is not None
+            case "groq":
+                return self.groq_api_key is not None
             case _:
                 return False
 
