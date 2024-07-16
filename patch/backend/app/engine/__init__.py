@@ -3,7 +3,6 @@ import os
 from app.engine.constants import DEFAULT_RERANK_TOP_K, DEFAULT_TOP_K
 from app.engine.index import get_index
 from app.engine.reranker import get_reranker
-from app.engine.index import get_index
 from app.engine.tools import ToolFactory
 from llama_index.core.settings import Settings
 
@@ -29,7 +28,10 @@ def get_chat_engine(filters=None):
         from llama_index.core.chat_engine import CondensePlusContextChatEngine
 
         return CondensePlusContextChatEngine.from_defaults(
-            retriever=index.as_retriever(similarity_top_k=top_k, filters=filters,),
+            retriever=index.as_retriever(
+                similarity_top_k=top_k,
+                filters=filters,
+            ),
             node_postprocessors=node_postprocessors,
             system_prompt=system_prompt,
             llm=Settings.llm,

@@ -1,13 +1,13 @@
-from pydantic import Field, computed_field
+from pydantic import Field
 
 from src.models.base_env import BaseEnvConfig
 
 
 class CohereRerankerConfig(BaseEnvConfig):
-    reranker_provider: str | None = Field(
+    rerank_provider: str | None = Field(
         default="cohere",
         description="The provider of the reranker service.",
-        env="RERANKER_PROVIDER",
+        env="RERANK_PROVIDER",
     )
     cohere_api_key: str | None = Field(
         default=None,
@@ -15,11 +15,11 @@ class CohereRerankerConfig(BaseEnvConfig):
         env="COHERE_API_KEY",
     )
 
-    @computed_field
-    def use_reranker(self) -> bool:
-        if self.reranker_provider == "cohere" and self.cohere_api_key:
-            return True
-        return False
+    use_reranker: bool | None = Field(
+        default=None,
+        description="Whether to use the reranker service or not.",
+        env="USE_RERANKER",
+    )
 
 
 def get_reranker_config():
