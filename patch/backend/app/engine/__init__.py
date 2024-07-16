@@ -1,14 +1,10 @@
 import os
 
+from app.engine.constants import DEFAULT_RERANK_TOP_K, DEFAULT_TOP_K
 from app.engine.index import get_index
 from app.engine.reranker import get_reranker
 from app.engine.tools import ToolFactory
 from llama_index.core.settings import Settings
-
-# Top k for retrieval
-DEFAULT_TOP_K = 3
-# Max top k for retrieval if reranker is enabled
-DEFAULT_MAX_TOP_K = 20
 
 
 def get_chat_engine():
@@ -17,7 +13,7 @@ def get_chat_engine():
 
     top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
     if os.getenv("RERANK_PROVIDER") is not None:
-        top_k = max(top_k, DEFAULT_MAX_TOP_K)
+        top_k = max(top_k, DEFAULT_RERANK_TOP_K)
         node_postprocessors.append(get_reranker())
 
     index = get_index()
