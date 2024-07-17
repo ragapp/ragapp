@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.18
+
+### Patch Changes
+
+- 8910838: Add Cohere reranker for improved retrieval results
+
 ## 0.0.17
 
 ### Patch Changes
