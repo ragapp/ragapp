@@ -1,6 +1,6 @@
 import os
 
-from app.engine.constants import DEFAULT_RERANK_TOP_K, DEFAULT_TOP_K
+from app.engine.constants import DEFAULT_MAX_TOP_K, DEFAULT_TOP_K
 from app.engine.index import get_index
 from app.engine.reranker import get_reranker
 from app.engine.tools import ToolFactory
@@ -12,12 +12,11 @@ def get_chat_engine(filters=None):
     system_prompt = os.getenv("SYSTEM_PROMPT")
     node_postprocessors = []
 
-    top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
     if os.getenv("USE_RERANKER", "False").lower() == "true":
-        rerank_top_k = int(os.getenv("RERANK_TOP_K", DEFAULT_RERANK_TOP_K))
-        # Update top_k if reranker is enabled
-        top_k = max(top_k, rerank_top_k)
+        top_k = max(top_k, DEFAULT_MAX_TOP_K)
         node_postprocessors.append(get_reranker())
+    else:
+        top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
 
     index = get_index()
     if index is None:

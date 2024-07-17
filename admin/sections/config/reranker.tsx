@@ -118,7 +118,7 @@ export const RerankerConfig = () => {
                 name="rerank_top_k"
                 render={({ field }) => (
                   <FormItem className="ml-6">
-                    <FormLabel>Rerank Top K</FormLabel>
+                    <FormLabel>Top K</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
