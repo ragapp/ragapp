@@ -5,7 +5,6 @@ export const CohereRerankerConfigSchema = z.object({
   use_reranker: z.boolean().optional(),
   rerank_provider: z.string().trim().optional(),
   cohere_api_key: z.string().trim().optional(),
-  top_k: z.coerce.number().int().optional().default(5),
 });
 
 export type CohereRerankerConfigFormType = z.TypeOf<

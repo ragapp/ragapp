@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -108,22 +107,6 @@ export const RerankerConfig = () => {
                       >
                         https://dashboard.cohere.com/api-keys
                       </a>
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="top_k"
-                render={({ field }) => (
-                  <FormItem className="ml-6">
-                    <FormLabel>Top K</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      The number of top results to return from the reranker
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
