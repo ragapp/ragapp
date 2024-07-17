@@ -7,8 +7,15 @@ export const OllamaConfigSchema = BaseConfigSchema.extend({
     .string()
     .trim()
     .default("http://host.docker.internal:11434")
+    .optional()
     .refine(
       (value) => {
+        if (value === undefined) {
+          return false;
+        }
+        if (value.endsWith("/")) {
+          return false;
+        }
         try {
           new URL(value);
           return true;
@@ -17,10 +24,7 @@ export const OllamaConfigSchema = BaseConfigSchema.extend({
         }
       },
       { message: "Invalid URL" },
-    )
-    .refine((value) => !value.endsWith("/"), {
-      message: "URL should not end with a trailing slash",
-    }),
+    ),
   ollama_request_timeout: z.coerce
     .number()
     .default(120.0)
