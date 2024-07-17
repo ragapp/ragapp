@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -78,7 +79,7 @@ export const RerankerConfig = () => {
                   <FormLabel className="font-normal">Use Reranker</FormLabel>
                   <FormMessage />
                   <FormDescription>
-                    Use Cohere reranker to rerank the retrieved documents
+                    Use a reranker to improve the accuracy of the retrieved documents
                   </FormDescription>
                   <FormMessage />
                 </div>
@@ -87,29 +88,50 @@ export const RerankerConfig = () => {
           />
 
           {form.watch("use_reranker") && (
-            <FormField
-              control={form.control}
-              name="cohere_api_key"
-              render={({ field }) => (
-                <FormItem className="ml-6">
-                  <FormLabel>Cohere API Key</FormLabel>
-                  <FormControl>
-                    <PasswordInput {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    You can get your API key from{" "}
-                    <a
-                      href="https://dashboard.cohere.com/api-keys"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      https://dashboard.cohere.com/api-keys
-                    </a>
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <>
+              <FormField
+                control={form.control}
+                name="cohere_api_key"
+                render={({ field }) => (
+                  <FormItem className="ml-6">
+                    <FormLabel>Cohere API Key</FormLabel>
+                    <FormControl>
+                      <PasswordInput {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      You can get your API key from{" "}
+                      <a
+                        href="https://dashboard.cohere.com/api-keys"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        https://dashboard.cohere.com/api-keys
+                      </a>
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="rerank_top_k"
+                render={({ field }) => (
+                  <FormItem className="ml-6">
+                    <FormLabel>Rerank Top K</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      The number of top results to return from the reranker
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
           )}
         </form>
       </Form>

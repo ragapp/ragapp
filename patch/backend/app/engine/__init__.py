@@ -13,8 +13,10 @@ def get_chat_engine(filters=None):
     node_postprocessors = []
 
     top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
-    if os.getenv("RERANK_PROVIDER") is not None:
-        top_k = max(top_k, DEFAULT_RERANK_TOP_K)
+    if os.getenv("USE_RERANKER", "False").lower() == "true":
+        rerank_top_k = int(os.getenv("RERANK_TOP_K", DEFAULT_RERANK_TOP_K))
+        # Update top_k if reranker is enabled
+        top_k = max(top_k, rerank_top_k)
         node_postprocessors.append(get_reranker())
 
     index = get_index()
