@@ -79,7 +79,8 @@ export const RerankerConfig = () => {
                   <FormLabel className="font-normal">Use Reranker</FormLabel>
                   <FormMessage />
                   <FormDescription>
-                    Use a reranker to improve the accuracy of the retrieved documents
+                    Use a reranker to improve the accuracy of the retrieved
+                    documents
                   </FormDescription>
                   <FormMessage />
                 </div>
@@ -119,10 +120,7 @@ export const RerankerConfig = () => {
                   <FormItem className="ml-6">
                     <FormLabel>Rerank Top K</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                      />
+                      <Input type="number" {...field} />
                     </FormControl>
                     <FormDescription>
                       The number of top results to return from the reranker
