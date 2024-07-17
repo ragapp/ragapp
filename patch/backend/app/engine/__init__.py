@@ -1,6 +1,8 @@
 import os
 
+from app.engine.constants import DEFAULT_MAX_TOP_K, DEFAULT_TOP_K
 from app.engine.index import get_index
+from app.engine.reranker import get_reranker
 from app.engine.tools import ToolFactory
 from llama_index.core.settings import Settings
 
@@ -8,6 +10,13 @@ from llama_index.core.settings import Settings
 def get_chat_engine(filters=None):
     top_k = int(os.getenv("TOP_K", "3"))
     system_prompt = os.getenv("SYSTEM_PROMPT")
+    node_postprocessors = []
+
+    if os.getenv("USE_RERANKER", "False").lower() == "true":
+        top_k = max(top_k, DEFAULT_MAX_TOP_K)
+        node_postprocessors.append(get_reranker())
+    else:
+        top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
 
     index = get_index()
     if index is None:
@@ -21,9 +30,10 @@ def get_chat_engine(filters=None):
 
         return CondensePlusContextChatEngine.from_defaults(
             retriever=index.as_retriever(
-                top_k=top_k,
+                similarity_top_k=top_k,
                 filters=filters,
             ),
+            node_postprocessors=node_postprocessors,
             system_prompt=system_prompt,
             llm=Settings.llm,
         )
@@ -35,13 +45,14 @@ def get_chat_engine(filters=None):
         query_engine_tool = QueryEngineTool.from_defaults(
             query_engine=index.as_query_engine(
                 similarity_top_k=top_k,
+                node_postprocessors=node_postprocessors,
                 filters=filters,
             )
         )
-        tools.append(query_engine_tool)
+        tools.append(query_engine_tool)  # type: ignore
         return AgentRunner.from_llm(
             llm=Settings.llm,
-            tools=tools,
+            tools=tools,  # type: ignore
             system_prompt=system_prompt,
             verbose=True,  # Show agent logs to console
         )
