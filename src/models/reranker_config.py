@@ -19,10 +19,10 @@ class CohereRerankerConfig(BaseEnvConfig):
         description="The API key for the Cohere API.",
         env="COHERE_API_KEY",
     )
-    rerank_top_k: int | None = Field(
+    top_k: int | None = Field(
         default=5,
         description="The number of top results to return from the reranker",
-        env="RERANK_TOP_K",
+        env="TOP_K",
     )
 
 
