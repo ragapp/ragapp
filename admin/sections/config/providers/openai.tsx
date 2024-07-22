@@ -18,7 +18,7 @@ export const OpenAIForm = ({
   form: UseFormReturn;
   defaultValues: any;
 }) => {
-  const supportingModels = ["gpt-3.5-turbo", "gpt-4", "gpt-4o"];
+  const supportingModels = ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo", "gpt-4"];
   const embeddingModels = ["text-embedding-3-small", "text-embedding-3-large"];
 
   return (

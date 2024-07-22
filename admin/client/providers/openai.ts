@@ -27,7 +27,7 @@ export const OpenAIConfigSchema = BaseConfigSchema.extend({
 
 export const DEFAULT_OPENAI_CONFIG: z.input<typeof OpenAIConfigSchema> = {
   model_provider: "openai",
-  model: "gpt-3.5-turbo",
+  model: "gpt-4o-mini",
   embedding_model: "text-embedding-3-small",
   embedding_dim: 1536,
   openai_api_key: "",
