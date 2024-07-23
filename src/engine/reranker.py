@@ -1,7 +1,8 @@
 import os
 
-from app.engine.constants import DEFAULT_TOP_K
 from llama_index.core.postprocessor.types import BaseNodePostprocessor
+
+from src.engine.constants import DEFAULT_TOP_K
 
 
 def get_cohere_reranker():

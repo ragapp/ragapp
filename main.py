@@ -22,6 +22,7 @@ from src.routers.management.llamacloud import llamacloud_router
 from src.routers.management.loader import loader_router
 from src.routers.management.reranker import reranker_router
 from src.routers.management.tools import tools_router
+from src.routers.chat.index import chat_router
 
 app = FastAPI()
 init_settings()
@@ -36,7 +37,6 @@ if environment == "dev":
         allow_headers=["*"],
     )
 
-# Add chat router from create_llama/backend
 app.include_router(chat_router, prefix="/api/chat", tags=["Chat"])
 app.include_router(config_router, prefix="/api/management/config")
 app.include_router(tools_router, prefix="/api/management/tools", tags=["Agent"])
