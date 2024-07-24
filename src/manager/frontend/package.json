@@ -22,7 +22,8 @@
     "react-dom": "^18",
     "react-query": "^3.39.3",
     "tailwind-merge": "^2.4.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "react-icons": "^5.2.1"
   },
   "devDependencies": {
     "@types/node": "^20",

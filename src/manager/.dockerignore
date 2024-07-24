@@ -1,5 +1,6 @@
 *
-
+!frontend
+!Makefile
 !app/
 !static/
 !main.py

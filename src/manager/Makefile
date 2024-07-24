@@ -1,4 +1,4 @@
-build-frontends:
+build-frontend:
 	@echo "\nBuilding Admin Dashbboard..."
 	cd ./frontend && pnpm install && pnpm run build
 	@echo "\nCopying Admin Dashbboard to static folder..."
