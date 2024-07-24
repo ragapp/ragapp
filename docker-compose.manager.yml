@@ -1,15 +1,21 @@
 services:
   manager:
     image: ragapp/manager
-    build: src/manager
+    build:
+      context: src/manager
+      args:
+        # Build time variables to set the basePath for static files
+        - APP_PATH=/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - APP_PATH=/manager
     labels:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000
-      - traefik.http.routers.admin-dashboard.rule=PathPrefix(`/dashboard`)
-      - traefik.http.middlewares.admin-dashboard-stripprefix.stripprefix.prefixes=/dashboard
-      - traefik.http.routers.admin-dashboard.middlewares=admin-dashboard-stripprefix
+      - traefik.http.routers.admin-manager.rule=PathPrefix(`/manager`)
+      - traefik.http.middlewares.admin-manager-stripprefix.stripprefix.prefixes=/manager
+      - traefik.http.routers.admin-manager.middlewares=admin-manager-stripprefix,admin-auth
       - traefik.http.routers.app-http.entrypoints=http
       - traefik.docker.network=traefik-public
       - traefik.http.middlewares.testheader.headers.customresponseheaders.X-Test-Header=TraefikProxy
@@ -22,12 +28,11 @@ services:
       - 80:80
     labels:
       - traefik.enable=true
-      - traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080
-      - traefik.http.routers.traefik-dashboard-http.entrypoints=http
-      - traefik.http.routers.traefik-dashboard-http.rule=Host(`traefik.fastapi-with-traefik.example.com`)
+      - traefik.http.services.traefik-manager.loadbalancer.server.port=8080
+      - traefik.http.routers.traefik-manager-http.entrypoints=http
       - traefik.docker.network=traefik-public
       - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME?Variable not set}:${HASHED_PASSWORD?Variable not set}
-      - traefik.http.routers.traefik-dashboard-https.middlewares=admin-auth
+      - traefik.http.routers.traefik-manager-https.middlewares=admin-auth
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:

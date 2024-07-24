@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: 'export',
-    // TODO: Use ENV?
-    assetPrefix: '/dashboard'
+    basePath: process.env.APP_PATH || '',
+    env: {
+        APP_PATH: process.env.APP_PATH || '',
+    },
 };
 
 export default nextConfig;

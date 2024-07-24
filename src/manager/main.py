@@ -1,10 +1,9 @@
 import os
 
+from app.routers.services import service_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
-from app.routers.services import service_router
 
 
 def create_app() -> FastAPI:
