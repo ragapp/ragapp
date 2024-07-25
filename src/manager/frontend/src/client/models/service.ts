@@ -7,6 +7,5 @@ export type Service = {
     status: string;
     image: string;
     restart_count: number;
-    port: string;
     url: string;
 }

@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel, computed_field, validator
-
 from app.constants import DEFAULT_PROJECT_PREFIX
 from app.docker_client import get_docker_client
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, computed_field, validator
 
 service_router = r = APIRouter()
 
@@ -18,16 +17,6 @@ class ServiceInfo(BaseModel):
     status: str
     image: str
     restart_count: int
-    exposed_ports: dict
-
-    @computed_field  # type: ignore
-    @property
-    def port(self) -> str | None:
-        main_port = self.exposed_ports.get("8000/tcp", [])
-        if main_port:
-            return main_port[0].get("HostPort")
-        else:
-            return None
 
     @computed_field  # type: ignore
     @property
@@ -66,7 +55,6 @@ def list_services(
             status=state.get("Status"),
             image=attrs.get("Image"),
             restart_count=attrs.get("RestartCount"),
-            exposed_ports=attrs.get("NetworkSettings", {}).get("Ports"),
         )
         service_list.append(service_info)
     return service_list

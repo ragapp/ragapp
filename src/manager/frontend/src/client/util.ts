@@ -3,5 +3,5 @@ export function getBaseURL(): string {
   if (process.env.ENVIRONMENT === "dev") {
     return "http://localhost:8000";
   }
-  return typeof window !== "undefined" ? window.location.href : "";
+  return typeof window !== "undefined" ? window.location.href.replace(/\/$/, "") : "";
 }
