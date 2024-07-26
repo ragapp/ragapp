@@ -4,6 +4,7 @@ const nextConfig = {
     basePath: process.env.APP_PATH || '',
     env: {
         APP_PATH: process.env.APP_PATH || '',
+        DEVELOPMENT: process.env.DEVELOPMENT,
     },
 };
 

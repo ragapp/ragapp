@@ -1,7 +1,16 @@
 export function getBaseURL(): string {
-  // If we are in development, use the local backend endpoint
-  if (process.env.ENVIRONMENT === "dev") {
+  // If we are in development, use the local backend server
+  if (process.env.DEVELOPMENT === "dev") {
     return "http://localhost:8000";
   }
-  return typeof window !== "undefined" ? window.location.href.replace(/\/$/, "") : "";
+  // Otherwise, in production, we can either:
+  // - Use the origin URL
+  // - Or use the NEXT_PUBLIC_API_URL environment variable if it is set (suitable for reverse proxy deployment)
+  if (typeof window !== "undefined") {
+    const w = window as any;
+    if (w.ENV && typeof w.ENV.NEXT_PUBLIC_API_URL === "string") {
+      return w.ENV.NEXT_PUBLIC_API_URL;
+    }
+  }
+  return "";
 }
