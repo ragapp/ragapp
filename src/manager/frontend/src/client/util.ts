@@ -1,6 +1,6 @@
 export function getBaseURL(): string {
   // If we are in development, use the local backend server
-  if (process.env.DEVELOPMENT === "dev") {
+  if (process.env.ENVIRONMENT === "dev") {
     return "http://localhost:8000";
   }
   // Otherwise, in production, we can either:

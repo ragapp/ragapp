@@ -3,7 +3,7 @@ const nextConfig = {
     output: 'export',
     basePath: '',
     env: {
-        DEVELOPMENT: process.env.DEVELOPMENT,
+        ENVIRONMENT: process.env.ENVIRONMENT,
     },
 };
 
