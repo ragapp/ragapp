@@ -31,7 +31,7 @@ function ServiceCard({ service }: { service: Service }) {
             </CardContent>
             <CardFooter className="flex justify-between">
                 <a
-                    href={`${service.url}/admin`}
+                    href={`${service.url}/admin/`}
                     className="text-primary-foreground"
                 >
                     <Button variant="outline" className="flex items-center text-muted-foreground">
