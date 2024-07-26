@@ -30,7 +30,7 @@ function ServiceCard({ service }: { service: Service }) {
                 </ul>
             </CardContent>
             <CardFooter className="flex justify-between">
-                <Link
+                <a
                     href={`${service.url}/admin`}
                     className="text-primary-foreground"
                 >
@@ -38,7 +38,7 @@ function ServiceCard({ service }: { service: Service }) {
                         <TbFilePencil size={20} />
                         Edit
                     </Button>
-                </Link>
+                </a>
             </CardFooter>
         </Card>
     )

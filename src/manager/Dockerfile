@@ -1,8 +1,6 @@
 # ======= FRONTEND BUILD ==========
 FROM node:20-alpine as frontend-build
 
-ARG APP_PATH
-
 # Install pnpm and make
 RUN npm install -g pnpm@9.4.0
 RUN apk add --no-cache make
