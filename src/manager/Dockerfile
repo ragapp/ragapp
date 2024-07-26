@@ -35,4 +35,3 @@ COPY --from=frontend-build /app/frontend/out /app/static
 
 COPY . /app
 
-# CMD ["fastapi", "run", "main.py"]
