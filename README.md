@@ -85,6 +85,22 @@ Using a local Ollama instance is necessary if you're running RAGapp on macOS, as
 
 To enable Docker access to NVIDIA GPUs on Linux, [install the NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
+#### Manage RAGapp via Manager UI:
+You can set up Traefik reverse proxy and handle your apps right from the manager UI.
+
+Once you deploy RAGapp using the default `docker-compose.yml`, just use the `docker-compose.manager.yml` to get Traefik and Manager UI up and running.
+
+But before that, let create a credential to access admin and manager pages.
+```shell
+export USERNAME=admin 
+export HASHED_PASSWORD=$(openssl passwd -apr1 <your_admin_password>)
+```
+Then run the `docker-compose.manager.yml`.
+```shell
+docker-compose -f docker-compose.manager.yml up -d
+```
+To access manager UI, just go to `http://localhost/manager` endpoint.
+
 ### Kubernetes
 
 It's easy to deploy RAGapp in your own cloud infrastructure. Customized K8S deployment descriptors are coming soon.
