@@ -13,7 +13,7 @@ function ServiceCard({ service }: { service: Service }) {
             <CardHeader>
                 <CardTitle className="text-xl font-bold flex items-center text-foreground">
                     <TbRobot size={30} />
-                    {service.name}
+                    {service.app_name ? service.app_name : service.name}
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -31,7 +31,7 @@ function ServiceCard({ service }: { service: Service }) {
             </CardContent>
             <CardFooter className="flex justify-between">
                 <Link
-                    href={`/services/${service.url}`}
+                    href={`${service.url}/admin`}
                     className="text-primary-foreground"
                 >
                     <Button variant="outline" className="flex items-center text-muted-foreground">
