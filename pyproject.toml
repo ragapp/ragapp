@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
-fastapi = "^0.110.1"
+fastapi = "^0.111.1"
 python-dotenv = "^1.0.0"
 llama-index = "0.10.56"
 uvicorn = { version = "^0.23.2", extras = ["standard"] }

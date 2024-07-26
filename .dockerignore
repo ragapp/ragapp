@@ -16,6 +16,8 @@
 # Node
 **/.results
 **/node_modules
+**/out
+**/.next
 
 ./static
 
@@ -24,6 +26,7 @@
 ./storage/
 ./static/
 ./data/
+./src/manager/
 
 # Deployment files
 ./Dockerfile
