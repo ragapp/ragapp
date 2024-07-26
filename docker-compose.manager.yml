@@ -29,6 +29,9 @@ services:
       - traefik.enable=true
       - traefik.docker.network=ragapp-network
       - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME?Variable not set}:${HASHED_PASSWORD?Variable not set}
+      # Use admin-auth middleware for all RAGapp admin
+      - traefik.http.routers.ragapp-admin.rule=PathRegexp(`/a/.*/admin`)
+      - traefik.http.routers.ragapp-admin.middlewares=admin-auth
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
