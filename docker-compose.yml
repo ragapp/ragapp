@@ -26,7 +26,7 @@ services:
       - MODEL=${MODEL:-phi3:latest}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
       - QDRANT_URL=http://qdrant:6333
-      - COLLECTION_NAME=default
+      - COLLECTION_NAME=cs50,cs101
       - DISTANCE_METRIC=Cosine
       - VECTOR_SIZE=768
     command: >
@@ -38,18 +38,61 @@ services:
       - qdrant
       - ollama
 
-  ragapp:
+  ragapp-cs50:
     build: .
     image: ragapp/ragapp:latest
-    ports:
-      - "8000:8000"
+    entrypoint: ["/app/entrypoint.sh"]
+    command: ["fastapi", "run", "main.py"]
     volumes:
       - ./config:/app/config
-      - ./data:/app/data
+      - ./data:/app/data 
+    labels:
+      - ragapp.app_name=cs50
+      - traefik.enable=true
+      - traefik.http.services.ragapp-cs50.loadbalancer.server.port=8000
+      - traefik.http.routers.ragapp-cs50.rule=PathPrefix(`/a/cs50`)
+      - traefik.http.middlewares.ragapp-cs50-strip-path.stripprefix.prefixes=/a/cs50
+      - traefik.http.routers.ragapp-cs50.middlewares=ragapp-cs50-strip-path
+      - traefik.http.routers.ragapp-cs50-admin.rule=PathRegexp(`/a/cs50/admin`)
+      - traefik.http.routers.ragapp-cs50-admin.middlewares=admin-auth,ragapp-cs50-strip-path
     environment:
+      - BASE_URL=/a/cs50
       - VECTOR_STORE_PROVIDER=qdrant
       - QDRANT_URL=http://qdrant:6333
-      - QDRANT_COLLECTION=default
+      - QDRANT_COLLECTION=cs50
+      - QDRANT_API_KEY=""
+      - MODEL_PROVIDER=ollama
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - EMBEDDING_MODEL=nomic-embed-text
+      - EMBEDDING_DIM=768
+      - MODEL=${MODEL:-phi3:latest}
+    depends_on:
+      - setup
+    networks:
+      - ragapp-network
+
+  ragapp-cs101:
+    build: .
+    image: ragapp/ragapp:latest
+    entrypoint: ["/app/entrypoint.sh"]
+    command: ["fastapi", "run", "main.py"]
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data 
+    labels:
+      - ragapp.app_name=cs101
+      - traefik.enable=true
+      - traefik.http.services.ragapp-cs101.loadbalancer.server.port=8000
+      - traefik.http.routers.ragapp-cs101.rule=PathPrefix(`/a/cs101`)
+      - traefik.http.middlewares.ragapp-cs101-strip-path.stripprefix.prefixes=/a/cs101
+      - traefik.http.routers.ragapp-cs101.middlewares=ragapp-cs101-strip-path
+      - traefik.http.routers.ragapp-cs101-admin.rule=PathRegexp(`/a/cs101/admin`)
+      - traefik.http.routers.ragapp-cs101-admin.middlewares=admin-auth,ragapp-cs101-strip-path
+    environment:
+      - BASE_URL=/a/cs101
+      - VECTOR_STORE_PROVIDER=qdrant
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_COLLECTION=cs101
       - QDRANT_API_KEY=""
       - MODEL_PROVIDER=ollama
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
@@ -63,4 +106,4 @@ services:
   
 networks:
   ragapp-network:
-
+    external: true
