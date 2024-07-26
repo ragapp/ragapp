@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run sed command for all files in the static directory
-sed -i 's|/_next/static|'$APP_PATH'/_next/static|g' static/*.*
+sed -i 's|"/_next/static|"'$APP_PATH'/_next/static|g' static/*.*
 
 # Run sed command to generate window.ENV.API_URL to index.html
 # Add it at the start of the head tag
