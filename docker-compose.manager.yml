@@ -6,6 +6,8 @@ services:
       args:
         # Build time variables to set the basePath for static files
         - APP_PATH=/manager
+    entrypoint: ["/app/entrypoint.sh"]
+    command: ["fastapi", "run", "main.py", "--root-path", "/manager"]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -14,8 +16,8 @@ services:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000
       - traefik.http.routers.admin-manager.rule=PathPrefix(`/manager`)
-      - traefik.http.middlewares.admin-manager-stripprefix.stripprefix.prefixes=/manager
-      - traefik.http.routers.admin-manager.middlewares=admin-manager-stripprefix,admin-auth
+      - traefik.http.middlewares.strip-manager-path.stripprefix.prefixes=/manager
+      - traefik.http.routers.admin-manager.middlewares=strip-manager-path,admin-auth
     networks:
       - ragapp-network
   
