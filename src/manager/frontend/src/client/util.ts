@@ -5,11 +5,11 @@ export function getBaseURL(): string {
   }
   // Otherwise, in production, we can either:
   // - Use the origin URL
-  // - Or use the NEXT_PUBLIC_API_URL environment variable if it is set (suitable for reverse proxy deployment)
+  // - Or use the BASE_URL environment variable if it is set (suitable for reverse proxy deployment)
   if (typeof window !== "undefined") {
     const w = window as any;
-    if (w.ENV && typeof w.ENV.NEXT_PUBLIC_API_URL === "string") {
-      return w.ENV.NEXT_PUBLIC_API_URL;
+    if (w.ENV && typeof w.ENV.BASE_URL === "string") {
+      return w.ENV.BASE_URL;
     }
   }
   return "";
