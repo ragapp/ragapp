@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel, computed_field, validator
-
 from app.docker_client import get_docker_client
+from docker.errors import DockerException
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, computed_field, validator
 
 service_router = r = APIRouter()
 
@@ -39,7 +40,7 @@ def list_services(
 ) -> list[ServiceInfo]:
     # Filter services by label
     filters = {"label": "ragapp.app_name"} if only_ragapp else {}
-    services = docker_client.containers.list(filters=filters)
+    services = docker_client.containers.list(filters=filters, all=True)
     service_list = []
     for service in services:
         attrs = service.attrs
@@ -59,3 +60,42 @@ def list_services(
         )
         service_list.append(service_info)
     return service_list
+
+
+@r.post("/{service_id}/stop")
+def stop_service(
+    service_id: str,
+    docker_client=Depends(get_docker_client),
+):
+    try:
+        container = docker_client.containers.get(service_id)
+        container.stop()
+    except DockerException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return JSONResponse(status_code=204, content={})
+
+
+@r.post("/{service_id}/start")
+def start_service(
+    service_id: str,
+    docker_client=Depends(get_docker_client),
+):
+    try:
+        container = docker_client.containers.get(service_id)
+        container.start()
+    except DockerException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return JSONResponse(status_code=204, content={})
+
+
+@r.delete("/{service_id}")
+def remove_service(
+    service_id: str,
+    docker_client=Depends(get_docker_client),
+):
+    try:
+        container = docker_client.containers.get(service_id)
+        container.remove(force=True)
+    except DockerException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return JSONResponse(status_code=204, content={})
