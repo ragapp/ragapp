@@ -18,7 +18,7 @@ create_collection() {
 }
 
 # Iterate and create collections
-for collection_name in $(echo $COLLECTION_NAME | sed "s/,/ /g")
+for collection_name in $(echo $COLLECTION_NAMES | sed "s/,/ /g")
 do
     if collection_exists $collection_name; then
         echo "Collection '$collection_name' already exists."

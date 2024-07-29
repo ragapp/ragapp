@@ -37,7 +37,7 @@ services:
     environment:
       - MODEL=${MODEL:-phi3:latest}
       - QDRANT_URL=http://qdrant:6333
-      - COLLECTION_NAME=cs50,cs101
+      - COLLECTION_NAMES=cs50,cs101
       - DISTANCE_METRIC=Cosine
       - VECTOR_SIZE=768
     command: >
