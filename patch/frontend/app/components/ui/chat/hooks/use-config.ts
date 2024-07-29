@@ -1,3 +1,4 @@
+// Patching to use value from window.ENV.BASE_URL  
 "use client";
 
 import { useEffect, useMemo, useState } from "react";

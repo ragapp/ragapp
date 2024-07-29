@@ -11,6 +11,7 @@ export function getBaseURL(): string {
     if (w.ENV && typeof w.ENV.BASE_URL === "string") {
       return w.ENV.BASE_URL;
     }
+    return window.location.origin;
   }
   return "";
 }

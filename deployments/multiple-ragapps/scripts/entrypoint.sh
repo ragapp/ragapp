@@ -7,8 +7,7 @@ sed -i 's|"/api/|"'$BASE_URL'/api/|g' static/*.*
 
 # Run sed command to generate window.ENV.API_URL to index.html
 # Add it at the start of the head tag
-sed -i '/<\/head>/i <script>window.ENV = {"BASE_URL":"'$BASE_URL'"};</script>' static/**/*.html
-sed -i '/<\/head>/i <script>window.ENV = {"BASE_URL":"'$BASE_URL'"};</script>' static/*.html
+sed -i '/<\/head>/i <script>window.ENV = {"BASE_URL":"'$BASE_URL'"};</script>' static/*.html static/**/*.html
 
 echo "Updated static files succesfully!"
 echo "Running application..."
