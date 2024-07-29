@@ -48,13 +48,14 @@ services:
       - qdrant
 
   ragapp-cs50:
-    build: .
+    build: ../..
     image: ragapp/ragapp:latest
-    entrypoint: ["/app/entrypoint.sh"]
+    entrypoint: ["/app/scripts/entrypoint.sh"]
     command: ["fastapi", "run", "main.py"]
     volumes:
       - ./volumes/cs50/config:/app/config
       - ./volumes/cs50/data:/app/data
+      - ./scripts:/app/scripts:r-x
     labels:
       - ragapp.app_name=cs50
       - traefik.enable=true
@@ -80,13 +81,14 @@ services:
       - ragapp-network
 
   ragapp-cs101:
-    build: .
+    build: ../..
     image: ragapp/ragapp:latest
-    entrypoint: ["/app/entrypoint.sh"]
+    entrypoint: ["/app/scripts/entrypoint.sh"]
     command: ["fastapi", "run", "main.py"]
     volumes:
       - ./volumes/cs101/config:/app/config
       - ./volumes/cs101/data:/app/data
+      - ./scripts:/app/scripts:r-x
     labels:
       - ragapp.app_name=cs101
       - traefik.enable=true
@@ -113,12 +115,11 @@ services:
   
   manager:
     image: ragapp/manager
-    build: src/manager
-    entrypoint: ["/app/scripts/entrypoint.sh"]
+    build: ../../src/manager
+    entrypoint: ["/app/entrypoint.sh"]
     command: ["fastapi", "run", "main.py"]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./scripts:/app/scripts:r-x
     environment:
       - BASE_URL=/manager
     labels:
