@@ -1,4 +1,5 @@
 #!/bin/bash
+# This entrypoint used for multiple RAG apps deployment under reverse proxy
 
 # Run sed command for all files in the static directory
 sed -i 's|"/_next/static|"'$BASE_URL'/_next/static|g' static/*.*
