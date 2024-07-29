@@ -26,7 +26,7 @@ services:
       - MODEL=${MODEL:-phi3:latest}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
       - QDRANT_URL=http://qdrant:6333
-      - COLLECTION_NAME=default
+      - COLLECTION_NAMES=default
       - DISTANCE_METRIC=Cosine
       - VECTOR_SIZE=768
     command: >
@@ -49,7 +49,7 @@ services:
     environment:
       - VECTOR_STORE_PROVIDER=qdrant
       - QDRANT_URL=http://qdrant:6333
-      - QDRANT_COLLECTIONS=default
+      - QDRANT_COLLECTION=default
       - QDRANT_API_KEY=""
       - MODEL_PROVIDER=ollama
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}

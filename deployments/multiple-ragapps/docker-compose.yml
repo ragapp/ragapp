@@ -51,7 +51,7 @@ services:
     build: ../..
     image: ragapp/ragapp:latest
     volumes:
-      - ./data/cs101-data:/app/data
+      - ./data/cs50-data:/app/data
     labels:
       - ragapp.app_name=cs50
       - traefik.enable=true
@@ -79,8 +79,6 @@ services:
   ragapp-cs101:
     build: ../..
     image: ragapp/ragapp:latest
-    entrypoint: ["/app/entrypoint.sh"]
-    command: ["fastapi", "run", "main.py"]
     volumes:
       - ./data/cs101-data:/app/data
     labels:
@@ -109,8 +107,6 @@ services:
   
   manager:
     image: ragapp/manager
-    build: ../../src/manager
-    command: ["fastapi", "run", "main.py"]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
