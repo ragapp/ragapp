@@ -1,12 +1,17 @@
+import logging
 from datetime import datetime
 
 from app.docker_client import get_docker_client
+from app.models.ragapp import RAGAppServiceConfig
 from docker.errors import DockerException
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, computed_field, validator
 
 service_router = r = APIRouter()
+
+
+logger = logging.getLogger("uvicorn")
 
 
 class ServiceInfo(BaseModel):
@@ -68,6 +73,7 @@ def stop_service(
     docker_client=Depends(get_docker_client),
 ):
     try:
+        logger.info(f"Stopping container {service_id}")
         container = docker_client.containers.get(service_id)
         container.stop()
     except DockerException as e:
@@ -81,6 +87,7 @@ def start_service(
     docker_client=Depends(get_docker_client),
 ):
     try:
+        logger.info(f"Starting container {service_id}")
         container = docker_client.containers.get(service_id)
         container.start()
     except DockerException as e:
@@ -94,8 +101,45 @@ def remove_service(
     docker_client=Depends(get_docker_client),
 ):
     try:
+        logger.info(f"Removing container {service_id}")
         container = docker_client.containers.get(service_id)
         container.remove(force=True)
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
     return JSONResponse(status_code=204, content={})
+
+
+# Create a new service
+@r.post("")
+def create_service(
+    config: RAGAppServiceConfig,
+    docker_client=Depends(get_docker_client),
+):
+    container_config = config.to_docker_create_kwargs()
+
+    try:
+        current_container = docker_client.containers.get(container_config["name"])
+        if current_container:
+            raise HTTPException(status_code=400, detail="Container already exists")
+    except DockerException:
+        pass
+
+    try:
+        logger.info(f"Creating container with config: {container_config}")
+        container = docker_client.containers.create(**container_config)
+    except DockerException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    try:
+        container.start()
+    except DockerException as e:
+        container.remove(force=True)
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return JSONResponse(
+        status_code=201,
+        content={
+            "id": container.id,
+            "name": container.name,
+        },
+    )
