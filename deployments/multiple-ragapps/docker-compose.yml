@@ -33,7 +33,7 @@ services:
     networks:
       - ragapp-network
     volumes:
-      - ../../scripts:/ragapp
+      - ../scripts:/ragapp
     environment:
       - MODEL=${MODEL:-phi3:latest}
       - QDRANT_URL=http://qdrant:6333
