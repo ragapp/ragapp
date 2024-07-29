@@ -24,7 +24,6 @@ WORKDIR /app
 
 # Add create_llama/backend to PYTHONPATH
 ENV PYTHONPATH=/app:/app/create_llama/backend
-ENV BASE_URL=/
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
@@ -48,5 +47,7 @@ COPY . .
 RUN mkdir -p data
 
 EXPOSE 8000
+
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 CMD ["fastapi", "run", "main.py"]

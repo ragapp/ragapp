@@ -50,8 +50,6 @@ services:
   ragapp-cs50:
     build: ../..
     image: ragapp/ragapp:latest
-    entrypoint: ["/app/entrypoint.sh"]
-    command: ["fastapi", "run", "main.py"]
     volumes:
       - ./data/cs101-data:/app/data
     labels:
@@ -112,7 +110,6 @@ services:
   manager:
     image: ragapp/manager
     build: ../../src/manager
-    entrypoint: ["/app/entrypoint.sh"]
     command: ["fastapi", "run", "main.py"]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
