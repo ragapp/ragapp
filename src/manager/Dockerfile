@@ -33,3 +33,6 @@ COPY --from=frontend-build /app/frontend/out /app/static
 
 COPY . /app
 
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+CMD ["fastapi", "run", "main.py"]
