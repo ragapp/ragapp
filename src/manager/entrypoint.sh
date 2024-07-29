@@ -7,7 +7,7 @@ sed -i 's|"/_next/static|"'$BASE_URL'/_next/static|g' static/*.*
 # Add it at the start of the head tag
 sed -i '/<\/head>/i <script>window.ENV = {"BASE_URL":"'$BASE_URL'"};</script>' static/index.html
 
-echo "Updated static files succesfully!"
+echo "Updated static files successfully!"
 echo "Running application..."
 
 exec "$@"
