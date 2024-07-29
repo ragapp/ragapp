@@ -1,0 +1,3 @@
+file:
+  # use_llama_parse: Use LlamaParse if `true`. Needs a `LLAMA_CLOUD_API_KEY` from https://cloud.llamaindex.ai set as environment variable
+  use_llama_parse: false
