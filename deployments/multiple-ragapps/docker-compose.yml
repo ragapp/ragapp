@@ -20,33 +20,6 @@ services:
     networks:
       - ragapp-network
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    ports:
-      - 6333:6333
-      - 6334:6334
-    networks:
-      - ragapp-network
-  
-  setup:
-    image: curlimages/curl:latest
-    networks:
-      - ragapp-network
-    volumes:
-      - ../scripts:/ragapp
-    environment:
-      - MODEL=${MODEL:-phi3:latest}
-      - QDRANT_URL=http://qdrant:6333
-      - COLLECTION_NAMES=cs50,cs101
-      - DISTANCE_METRIC=Cosine
-      - VECTOR_SIZE=768
-    command: >
-      /bin/sh -c "
-      chmod +x /ragapp/create_qdrant_collection.sh &&
-      /ragapp/create_qdrant_collection.sh"
-    depends_on:
-      - qdrant
-
   ragapp-cs50:
     build: ../..
     image: ragapp/ragapp:latest
@@ -63,16 +36,11 @@ services:
       - traefik.http.routers.ragapp-cs50-admin.middlewares=admin-auth,ragapp-cs50-strip-path
     environment:
       - BASE_URL=/a/cs50
-      - VECTOR_STORE_PROVIDER=qdrant
-      - QDRANT_URL=http://qdrant:6333
-      - QDRANT_COLLECTION=cs50
-      - QDRANT_API_KEY=""
+      - FILESERVER_URL_PREFIX=/a/cs50/api/files
       - MODEL_PROVIDER=openai
       - MODEL=gpt-4o-mini
       - EMBEDDING_MODEL=text-embedding-3-small
       - EMBEDDING_DIM=1024
-    depends_on:
-      - setup
     networks:
       - ragapp-network
 
@@ -92,21 +60,17 @@ services:
       - traefik.http.routers.ragapp-cs101-admin.middlewares=admin-auth,ragapp-cs101-strip-path
     environment:
       - BASE_URL=/a/cs101
-      - VECTOR_STORE_PROVIDER=qdrant
-      - QDRANT_URL=http://qdrant:6333
-      - QDRANT_COLLECTION=cs101
-      - QDRANT_API_KEY=""
+      - FILESERVER_URL_PREFIX=/a/cs101/api/files
       - MODEL_PROVIDER=openai
       - MODEL=gpt-4o-mini
       - EMBEDDING_MODEL=text-embedding-3-small
       - EMBEDDING_DIM=1024
-    depends_on:
-      - setup
     networks:
       - ragapp-network
   
   manager:
     image: ragapp/manager
+    build: ../../src/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:

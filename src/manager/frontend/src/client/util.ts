@@ -4,7 +4,6 @@ export function getBaseURL(): string {
     return "http://localhost:8000";
   }
   // Otherwise, in production, we can either:
-  // - Use the origin URL
   // - Or use the BASE_URL environment variable if it is set (suitable for reverse proxy deployment)
   if (typeof window !== "undefined") {
     const w = window as any;
