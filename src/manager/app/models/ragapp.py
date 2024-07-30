@@ -37,7 +37,7 @@ def get_default_app_environment(app_name: str) -> Dict[str, str]:
     }
 
 
-class RAGAppServiceConfig(BaseModel):
+class RAGAppContainerConfig(BaseModel):
     name: str
     image: str = Field(default=DEFAULT_RAGAPP_IMAGE)
     command: Optional[List[str]] = Field(default=None)

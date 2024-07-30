@@ -1,41 +1,17 @@
 import logging
-from datetime import datetime
 
+from app.controllers.setup import delete_collection, setup_vectordb
 from app.docker_client import get_docker_client
-from app.models.ragapp import RAGAppServiceConfig
+from app.models.docker_service import ServiceInfo
+from app.models.ragapp import RAGAppContainerConfig
 from docker.errors import DockerException
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, computed_field, validator
 
 service_router = r = APIRouter()
 
 
 logger = logging.getLogger("uvicorn")
-
-
-class ServiceInfo(BaseModel):
-    id: str
-    name: str
-    app_name: str | None
-    created_at: str
-    started_at: str | None
-    updated_at: str | None
-    status: str
-    image: str
-    restart_count: int
-
-    @computed_field  # type: ignore
-    @property
-    def url(self) -> str:
-        return f"/a/{self.app_name}"
-
-    @validator("created_at", "updated_at", "started_at", pre=True)
-    def format_datetime(cls, v):
-        if v is None:
-            return v
-        dt = datetime.strptime(v.split(".")[0], "%Y-%m-%dT%H:%M:%S")
-        return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
 @r.get("")
@@ -103,7 +79,11 @@ def remove_service(
     try:
         logger.info(f"Removing container {service_id}")
         container = docker_client.containers.get(service_id)
+        app_name = container.labels.get("ragapp.app_name")
         container.remove(force=True)
+        # Remove collection from QdrantDB
+        if app_name:
+            delete_collection(collection_name=app_name)
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
     return JSONResponse(status_code=204, content={})
@@ -111,8 +91,8 @@ def remove_service(
 
 # Create a new service
 @r.post("")
-def create_service(
-    config: RAGAppServiceConfig,
+def create_agent(
+    config: RAGAppContainerConfig,
     docker_client=Depends(get_docker_client),
 ):
     container_config = config.to_docker_create_kwargs()
@@ -125,6 +105,9 @@ def create_service(
         pass
 
     try:
+        setup_vectordb(
+            collection_name=config.name,
+        )
         logger.info(f"Creating container with config: {container_config}")
         container = docker_client.containers.create(**container_config)
     except DockerException as e:
