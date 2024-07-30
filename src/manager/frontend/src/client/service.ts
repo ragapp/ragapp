@@ -1,5 +1,5 @@
 import { getBaseURL } from "./util";
-import { Service } from "./models/service";
+import { RAGAppFormType, Service } from "./models/service";
 
 export const getServices = async (): Promise<Service[]> => {
     const response = await fetch(`${getBaseURL()}/api/services`);
@@ -22,5 +22,15 @@ export const startService = async (serviceId: string): Promise<void> => {
 export const removeService = async (serviceId: string): Promise<void> => {
     await fetch(`${getBaseURL()}/api/services/${serviceId}`, {
         method: 'DELETE',
+    });
+}
+
+export const createRAGAppService = async (values: RAGAppFormType): Promise<void> => {
+    await fetch(`${getBaseURL()}/api/services`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
     });
 }

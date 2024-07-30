@@ -8,6 +8,9 @@ import { ImSpinner8 } from "react-icons/im";
 import { TiDeleteOutline } from "react-icons/ti";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
 
+import { useEffect, useState } from "react";
+import { CreateAgentDialog } from "./createAgent";
+
 function AlertDialogRemoveApp({
     service,
     refetch
@@ -114,15 +117,28 @@ function ServiceCard({
     )
 }
 
+
 export function ServicesList() {
     const { data, error, isLoading, refetch } = useQuery('services', getServices);
+    const [addAgentDialogOpen, setAddAgentDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (!addAgentDialogOpen) {
+            refetch();
+        }
+    }, [addAgentDialogOpen]);
 
     return (
         <>
-            <header className="mb-8">
+            <header className="mb-8 space-y-2">
                 <h1 className="text-3xl font-bold text-foreground">
                     Agents
                 </h1>
+                <CreateAgentDialog
+                    open={addAgentDialogOpen}
+                    setOpen={setAddAgentDialogOpen}
+                />
+                <Button onClick={() => setAddAgentDialogOpen(true)}>+ New Agent</Button>
             </header>
             <section className="space-y-4">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 pr-8">

@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 export type Service = {
     id: string;
     name: string;
@@ -10,3 +12,15 @@ export type Service = {
     restart_count: number;
     url: string;
 }
+
+export const ragappFormSchema = z.object({
+    name: z.string().trim().min(1),
+    image: z.string().trim().min(1),
+});
+
+export const defaultRAGAppFormValues = ragappFormSchema.parse({
+    name: "my-app",
+    image: "ragapp/ragapp:latest",
+});
+
+export type RAGAppFormType = z.infer<typeof ragappFormSchema>;
