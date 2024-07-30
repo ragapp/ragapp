@@ -86,4 +86,3 @@ services:
   
 networks:
   ragapp-network:
-    external: true
