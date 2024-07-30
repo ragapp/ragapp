@@ -63,6 +63,7 @@ services:
       - traefik.http.routers.ragapp-cs50-admin.middlewares=admin-auth,ragapp-cs50-strip-path
     environment:
       - BASE_URL=/a/cs50
+      - FILESERVER_URL_PREFIX=/a/cs50/api/files
       - VECTOR_STORE_PROVIDER=qdrant
       - QDRANT_URL=http://qdrant:6333
       - QDRANT_COLLECTION=cs50
@@ -94,6 +95,7 @@ services:
       - BASE_URL=/a/cs101
       - VECTOR_STORE_PROVIDER=qdrant
       - QDRANT_URL=http://qdrant:6333
+      - FILESERVER_URL_PREFIX=/a/cs101/api/files
       - QDRANT_COLLECTION=cs101
       - QDRANT_API_KEY=""
       - MODEL_PROVIDER=openai

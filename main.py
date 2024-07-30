@@ -14,6 +14,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from create_llama.backend.app.api.routers.chat import chat_router
+from create_llama.backend.app.api.routers.upload import file_upload_router
 from create_llama.backend.app.settings import init_settings
 from src.models.model_config import ModelConfig
 from src.routers.management.config import config_router
@@ -38,6 +39,7 @@ if environment == "dev":
 
 # Add chat router from create_llama/backend
 app.include_router(chat_router, prefix="/api/chat", tags=["Chat"])
+app.include_router(file_upload_router, prefix="/api/chat/upload", tags=["Chat"])
 app.include_router(config_router, prefix="/api/management/config")
 app.include_router(tools_router, prefix="/api/management/tools", tags=["Agent"])
 app.include_router(files_router, prefix="/api/management/files", tags=["Knowledge"])
@@ -69,8 +71,8 @@ app.mount(
 
 # Mount the output files from tools
 app.mount(
-    "/api/files/tool-output",
-    StaticFiles(directory="tool-output", check_dir=False),
+    "/api/files/output",
+    StaticFiles(directory="output", check_dir=False),
 )
 
 # Mount the frontend static files
