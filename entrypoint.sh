@@ -16,10 +16,11 @@ if [[ -n "$BASE_URL" ]]; then
     sed -i '/<\/head>/i <script>window.ENV = {"BASE_URL":"'$BASE_URL'"};</script>' static/*.html static/**/*.html
 
     echo "Updated static files successfully!"
-fi
+else
     # Remove asset prefix
     find static -type f -name "*.*" -exec sed -i 's|https://static-assets.ragapp.org||g' {} +
     echo "Updated static files successfully!"
+fi
 
 echo "Running application..."
 

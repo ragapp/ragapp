@@ -1,5 +1,5 @@
-// Apply patch to set assetPrefix to use ASSET_PREFIX for exported assets
-// which is easier to replace with others path under reverse proxy
+// Apply patch to set assetPrefix to use https://static-assets.ragapp.org for exported assets
+
 /** @type {import('next').NextConfig} */
 
 import fs from "fs";
@@ -8,10 +8,8 @@ import webpack from "./webpack.config.mjs";
 
 const nextConfig = JSON.parse(fs.readFileSync("./next.config.json", "utf-8"));
 
-if (process.env.ENVIRONMENT !== 'dev') {
-    // This prefix will be rewritten by BASE_URL when deployed, see entrypoint.sh
-    nextConfig.assetPrefix = process.env.ASSET_PREFIX;
-}
+// This prefix will be rewritten by BASE_URL when deployed, see entrypoint.sh
+nextConfig.assetPrefix = "https://static-assets.ragapp.org";
 
 nextConfig.webpack = webpack;
 
