@@ -4,7 +4,8 @@ if [[ -n "$BASE_URL" ]]; then
     # Rewrite asset prefix to BASE_URL
     find static -type f -name "*.*" -exec sed -i 's|https://static-assets.ragapp.org|'$BASE_URL'|g' {} +
 
-    # Replacment for logo and avatar
+    # Add BASE_URL to logo and avatar
+    # TODO: find a way that is independent of assets used
     find static -type f -name "*.*" -exec sed -i 's|"/logo.png|"'$BASE_URL'/logo.png|g' {} +
     find static -type f -name "*.*" -exec sed -i 's|"/llama.png|"'$BASE_URL'/llama.png|g' {} +
 
