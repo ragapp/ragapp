@@ -14,13 +14,13 @@ export type Service = {
 }
 
 export const ragappFormSchema = z.object({
-    name: z.string().trim().min(1),
-    image: z.string().trim().min(1),
+    name: z.string().trim().min(1).refine(value => /^[a-zA-Z0-9-_]+$/.test(value), {
+      message: "Name can only contain alphanumeric characters, dashes, or underscores",
+    }),
 });
 
 export const defaultRAGAppFormValues = ragappFormSchema.parse({
     name: "my-app",
-    image: "ragapp/ragapp:latest",
 });
 
 export type RAGAppFormType = z.infer<typeof ragappFormSchema>;

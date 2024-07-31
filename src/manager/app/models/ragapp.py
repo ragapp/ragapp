@@ -1,9 +1,11 @@
+import os
+import re
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, validator
 
-DEFAULT_RAGAPP_IMAGE = "ragapp/ragapp:latest"
-DEFAULT_NETWORK = "ragapp-network"
+DEFAULT_RAGAPP_IMAGE = os.getenv("RAGAPP_IMAGE", "ragapp/ragapp:latest")
+DEFAULT_NETWORK = os.getenv("RAGAPP_NETWORK", "ragapp-network")
 APP_NAME_TEMPLATE = "ragapp-{app_name}"
 
 
@@ -11,6 +13,7 @@ def get_default_app_labels(app_name: str) -> Dict[str, str]:
     return {
         # To display the name in manager UI
         "ragapp.app_name": app_name,
+        "com.docker.compose.service": f"ragapp-{app_name}",
         # Traefik configs
         "traefik.enable": "true",
         f"traefik.http.services.ragapp-{app_name}.loadbalancer.server.port": "8000",
@@ -26,10 +29,7 @@ def get_default_app_labels(app_name: str) -> Dict[str, str]:
 def get_default_app_environment(app_name: str) -> Dict[str, str]:
     return {
         "BASE_URL": f"/a/{app_name}",
-        "VECTOR_STORE_PROVIDER": "qdrant",
-        "QDRANT_URL": "http://qdrant:6333",
-        "QDRANT_COLLECTION": app_name,
-        "QDRANT_API_KEY": "",
+        "FILESERVER_URL_PREFIX": f"/a/{app_name}/api/files",
         "MODEL_PROVIDER": "openai",
         "MODEL": "gpt-4o-mini",
         "EMBEDDING_MODEL": "text-embedding-3-small",
@@ -65,6 +65,14 @@ class RAGAppContainerConfig(BaseModel):
             data["environment"] += get_default_app_environment(data["name"])
 
         super().__init__(**data)
+
+    @validator("name", pre=True)
+    def validate_name(cls, v):
+        if not re.match(r"^[a-zA-Z0-9_-]+$", v):
+            raise ValueError(
+                "Name must be alphanumeric or underscores `_` or dashes `-`"
+            )
+        return v
 
     @computed_field
     @property
