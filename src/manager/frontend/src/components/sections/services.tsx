@@ -138,7 +138,7 @@ function ServiceCard({
                         target="_blank"
                     >
                         <Button variant="outline" className="flex items-center text-muted-foreground">
-                            <Settings2 size={20} /> {" "}
+                            <Settings2 size={20} className="mr-2" />
                             Edit
                         </Button>
                     </a>
