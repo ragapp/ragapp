@@ -3,15 +3,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { getServices, startService, stopService, removeService } from "@/client/service";
 import { Service } from "@/client/models/service";
-import { TbFilePencil, TbPlayerPauseFilled, TbPlayerPlayFilled } from "react-icons/tb";
-import { ImSpinner8 } from "react-icons/im";
-import { TiDeleteOutline } from "react-icons/ti";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
 
 import { useEffect, useState } from "react";
 import { CreateAgentDialog } from "./createAgent";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { LoaderCircle, Pause, Play, Settings2, Trash2 } from "lucide-react";
 
 function AlertDialogRemoveApp({
     service,
@@ -29,7 +27,7 @@ function AlertDialogRemoveApp({
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="ghost"><TiDeleteOutline size={20} /></Button>
+                <Button variant="ghost"><Trash2 size={20} /></Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -80,7 +78,7 @@ function StartStopButton({
                 onClick={handleStopService}
                 disabled={isHandling}
             >
-                <TbPlayerPauseFilled size={20} />
+                <Pause size={20} />
             </Button>)
             : (<Button
                 variant="outline"
@@ -88,7 +86,7 @@ function StartStopButton({
                 onClick={handleStartService}
                 disabled={isHandling}
             >
-                <TbPlayerPlayFilled size={20} />
+                <Play size={20} />
             </ Button>)
     )
 }
@@ -140,7 +138,7 @@ function ServiceCard({
                         target="_blank"
                     >
                         <Button variant="outline" className="flex items-center text-muted-foreground">
-                            <TbFilePencil size={20} />
+                            <Settings2 size={20} /> {" "}
                             Edit
                         </Button>
                     </a>
@@ -178,7 +176,7 @@ export function ServicesList() {
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 pr-8">
                     {
                         isLoading
-                            ? <div className="flex justify-center animate-spin items-start w-10"><ImSpinner8 /></div>
+                            ? <div className="flex justify-center animate-spin items-start w-10"><LoaderCircle /></div>
                             : (
                                 data?.map(service => (
                                     <ServiceCard service={service} refetch={refetch} />
