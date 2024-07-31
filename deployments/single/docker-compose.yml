@@ -21,7 +21,7 @@ services:
     networks:
       - ragapp-network
     volumes:
-      - ../scripts:/ragapp
+      - ./scripts:/ragapp
     environment:
       - MODEL=${MODEL:-phi3:latest}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
