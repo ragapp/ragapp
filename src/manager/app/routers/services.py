@@ -5,7 +5,7 @@ from app.models.docker_service import ServiceInfo
 from app.models.ragapp import RAGAppContainerConfig
 from docker.errors import DockerException
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 service_router = r = APIRouter()
 
@@ -53,7 +53,7 @@ def stop_service(
         container.stop()
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
-    return JSONResponse(status_code=204, content={})
+    return Response(status_code=204)
 
 
 @r.post("/{service_id}/start")
@@ -67,7 +67,7 @@ def start_service(
         container.start()
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
-    return JSONResponse(status_code=204, content={})
+    return Response(status_code=204)
 
 
 @r.delete("/{service_id}")
@@ -81,7 +81,7 @@ def remove_service(
         container.remove(force=True)
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
-    return JSONResponse(status_code=204, content={})
+    return Response(status_code=204)
 
 
 # Create a new service
