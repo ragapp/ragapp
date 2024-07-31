@@ -24,7 +24,10 @@ from src.routers.management.loader import loader_router
 from src.routers.management.reranker import reranker_router
 from src.routers.management.tools import tools_router
 
-app = FastAPI()
+app = FastAPI(
+    title="RAGapp",
+    root_path=os.getenv("BASE_URL", ""),
+)
 init_settings()
 
 environment = os.getenv("ENVIRONMENT")
