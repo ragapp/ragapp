@@ -1,34 +1,47 @@
-## Multiple RAGApp Deployment
+## RAGApp with Manager
+
 ## Features
-- Multiple RAGApp containers.
-- Manage RAGApp containers through the Manager UI.
-- Utilize Traefik as a reverse proxy to authenticate and manage admin routes.
+
+- Manage RAGApp containers through a manager UI
+- Start/Stop multiple RAGApp containers
+- Use Traefik for routing and to protect admin routes with authentication
 
 ## How to start?
-Navigate to the `deployments/multiple-ragapps` directory in your local repository and run docker compose:
+
+Navigate to the `deployments/multiple-ragapps` directory and run Docker Compose:
+
 ```shell
-cd deployments/multiple-ragapps && docker compose up -d
+cd deployments/multiple-ragapps
+docker compose up
 ```
-> _Note_: You can also use `docker compose up --build` command to build and start using your local image.
+
+> _Note_: Use `docker compose up --build` to use a local build instead of the images from Docker Hub.
 
 ## App paths:
-- Manager UI: http://localhost/manager/
-- Chat UI: http://localhost/a/cs50/ , http://localhost/a/cs101/
 
-## Change admin credentials: 
-The default username and password is `admin`. You should probably change it to your own new credentials:
-1. Create a new hashed password by `openssl`:
+- Manager UI: http://localhost/manager/
+
+## Change admin credentials:
+
+The default username and password is `admin`. You can change it to use your own credentials:
+
+1. Create a new hashed password using `openssl`:
+
 ```shell
 openssl passwd -apr1 new_password
 ```
+
 2. Export new user name and password to environment variables:
+
 ```shell
 export USERNAME=your_username
 export HASHED_PASSWORD=the_hashed_password
 ```
+
 You can also update them directly in the [./docker-compose.yml](docker-compose.yml) file. By changing the `traefik.http.middlewares.admin-auth.basicauth.users` config of the `traefik` service.
 
 3. Restart the service:
+
 ```
-docker compose up -d
+docker compose up
 ```

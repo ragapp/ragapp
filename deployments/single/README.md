@@ -1,6 +1,8 @@
 ## Single RAGApp deployment
+
 ## Features
-Deploy RAGapp with [Ollama](https://ollama.com/) and [Qdrant](https://qdrant.tech/) easy in your own infrastructure.
+
+Deploy RAGapp with [Ollama](https://ollama.com/) and [Qdrant](https://qdrant.tech/) easily in your own infrastructure.
 
 Using the `MODEL` environment variable, you can specify which model to use, e.g. [`llama3`](https://ollama.com/library/llama3):
 
@@ -31,7 +33,7 @@ Using a local Ollama instance is necessary if you're running RAGapp on macOS, as
 
 To enable Docker access to NVIDIA GPUs on Linux, [install the NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
-
 ## App paths:
+
 - Chat UI: http://localhost:8000
 - Admin UI: http://localhost:8000/admin

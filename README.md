@@ -53,9 +53,11 @@ Later versions of RAGapp will support to restrict access based on access tokens 
 ## Deployment
 
 ### Using Docker Compose
-You can easily start deploy RAGapp to your own infrastructure with these two docker-compose deployments:
+
+You can easily deploy RAGapp to your own infrastructure with one of these Docker Compose deployments:
+
 1. [Deploy RAGapp with Ollama and Qdrant](./deployments/single)
-2. [Deploy multiple RAGapps and a management UI with the Traefik reverse proxy](./deployments/multiple-ragapps)
+2. [Deploy multiple RAGapps with a management UI](./deployments/multiple-ragapps)
 
 ### Kubernetes
 
