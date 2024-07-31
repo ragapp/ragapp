@@ -37,22 +37,6 @@ function CreateAgentForm({
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="image"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Agent image</FormLabel>
-                            <FormControl>
-                                <Input {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                Specify docker image for the agent, recommended to use the default image
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
             </form>
         </Form>
     )

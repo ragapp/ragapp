@@ -88,8 +88,9 @@ function ServiceCard({
             </CardContent>
             <CardFooter className="flex justify-between">
                 <a
-                    href={`${service.url}/admin/`}
                     className="text-primary-foreground"
+                    href={`${service.url}/admin/`}
+                    target="_blank"
                 >
                     <Button variant="outline" className="flex items-center text-muted-foreground">
                         <TbFilePencil size={20} />

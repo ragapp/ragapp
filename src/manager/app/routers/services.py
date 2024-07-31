@@ -1,6 +1,5 @@
 import logging
 
-from app.controllers.setup import delete_collection, setup_vectordb
 from app.docker_client import get_docker_client
 from app.models.docker_service import ServiceInfo
 from app.models.ragapp import RAGAppContainerConfig
@@ -79,11 +78,7 @@ def remove_service(
     try:
         logger.info(f"Removing container {service_id}")
         container = docker_client.containers.get(service_id)
-        app_name = container.labels.get("ragapp.app_name")
         container.remove(force=True)
-        # Remove collection from QdrantDB
-        if app_name:
-            delete_collection(collection_name=app_name)
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
     return JSONResponse(status_code=204, content={})
@@ -105,17 +100,16 @@ def create_agent(
         pass
 
     try:
-        setup_vectordb(
-            collection_name=config.name,
-        )
         logger.info(f"Creating container with config: {container_config}")
         container = docker_client.containers.create(**container_config)
     except DockerException as e:
+        logger.error(f"Error creating container: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
     try:
         container.start()
     except DockerException as e:
+        logger.error(f"Error starting container: {e}")
         container.remove(force=True)
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -14,13 +14,6 @@ export function SideBar() {
                         <TbRobot size={40} />
                         Agents
                     </a>
-                    <a
-                        href="#"
-                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:disable"
-                    >
-                        <TbMessageChatbot size={40} />
-                        Chat
-                    </a>
                 </nav>
             </div>
         </div>
