@@ -86,3 +86,4 @@ services:
   
 networks:
   ragapp-network:
+    name: ragapp-network

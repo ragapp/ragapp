@@ -1,6 +1,4 @@
-import Link from "next/link"
-import { TbRobot, TbMessageChatbot } from "react-icons/tb"
-
+import { Bot } from "lucide-react";
 
 export function SideBar() {
     return (
@@ -11,15 +9,8 @@ export function SideBar() {
                         href="#"
                         className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
                     >
-                        <TbRobot size={40} />
+                        <Bot size={40} />
                         Agents
-                    </a>
-                    <a
-                        href="#"
-                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:disable"
-                    >
-                        <TbMessageChatbot size={40} />
-                        Chat
                     </a>
                 </nav>
             </div>

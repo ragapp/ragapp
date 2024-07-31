@@ -1,35 +1,16 @@
-from datetime import datetime
-
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel, computed_field, validator
+import logging
 
 from app.docker_client import get_docker_client
+from app.models.docker_service import ServiceInfo
+from app.models.ragapp import RAGAppContainerConfig
+from docker.errors import DockerException
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 
 service_router = r = APIRouter()
 
 
-class ServiceInfo(BaseModel):
-    id: str
-    name: str
-    app_name: str | None
-    created_at: str
-    started_at: str | None
-    updated_at: str | None
-    status: str
-    image: str
-    restart_count: int
-
-    @computed_field  # type: ignore
-    @property
-    def url(self) -> str:
-        return f"/a/{self.app_name}"
-
-    @validator("created_at", "updated_at", "started_at", pre=True)
-    def format_datetime(cls, v):
-        if v is None:
-            return v
-        dt = datetime.strptime(v.split(".")[0], "%Y-%m-%dT%H:%M:%S")
-        return dt.strftime("%Y-%m-%d %H:%M:%S")
+logger = logging.getLogger("uvicorn")
 
 
 @r.get("")
@@ -39,7 +20,7 @@ def list_services(
 ) -> list[ServiceInfo]:
     # Filter services by label
     filters = {"label": "ragapp.app_name"} if only_ragapp else {}
-    services = docker_client.containers.list(filters=filters)
+    services = docker_client.containers.list(filters=filters, all=True)
     service_list = []
     for service in services:
         attrs = service.attrs
@@ -59,3 +40,83 @@ def list_services(
         )
         service_list.append(service_info)
     return service_list
+
+
+@r.post("/{service_id}/stop")
+def stop_service(
+    service_id: str,
+    docker_client=Depends(get_docker_client),
+):
+    try:
+        logger.info(f"Stopping container {service_id}")
+        container = docker_client.containers.get(service_id)
+        container.stop()
+    except DockerException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return JSONResponse(status_code=204, content={})
+
+
+@r.post("/{service_id}/start")
+def start_service(
+    service_id: str,
+    docker_client=Depends(get_docker_client),
+):
+    try:
+        logger.info(f"Starting container {service_id}")
+        container = docker_client.containers.get(service_id)
+        container.start()
+    except DockerException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return JSONResponse(status_code=204, content={})
+
+
+@r.delete("/{service_id}")
+def remove_service(
+    service_id: str,
+    docker_client=Depends(get_docker_client),
+):
+    try:
+        logger.info(f"Removing container {service_id}")
+        container = docker_client.containers.get(service_id)
+        container.remove(force=True)
+    except DockerException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return JSONResponse(status_code=204, content={})
+
+
+# Create a new service
+@r.post("")
+def create_agent(
+    config: RAGAppContainerConfig,
+    docker_client=Depends(get_docker_client),
+):
+    container_config = config.to_docker_create_kwargs()
+
+    try:
+        current_container = docker_client.containers.get(container_config["name"])
+        if current_container:
+            raise HTTPException(status_code=400, detail="Container already exists")
+    except DockerException:
+        pass
+
+    try:
+        logger.info(f"Creating container with config: {container_config}")
+        container = docker_client.containers.create(**container_config)
+    except DockerException as e:
+        logger.error(f"Error creating container: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+    try:
+        container.start()
+    except DockerException as e:
+        logger.error(f"Error starting container: {e}")
+        container.remove(force=True)
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return JSONResponse(
+        status_code=201,
+        content={
+            "id": container.id,
+            "name": container.name,
+        },
+    )

@@ -49,5 +49,3 @@ RUN mkdir -p data
 EXPOSE 8000
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-
-CMD ["fastapi", "run", "main.py"]
