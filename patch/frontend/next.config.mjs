@@ -8,12 +8,10 @@ import webpack from "./webpack.config.mjs";
 
 const nextConfig = JSON.parse(fs.readFileSync("./next.config.json", "utf-8"));
 
-if (process.env.ENVIRONMENT === "dev") {
-    nextConfig.assetPrefix = "";
-} else {
-    // This prefix will be rewritten by BASE_URL when deployed, see entrypoint.sh
-    nextConfig.assetPrefix = "https://static-assets.ragapp.org";   
-}
+process.env.ENVIRONMENT === "dev"
+  ? (nextConfig.assetPrefix = undefined)
+  : // This prefix will be rewritten by BASE_URL when deployed, see entrypoint.sh
+    (nextConfig.assetPrefix = "https://static-assets.ragapp.org");
 
 nextConfig.webpack = webpack;
 
