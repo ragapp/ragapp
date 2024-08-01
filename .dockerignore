@@ -16,6 +16,8 @@
 # Node
 **/.results
 **/node_modules
+**/out
+**/.next
 
 ./static
 
@@ -24,10 +26,13 @@
 ./storage/
 ./static/
 ./data/
+./src/manager/
 
 # Deployment files
 ./Dockerfile
 ./docker-compose.yml
+./deployments/**/data
+./deployments/**/ollama
 
 # Do not ignore template config files
 !config/*

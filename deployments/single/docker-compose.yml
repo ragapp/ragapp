@@ -26,7 +26,7 @@ services:
       - MODEL=${MODEL:-phi3:latest}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
       - QDRANT_URL=http://qdrant:6333
-      - COLLECTION_NAME=default
+      - COLLECTION_NAMES=default
       - DISTANCE_METRIC=Cosine
       - VECTOR_SIZE=768
     command: >
@@ -39,7 +39,7 @@ services:
       - ollama
 
   ragapp:
-    build: .
+    build: ../..
     image: ragapp/ragapp:latest
     ports:
       - "8000:8000"
@@ -63,4 +63,3 @@ services:
   
 networks:
   ragapp-network:
-
