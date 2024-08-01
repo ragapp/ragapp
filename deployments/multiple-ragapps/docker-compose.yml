@@ -30,10 +30,8 @@ services:
       - traefik.enable=true
       - traefik.http.services.ragapp-cs50.loadbalancer.server.port=8000
       - traefik.http.routers.ragapp-cs50.rule=PathPrefix(`/a/cs50`)
-      - traefik.http.middlewares.ragapp-cs50-strip-path.stripprefix.prefixes=/a/cs50
-      - traefik.http.routers.ragapp-cs50.middlewares=ragapp-cs50-strip-path
       - traefik.http.routers.ragapp-cs50-admin.rule=PathRegexp(`/a/cs50/admin`)
-      - traefik.http.routers.ragapp-cs50-admin.middlewares=admin-auth,ragapp-cs50-strip-path
+      - traefik.http.routers.ragapp-cs50-admin.middlewares=admin-auth
     environment:
       - BASE_URL=/a/cs50
       - FILESERVER_URL_PREFIX=/a/cs50/api/files
@@ -54,10 +52,8 @@ services:
       - traefik.enable=true
       - traefik.http.services.ragapp-cs101.loadbalancer.server.port=8000
       - traefik.http.routers.ragapp-cs101.rule=PathPrefix(`/a/cs101`)
-      - traefik.http.middlewares.ragapp-cs101-strip-path.stripprefix.prefixes=/a/cs101
-      - traefik.http.routers.ragapp-cs101.middlewares=ragapp-cs101-strip-path
       - traefik.http.routers.ragapp-cs101-admin.rule=PathRegexp(`/a/cs101/admin`)
-      - traefik.http.routers.ragapp-cs101-admin.middlewares=admin-auth,ragapp-cs101-strip-path
+      - traefik.http.routers.ragapp-cs101-admin.middlewares=admin-auth
     environment:
       - BASE_URL=/a/cs101
       - FILESERVER_URL_PREFIX=/a/cs101/api/files

@@ -66,6 +66,7 @@ It's easy to deploy RAGapp in your own cloud infrastructure. Customized K8S depl
 ## Development
 
 ```shell
+export ENVIRONMENT=dev
 poetry install --no-root
 make build-frontends
 make dev
