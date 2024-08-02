@@ -21,7 +21,7 @@ services:
       - ragapp-network
 
   ragapp-cs50:
-    build: ../..
+    build: ../../src/ragapp
     image: ragapp/ragapp:latest
     volumes:
       - ./data/cs50-data:/app/data
@@ -43,7 +43,7 @@ services:
       - ragapp-network
 
   ragapp-cs101:
-    build: ../..
+    build: ../../src/ragapp
     image: ragapp/ragapp:latest
     volumes:
       - ./data/cs101-data:/app/data
