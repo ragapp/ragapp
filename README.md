@@ -64,7 +64,8 @@ You can easily deploy RAGapp to your own infrastructure with one of these Docker
 It's easy to deploy RAGapp in your own cloud infrastructure. Customized K8S deployment descriptors are coming soon.
 
 ## Development
-
+### RAGApp:
+Move to [src/ragapp](src/ragapp) directory and start with these commands:
 ```shell
 export ENVIRONMENT=dev
 poetry install --no-root
@@ -72,7 +73,9 @@ make build-frontends
 make dev
 ```
 
-> _Note_: To check out the admin UI during development, please go to http://localhost:3000/admin.
+> _Note_:  
+Make sure you have the [Poetry](https://python-poetry.org/) installed.  
+To check out the admin UI during development, please go to http://localhost:3000/admin.
 
 ## Contact
 
