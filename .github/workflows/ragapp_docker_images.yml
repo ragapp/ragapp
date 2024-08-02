@@ -6,9 +6,6 @@ on:
       - main
     tags:
       - v*
-    paths:
-      - 'src/ragapp/**'
-      - '.github/workflows/ragapp_docker_images.yml'
 
 jobs:
   release_tagged_image:

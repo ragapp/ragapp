@@ -6,9 +6,6 @@ on:
       - main
     tags:
       - v*
-    paths:
-      - 'src/manager/**'
-      - '.github/workflows/manager_docker_images.yml'
 
 jobs:
   release_tagged_image:
