@@ -46,7 +46,7 @@ jobs:
         with:
           artifacts: "README.md"
           name: Release RAGapp ${{ steps.tag.outputs.TAG }}
-          bodyFile: "src/ragapp/CHANGELOG.md"
+          bodyFile: "CHANGELOG.md"
           token: ${{ secrets.GITHUB_TOKEN }}
 
   release_dev_image:
