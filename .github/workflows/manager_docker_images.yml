@@ -5,14 +5,14 @@ on:
     branches:
       - main
     tags:
-      - v*
+      - manager-v*
     paths:
       - 'src/manager/**'
       - '.github/workflows/manager_docker_images.yml'
 
 jobs:
   release_tagged_image:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/manager-v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -31,7 +31,7 @@ jobs:
 
       - name: Extract tag name
         id: tag
-        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/manager-}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -48,8 +48,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "README.md"
-          name: Release ${{ steps.tag.outputs.TAG }}
-          bodyFile: "CHANGELOG.md"
+          name: Release manager ${{ steps.tag.outputs.TAG }}
+          bodyFile: "src/manager/CHANGELOG.md"
           token: ${{ secrets.GITHUB_TOKEN }}
 
   release_dev_image:
