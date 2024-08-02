@@ -37,9 +37,9 @@ build-chat: patch-chat
 
 build-admin:
 	@echo "\nBuilding Admin UI..."
-	cd ./admin && pnpm install && pnpm run build
+	cd ./admin-ui && pnpm install && pnpm run build
 	@echo "\nCopying Admin UI to static folder..."
-	mkdir -p ./static/admin && cp -r ./admin/out/* ./static/admin/
+	mkdir -p ./static/admin-ui && cp -r ./admin-ui/out/* ./static/admin-ui/
 	@echo "\nDone!"
 
 build-frontends: build-chat build-admin
@@ -53,5 +53,5 @@ dev:
 	@export ENVIRONMENT=dev; \
 	trap 'kill 0' SIGINT; \
 	poetry run python main.py & \
-	pnpm --prefix ./admin run dev & \
+	pnpm --prefix ./admin-ui run dev & \
 	wait
