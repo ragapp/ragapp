@@ -52,6 +52,15 @@ jobs:
   release_dev_image:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - path: ./src/manager
+            image: ghcr.io/${{ github.repository }}:latest
+          - path: ./src/ragapp
+            image: ghcr.io/${{ github.repository }}/manager:latest
+
     permissions:
       contents: read
       packages: write
@@ -72,8 +81,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./src/manager
-          file: ./src/manager/Dockerfile
+          context: ${{ matrix.path }}
+          file: ${{ matrix.path }}/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64/v8
-          tags: ghcr.io/ragapp/manager:latest
+          tags: ${{ matrix.image }}
