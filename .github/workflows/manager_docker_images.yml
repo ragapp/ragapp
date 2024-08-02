@@ -8,14 +8,12 @@ on:
       - v*
     paths:
       - 'src/manager/**'
+      - '.github/workflows/manager_docker_images.yml'
 
 jobs:
   release_tagged_image:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: "src/manager"
     permissions:
       contents: write
     steps:
@@ -38,8 +36,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./src/manager
+          file: ./src/manager/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64/v8
           tags: |
@@ -57,9 +55,6 @@ jobs:
   release_dev_image:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: "src/manager"
     permissions:
       contents: read
       packages: write
@@ -80,8 +75,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./src/manager
+          file: ./src/manager/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64/v8
           tags: ghcr.io/${{ github.repository }}:latest

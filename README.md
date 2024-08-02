@@ -74,7 +74,7 @@ make dev
 ```
 
 > _Note_:  
-Make sure you have the [Poetry](https://python-poetry.org/) installed.  
+Make sure you have [Poetry](https://python-poetry.org/) installed.  
 To check out the admin UI during development, please go to http://localhost:3000/admin.
 
 ## Contact
