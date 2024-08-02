@@ -6,11 +6,16 @@ on:
       - main
     tags:
       - v*
+    paths:
+      - 'src/ragapp/**'
 
 jobs:
   release_tagged_image:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "src/ragapp"
     permissions:
       contents: write
     steps:
@@ -52,6 +57,9 @@ jobs:
   release_dev_image:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "src/ragapp"
     permissions:
       contents: read
       packages: write
