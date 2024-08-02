@@ -1,6 +1,6 @@
 "use client";
-import { ServicesList } from "./sections/services"
-import { SideBar } from "./sections/sidebar"
+import { ServicesList } from "./sections/services";
+import { SideBar } from "./sections/sidebar";
 
 export function AdminDashboard() {
   return (
@@ -10,6 +10,5 @@ export function AdminDashboard() {
         <ServicesList />
       </div>
     </div>
-  )
+  );
 }
-

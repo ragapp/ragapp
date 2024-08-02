@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import { AdminDashboard } from "@/components/admin-dashboard";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 export default function Home() {
   return (

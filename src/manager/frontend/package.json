@@ -6,7 +6,9 @@
     "dev": "export ENVIRONMENT=dev && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint '**/*.{ts,tsx}' --max-warnings=0",
+    "format": "prettier --ignore-unknown --cache --check .",
+    "format:write": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
