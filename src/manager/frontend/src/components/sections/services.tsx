@@ -158,7 +158,7 @@ export function ServicesList() {
         if (!addAgentDialogOpen) {
             refetch();
         }
-    }, [addAgentDialogOpen]);
+    }, [addAgentDialogOpen, refetch]);
 
     return (
         <>
@@ -179,7 +179,7 @@ export function ServicesList() {
                             ? <div className="flex justify-center animate-spin items-start w-10"><LoaderCircle /></div>
                             : (
                                 data?.map(service => (
-                                    <ServiceCard service={service} refetch={refetch} />
+                                    <ServiceCard key={service.id} service={service} refetch={refetch} />
                                 ))
                             )
                     }
