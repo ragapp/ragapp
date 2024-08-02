@@ -39,7 +39,7 @@ services:
       - ollama
 
   ragapp:
-    build: ../..
+    build: ../../src/ragapp
     image: ragapp/ragapp:latest
     ports:
       - "8000:8000"

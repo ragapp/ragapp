@@ -1,0 +1,9 @@
+data/
+node_modules/
+create_llama/
+ollama/
+tool-output/
+storage/
+output/
+
+!config/*

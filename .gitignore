@@ -1,16 +1,9 @@
-static/
-storage/
-
 **/__pycache__/
-
 **/.env
-
 **/.mypy_cache/
+**/node_modules/
+**/static/
 
-data/
-node_modules/
-create_llama/
-ollama/
-tool-output/
-
-!config/*
+# deployments
+deployments/**/data/
+deployments/**/ollama/

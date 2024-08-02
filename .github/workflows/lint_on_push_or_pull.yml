@@ -12,11 +12,35 @@ env:
   POETRY_VERSION: "1.6.1"
 
 jobs:
-  linting-ts:
+  linting-ts-ragapp-admin-ui:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "admin"
+        working-directory: "src/ragapp/admin-ui"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run lint
+        run: pnpm run lint
+
+      - name: Run Prettier
+        run: pnpm run format
+
+  linting-ts-manager:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "src/manager/frontend"
     steps:
       - uses: actions/checkout@v4
 
@@ -49,15 +73,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
-
-      - name: Install pre-commit
+      - name: Install black
         shell: bash
-        run: poetry install --with dev
+        run: pip install black
 
-      - name: Run formatter
+      - name: Run formatter ragapp
         shell: bash
-        run: poetry run black --check .
+        run: black --check ./src/ragapp
+      
+      - name: Run formatter manager
+        shell: bash
+        run: black --check ./src/manager

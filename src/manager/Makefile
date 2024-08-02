@@ -1,3 +1,5 @@
+.PHONY: build-frontend dev
+
 build-frontend:
 	@echo "\nBuilding Admin Dashbboard..."
 	cd ./frontend && rm -rf out && pnpm install && pnpm run build
