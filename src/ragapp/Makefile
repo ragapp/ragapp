@@ -39,7 +39,7 @@ build-admin:
 	@echo "\nBuilding Admin UI..."
 	cd ./admin-ui && pnpm install && pnpm run build
 	@echo "\nCopying Admin UI to static folder..."
-	mkdir -p ./static/admin-ui && cp -r ./admin-ui/out/* ./static/admin-ui/
+	mkdir -p ./static/admin && cp -r ./admin-ui/out/* ./static/admin/
 	@echo "\nDone!"
 
 build-frontends: build-chat build-admin

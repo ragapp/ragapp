@@ -65,7 +65,7 @@ services:
       - ragapp-network
   
   manager:
-    image: ragapp/manager
+    image: ragapp/manager:latest
     build: ../../src/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro

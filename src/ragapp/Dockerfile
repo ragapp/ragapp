@@ -10,9 +10,8 @@ RUN apk add --no-cache make
 WORKDIR /app
 
 COPY Makefile .
-COPY admin ./admin
+COPY admin-ui ./admin-ui
 COPY patch/frontend ./patch/frontend
-COPY patch/backend ./patch/backend
 
 # Build static files for the Chat UI
 RUN make build-frontends
@@ -39,7 +38,7 @@ RUN poetry install --no-root --no-cache --only main
 
 # Copy static files from the build stage 
 COPY --from=build /app/create_llama/frontend/out /app/static
-COPY --from=build /app/admin/out /app/static/admin
+COPY --from=build /app/admin-ui/out /app/static/admin
 COPY --from=build /app/create_llama/backend /app/create_llama/backend
 COPY . .
 
