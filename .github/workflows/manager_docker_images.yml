@@ -1,4 +1,4 @@
-name: RAGapp - Build and Push Docker image
+name: Manager - Build and Push Docker image
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     tags:
       - v*
     paths:
-      - 'src/ragapp/**'
+      - 'src/manager/**'
 
 jobs:
   release_tagged_image:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "src/ragapp"
+        working-directory: "src/manager"
     permissions:
       contents: write
     steps:
@@ -43,8 +43,8 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64/v8
           tags: |
-            ragapp/ragapp:${{ steps.tag.outputs.TAG }}
-            ragapp/ragapp:latest
+            ragapp/manager:${{ steps.tag.outputs.TAG }}
+            ragapp/manager:latest
 
       - name: Create GitHub release
         uses: ncipollo/release-action@v1
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "src/ragapp"
+        working-directory: "src/manager"
     permissions:
       contents: read
       packages: write
