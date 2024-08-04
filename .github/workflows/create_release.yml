@@ -50,8 +50,7 @@ jobs:
   release_github:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write
 
     steps:
       - name: Check out the code
