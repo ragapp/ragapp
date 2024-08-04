@@ -64,6 +64,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "README.md"
-          name: Release manager ${{ steps.tag.outputs.TAG }}
+          name: Release ${{ steps.tag.outputs.TAG }}
           bodyFile: "CHANGELOG.md"
           token: ${{ secrets.GITHUB_TOKEN }}
