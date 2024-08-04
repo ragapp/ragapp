@@ -14,7 +14,11 @@ import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "react-query";
 import { ModelForm } from "./shared";
 
-const embeddingModels = ["nomic-embed-text"];
+// The list defines the supported embedding models
+const embeddingModels = [
+  "nomic-embed-text",
+  "jina/jina-embeddings-v2-base-de"
+];
 
 const getLLMModels = (models: string[]) => {
   return models.filter((model) => {
@@ -109,40 +113,24 @@ export const OllamaForm = ({
           Could not fetch Ollama models. Make sure the Ollama base URL is
           accessible with RAGapp.
         </FormMessage>
-      ) : getLLMModels(models ?? []).length === 0 ? (
-        <FormMessage>
-          There is no LLM model available using Ollama. <br />
-          Please pull a Ollama LLM model from &nbsp;
-          <a href="https://ollama.com/library" target="_blank" rel="noreferrer">
-            https://ollama.com/library
-          </a>
-        </FormMessage>
-      ) : getEmbeddingModels(models ?? []).length == 0 ? (
+      ) : (
         <>
           <ModelForm
             form={form}
+            title="LLM Model"
+            description="Select an LLM model to use for language generation."
             defaultValue={defaultValues.model}
             supportedModels={getLLMModels(models ?? [])}
           />
-          <FormMessage>
-            The embedding model <i>nomic-embed-text</i> is required. Please pull
-            it from{" "}
-            <a
-              href="https://ollama.com/library/nomic-embed-text"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {" "}
-              https://ollama.com/library/nomic-embed-text
-            </a>
-          </FormMessage>
+          <ModelForm
+            form={form}
+            name="embedding_model"
+            title="Embedding Model"
+            description="Select an embedding model for text embeddings."
+            defaultValue={defaultValues.embedding_model}
+            supportedModels={getEmbeddingModels(models ?? [])}
+          />
         </>
-      ) : (
-        <ModelForm
-          form={form}
-          defaultValue={defaultValues.model}
-          supportedModels={getLLMModels(models ?? [])}
-        />
       )}
     </>
   );
