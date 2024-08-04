@@ -188,7 +188,7 @@ export function ServicesList() {
           open={addAgentDialogOpen}
           setOpen={setAddAgentDialogOpen}
         />
-        <Button onClick={() => setAddAgentDialogOpen(true)}>+ New Agent</Button>
+        <Button onClick={() => setAddAgentDialogOpen(true)}>+ New App</Button>
       </header>
       <section className="space-y-4">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 pr-8">

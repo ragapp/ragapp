@@ -40,11 +40,11 @@ function CreateAgentForm({ form }: { form: UseFormReturn<RAGAppFormType> }) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Agent name</FormLabel>
+              <FormLabel>RAGapp name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>Specify the name of the agent</FormDescription>
+              <FormDescription>Specify the name of the RAGapp</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -83,13 +83,13 @@ export function CreateAgentDialog({
     >
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle>Add Agent</DialogTitle>
-          <DialogDescription>Add a new agent to the system</DialogDescription>
+          <DialogTitle>Add App</DialogTitle>
+          <DialogDescription>Add a new RAGapp to the system</DialogDescription>
         </DialogHeader>
         <CreateAgentForm form={form} />
         <DialogFooter>
           <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
-            Add Agent
+            Add App
           </Button>
         </DialogFooter>
       </DialogContent>
