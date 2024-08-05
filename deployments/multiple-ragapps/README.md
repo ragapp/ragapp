@@ -30,7 +30,7 @@ docker compose up --build
 To use the latest test version from the `main` branch, call:
 
 ```shell
-IMAGE_RAGAPP=ghcr.io/ragapp/ragapp:latest IMAGE_MANAGER=ghcr.io/ragapp/ragapp-manager:latest docker compose up
+RAGAPP_IMAGE=ghcr.io/ragapp/ragapp:latest MANAGER_IMAGE=ghcr.io/ragapp/ragapp-manager:latest docker compose up
 ```
 
 ## App paths:

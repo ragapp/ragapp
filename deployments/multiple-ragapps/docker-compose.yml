@@ -22,7 +22,7 @@ services:
 
   ragapp-cs50:
     build: ../../src/ragapp
-    image: ${IMAGE_RAGAPP:-/ragapp/ragapp:latest}
+    image: ${RAGAPP_IMAGE:-ragapp/ragapp:latest}
     volumes:
       - ./data/cs50-data:/app/data
     labels:
@@ -44,7 +44,7 @@ services:
 
   ragapp-cs101:
     build: ../../src/ragapp
-    image: ${IMAGE_RAGAPP:-/ragapp/ragapp:latest}
+    image: ${RAGAPP_IMAGE:-ragapp/ragapp:latest}
     volumes:
       - ./data/cs101-data:/app/data
     labels:
@@ -65,12 +65,13 @@ services:
       - ragapp-network
   
   manager:
-    image: ${IMAGE_MANAGER:-/ragapp/manager:latest}
+    image: ${MANAGER_IMAGE:-ragapp/manager:latest}
     build: ../../src/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - BASE_URL=/manager
+      - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
     labels:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000
