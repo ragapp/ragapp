@@ -64,6 +64,10 @@ export const OllamaForm = ({
     },
   );
 
+  // Extract LLM and embedding models from the fetched models
+  const llmModels = getLLMModels(models ?? []);
+  const embeddingModelsAvailable = getEmbeddingModels(models ?? []);
+
   return (
     <>
       <FormField
@@ -113,6 +117,35 @@ export const OllamaForm = ({
           Could not fetch Ollama models. Make sure the Ollama base URL is
           accessible with RAGapp.
         </FormMessage>
+      ) : llmModels.length === 0 ? (
+        <FormMessage>
+          There is no LLM model available using Ollama. <br />
+          Please pull a Ollama LLM model from &nbsp;
+          <a href="https://ollama.com/library" target="_blank" rel="noreferrer">
+            https://ollama.com/library
+          </a>
+        </FormMessage>
+      ) : embeddingModelsAvailable.length === 0 ? (
+        <>
+          <ModelForm
+            form={form}
+            title="LLM Model"
+            description="Select an LLM model to use for language generation."
+            defaultValue={defaultValues.model}
+            supportedModels={llmModels}
+          />
+          <FormMessage>
+            One of the embedding models{" "}
+            <i>{embeddingModels.join(", ")}</i> is required. Please pull an Ollama embedding model (e.g., <i>nomic-embed-text</i>) from &nbsp;
+            <a
+              href="https://ollama.com/library"
+              target="_blank"
+              rel="noreferrer"
+            >
+              https://ollama.com/library
+            </a>
+          </FormMessage>
+        </>
       ) : (
         <>
           <ModelForm
@@ -120,7 +153,7 @@ export const OllamaForm = ({
             title="LLM Model"
             description="Select an LLM model to use for language generation."
             defaultValue={defaultValues.model}
-            supportedModels={getLLMModels(models ?? [])}
+            supportedModels={llmModels}
           />
           <ModelForm
             form={form}
@@ -128,7 +161,7 @@ export const OllamaForm = ({
             title="Embedding Model"
             description="Select an embedding model for text embeddings."
             defaultValue={defaultValues.embedding_model}
-            supportedModels={getEmbeddingModels(models ?? [])}
+            supportedModels={embeddingModelsAvailable}
           />
         </>
       )}
