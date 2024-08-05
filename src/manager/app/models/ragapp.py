@@ -18,10 +18,8 @@ def get_default_app_labels(app_name: str) -> Dict[str, str]:
         "traefik.enable": "true",
         f"traefik.http.services.ragapp-{app_name}.loadbalancer.server.port": "8000",
         f"traefik.http.routers.ragapp-{app_name}.rule": f"PathPrefix(`/a/{app_name}`)",
-        f"traefik.http.middlewares.ragapp-{app_name}-strip-path.stripprefix.prefixes": f"/a/{app_name}",
-        f"traefik.http.routers.ragapp-{app_name}.middlewares": f"ragapp-{app_name}-strip-path",
         f"traefik.http.routers.ragapp-{app_name}-admin.rule": f"PathRegexp(`/a/{app_name}/admin`)",
-        f"traefik.http.routers.ragapp-{app_name}-admin.middlewares": f"admin-auth,ragapp-{app_name}-strip-path",
+        f"traefik.http.routers.ragapp-{app_name}-admin.middlewares": "admin-auth",
     }
 
 
