@@ -42,13 +42,14 @@ The docker container exposes the following endpoints:
 
 ### Authentication
 
-RAGapp doesn't come with any authentication layer by design. You'll have to protect the `/admin` and `/api/management` paths in your cloud environment to secure your RAGapp.
+Just the RAGapp container doesn't come with any authentication layer by design. This is the task
+of an API Gateway routing the traffic to RAGapp.
 This step heavily depends on your cloud provider and the services you use.
-A common way to do so using Kubernetes is to use an [Ingress Controller](https://kubernetes.github.io/ingress-nginx/examples/auth/basic/).
+For a pure Docker Compose environment, you can look at our [RAGapp with management UI](./deployments/multiple-ragapps) deployment.
 
 ### Authorization
 
-Later versions of RAGapp will support to restrict access based on access tokens forwarded from an API Gateway or similar.
+Later versions of RAGapp will support restricting access based on access tokens forwarded from an API Gateway or similar.
 
 ## Deployment
 
@@ -56,16 +57,19 @@ Later versions of RAGapp will support to restrict access based on access tokens 
 
 You can easily deploy RAGapp to your own infrastructure with one of these Docker Compose deployments:
 
-1. [Deploy RAGapp with Ollama and Qdrant](./deployments/single)
-2. [Deploy multiple RAGapps with a management UI](./deployments/multiple-ragapps)
+1. [RAGapp with Ollama and Qdrant](./deployments/single)
+2. [Multiple RAGapps with a management UI](./deployments/multiple-ragapps)
 
 ### Kubernetes
 
 It's easy to deploy RAGapp in your own cloud infrastructure. Customized K8S deployment descriptors are coming soon.
 
 ## Development
+
 ### RAGApp:
+
 Move to [src/ragapp](src/ragapp) directory and start with these commands:
+
 ```shell
 export ENVIRONMENT=dev
 poetry install --no-root
@@ -73,9 +77,9 @@ make build-frontends
 make dev
 ```
 
-> _Note_:  
-Make sure you have [Poetry](https://python-poetry.org/) installed.  
-To check out the admin UI during development, please go to http://localhost:3000/admin.
+Then, to check out the admin UI, go to http://localhost:3000/admin.
+
+> _Note_: Make sure you have [Poetry](https://python-poetry.org/) installed.
 
 ## Contact
 
