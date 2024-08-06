@@ -15,10 +15,7 @@ import { useQuery } from "react-query";
 import { ModelForm } from "./shared";
 
 // The list defines the supported embedding models
-const embeddingModels = [
-  "nomic-embed-text",
-  "jina/jina-embeddings-v2-base-de"
-];
+const embeddingModels = ["nomic-embed-text", "jina/jina-embeddings-v2-base-de"];
 
 const getLLMModels = (models: string[]) => {
   return models.filter((model) => {
@@ -135,8 +132,9 @@ export const OllamaForm = ({
             supportedModels={llmModels}
           />
           <FormMessage>
-            One of the embedding models{" "}
-            <i>{embeddingModels.join(", ")}</i> is required. Please pull an Ollama embedding model (e.g., <i>nomic-embed-text</i>) from &nbsp;
+            One of the embedding models <i>{embeddingModels.join(", ")}</i> is
+            required. Please pull an Ollama embedding model (e.g.,{" "}
+            <i>nomic-embed-text</i>) from &nbsp;
             <a
               href="https://ollama.com/library"
               target="_blank"
