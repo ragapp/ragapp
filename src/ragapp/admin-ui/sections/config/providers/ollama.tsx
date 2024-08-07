@@ -126,8 +126,6 @@ export const OllamaForm = ({
         <>
           <ModelForm
             form={form}
-            title="LLM Model"
-            description="Select an LLM model to use for language generation."
             defaultValue={defaultValues.model}
             supportedModels={llmModels}
           />
