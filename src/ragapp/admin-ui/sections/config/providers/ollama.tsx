@@ -14,7 +14,8 @@ import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "react-query";
 import { ModelForm } from "./shared";
 
-const embeddingModels = ["nomic-embed-text"];
+// The list defines the supported embedding models
+const embeddingModels = ["nomic-embed-text", "jina/jina-embeddings-v2-base-de"];
 
 const getLLMModels = (models: string[]) => {
   return models.filter((model) => {
@@ -59,6 +60,10 @@ export const OllamaForm = ({
       },
     },
   );
+
+  // Extract LLM and embedding models from the fetched models
+  const llmModels = getLLMModels(models ?? []);
+  const embeddingModelsAvailable = getEmbeddingModels(models ?? []);
 
   return (
     <>
@@ -109,7 +114,7 @@ export const OllamaForm = ({
           Could not fetch Ollama models. Make sure the Ollama base URL is
           accessible with RAGapp.
         </FormMessage>
-      ) : getLLMModels(models ?? []).length === 0 ? (
+      ) : llmModels.length === 0 ? (
         <FormMessage>
           There is no LLM model available using Ollama. <br />
           Please pull a Ollama LLM model from &nbsp;
@@ -117,32 +122,42 @@ export const OllamaForm = ({
             https://ollama.com/library
           </a>
         </FormMessage>
-      ) : getEmbeddingModels(models ?? []).length == 0 ? (
+      ) : embeddingModelsAvailable.length === 0 ? (
         <>
           <ModelForm
             form={form}
             defaultValue={defaultValues.model}
-            supportedModels={getLLMModels(models ?? [])}
+            supportedModels={llmModels}
           />
           <FormMessage>
-            The embedding model <i>nomic-embed-text</i> is required. Please pull
-            it from{" "}
+            One of the embedding models <i>{embeddingModels.join(", ")}</i> is
+            required. Please pull an Ollama embedding model (e.g.,{" "}
+            <i>nomic-embed-text</i>) from &nbsp;
             <a
-              href="https://ollama.com/library/nomic-embed-text"
+              href="https://ollama.com/library"
               target="_blank"
               rel="noreferrer"
             >
-              {" "}
-              https://ollama.com/library/nomic-embed-text
+              https://ollama.com/library
             </a>
           </FormMessage>
         </>
       ) : (
-        <ModelForm
-          form={form}
-          defaultValue={defaultValues.model}
-          supportedModels={getLLMModels(models ?? [])}
-        />
+        <>
+          <ModelForm
+            form={form}
+            defaultValue={defaultValues.model}
+            supportedModels={llmModels}
+          />
+          <ModelForm
+            form={form}
+            name="embedding_model"
+            title="Embedding Model"
+            description="Select an embedding model for text embeddings."
+            defaultValue={defaultValues.embedding_model}
+            supportedModels={embeddingModelsAvailable}
+          />
+        </>
       )}
     </>
   );
