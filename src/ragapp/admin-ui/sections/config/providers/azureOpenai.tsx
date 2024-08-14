@@ -1,5 +1,6 @@
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -40,10 +41,22 @@ export const AzureOpenAIForm = ({
           render={({ field }) => (
             <FormItem className="w-1/2">
               <FormLabel>API Endpoint</FormLabel>
+              <FormDescription>
+                Please check how to get the endpoint in
+                <a
+                  className="italic"
+                  href="https://learn.microsoft.com/en-us/azure/ai-services/openai/reference"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {" "}
+                  this documentation
+                </a>
+              </FormDescription>
               <FormControl>
                 <Input
                   type="text"
-                  placeholder={defaultValues.azure_openai_endpoint}
+                  placeholder="https://{your-custom-endpoint}.openai.azure.com"
                   {...field}
                 />
               </FormControl>
@@ -53,15 +66,26 @@ export const AzureOpenAIForm = ({
         />
         <FormField
           control={form.control}
-          name="azure_openai_api_key"
+          name="azure_openai_api_version"
           render={({ field }) => (
             <FormItem className="w-1/2">
-              <FormLabel>API Key</FormLabel>
+              <FormLabel>API Version</FormLabel>
+              <FormDescription>
+                Please check the API version in
+                <a
+                  className="italic"
+                  href="https://learn.microsoft.com/en-us/azure/ai-services/openai/api-version-deprecation#latest-preview-api-releases"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {" "}
+                  this documentation
+                </a>
+              </FormDescription>
               <FormControl>
-                <PasswordInput
-                  placeholder={
-                    defaultValues.azure_openai_api && "****************"
-                  }
+                <Input
+                  type="text"
+                  placeholder={defaultValues.azure_openai_api_version}
                   {...field}
                 />
               </FormControl>
@@ -70,6 +94,24 @@ export const AzureOpenAIForm = ({
           )}
         />
       </div>
+      <FormField
+        control={form.control}
+        name="azure_openai_api_key"
+        render={({ field }) => (
+          <FormItem className="w-full">
+            <FormLabel>API Key</FormLabel>
+            <FormControl>
+              <PasswordInput
+                placeholder={
+                  defaultValues.azure_openai_api && "****************"
+                }
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <div className="flex flex-row w-full space-x-2">
         <FormField
           control={form.control}

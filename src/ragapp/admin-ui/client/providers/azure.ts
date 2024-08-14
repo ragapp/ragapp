@@ -15,6 +15,14 @@ export const AzureOpenAIConfigSchema = BaseConfigSchema.extend({
       (value) => value && value.trim().startsWith("https://"),
       "Azure OpenAI endpoint must start with 'https://'",
     ),
+  azure_openai_api_version: z
+    .string()
+    .nullable()
+    .optional()
+    .refine(
+      (value) => value && value.trim() !== "",
+      "AZURE OpenAI API version is required",
+    ),
   azure_openai_api_key: z
     .string()
     .nullable()
@@ -48,4 +56,5 @@ export const DEFAULT_AZURE_OPENAI_CONFIG: z.input<
   model: "gpt-35-turbo",
   embedding_model: "text-embedding-3-small",
   embedding_dim: 1536,
+  azure_openai_api_version: "2024-06-01",
 };
