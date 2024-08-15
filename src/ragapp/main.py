@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 
 from create_llama.backend.app.settings import init_settings
 from create_llama.backend.app.api.routers.upload import file_upload_router
+from create_llama.backend.app.api.routers.chat_config import config_router
 from backend.models.model_config import ModelConfig
 from backend.routers.chat.index import chat_router
 from backend.routers.management import management_router
@@ -37,6 +38,7 @@ if environment == "dev":
 
 # Use upload router form create-llama codebase
 app.include_router(file_upload_router, prefix="/api/chat/upload", tags=["Chat"])
+app.include_router(config_router, prefix="/api/chat/config", tags=["Chat"])
 # RAGapp routers
 app.include_router(chat_router, prefix="/api/chat", tags=["Chat"])
 app.include_router(management_router, prefix="/api/management", tags=["Management"])

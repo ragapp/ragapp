@@ -1,19 +1,17 @@
 import logging
-import os
 from typing import List
 
-from app.api.routers.chat import generate_filters
 from app.api.routers.events import EventCallbackHandler
 from app.api.routers.models import (
-    ChatConfig,
     ChatData,
     Message,
     Result,
     SourceNodes,
 )
 from app.api.routers.vercel_response import VercelStreamResponse
-from app.api.services.llama_cloud import LLamaCloudFileService
+from create_llama.backend.app.api.services.llama_cloud import LLamaCloudFileService
 from app.engine import get_chat_engine
+from app.engine.query_filter import generate_filters
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from llama_index.core.chat_engine.types import BaseChatEngine, NodeWithScore
 from llama_index.core.llms import MessageRole
@@ -51,8 +49,11 @@ async def chat(
 
         doc_ids = data.get_chat_document_ids()
         filters = generate_filters(doc_ids)
-        logger.info(f"Creating chat engine with filters: {filters.dict()}")
-        chat_engine = get_chat_engine(filters=filters)
+        params = data.data or {}
+        logger.info(
+            f"Creating chat engine with filters: {str(filters)}",
+        )
+        chat_engine = get_chat_engine(filters=filters, params=params)
 
         event_handler = EventCallbackHandler()
         chat_engine.callback_manager.handlers.append(event_handler)  # type: ignore
@@ -83,12 +84,3 @@ async def chat_request(
         result=Message(role=MessageRole.ASSISTANT, content=response.response),
         nodes=SourceNodes.from_source_nodes(response.source_nodes),
     )
-
-
-@r.get("/config")
-async def chat_config() -> ChatConfig:
-    starter_questions = None
-    conversation_starters = os.getenv("CONVERSATION_STARTERS")
-    if conversation_starters and conversation_starters.strip():
-        starter_questions = conversation_starters.strip().split("\n")
-    return ChatConfig(starter_questions=starter_questions)
