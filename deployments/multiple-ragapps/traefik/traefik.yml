@@ -1,0 +1,16 @@
+log: []
+api:
+  dashboard: true
+providers:
+  docker:
+    exposedByDefault: false
+entryPoints:
+  http:
+    address: ":80"
+
+
+experimental:
+  plugins:
+    keycloakopenid:
+      moduleName: "github.com/Gwojda/keycloakopenid"
+      version: "v0.1.34"

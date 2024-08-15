@@ -5,18 +5,45 @@ services:
       - 80:80
     labels:
       - traefik.enable=true
+      # API and dashboard
       - traefik.docker.network=ragapp-network
-      # Default username: admin, password: admin
-      - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME:-admin}:${HASHED_PASSWORD:-$$apr1$$3gG256rA$$BomHrC/uMhL807k/t7Wd6/}
+      # Keycloak OpenID plugin configuration
+      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.KeycloakURL=http://host.docker.internal:8080
+      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.ClientID=ragapp
+      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.ClientSecret=triZad1nPQn020SlCbyGDbtAdQkcv2MD
+      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.KeycloakRealm=ragapp
+      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.Scope=openid
+      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.UseAuthHeader=false
+      # Strip all keycloak redirect query params: state, code
+      - traefik.http.middlewares.keycloak-redirect-stripper.redirectregex.regex=^/(.*)\?(.*)?(state=[^&]*&?)?(code=[^&]*&?)?(.*)$
+      - traefik.http.middlewares.keycloak-redirect-stripper.redirectregex.replacement=/$1?$2$5
+      - traefik.http.middlewares.keycloak-redirect-stripper.redirectregex.permanent=true
+    volumes:  
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/traefik_config.yml:ro
+    command:
+      - --configFile=/traefik_config.yml
+    networks:
+      - ragapp-network
+
+  manager:
+    image: ${MANAGER_IMAGE:-ragapp/manager:latest}
+    build: ../../src/manager
+    ports:
+      - "8000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    command:
-      - --providers.docker
-      - --providers.docker.exposedbydefault=false
-      - --entrypoints.http.address=:80
-      - --accesslog
-      - --log
-      - --api
+    environment:
+      - BASE_URL=/manager
+      - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.app.loadbalancer.server.port=8000
+      - traefik.http.routers.admin-manager.rule=PathPrefix(`/manager`)
+      - traefik.http.middlewares.strip-manager-path.stripprefix.prefixes=/manager
+      - traefik.http.routers.admin-manager.middlewares=my-keycloakopenid,strip-manager-path,keycloak-redirect-stripper
+
     networks:
       - ragapp-network
 
@@ -31,9 +58,9 @@ services:
       - traefik.http.services.ragapp-cs50.loadbalancer.server.port=8000
       - traefik.http.routers.ragapp-cs50.rule=PathPrefix(`/a/cs50`)
       - traefik.http.routers.ragapp-cs50-admin.rule=PathRegexp(`/a/cs50/admin`)
+      - traefik.http.routers.ragapp-cs50-admin.middlewares=my-keycloakopenid,keycloak-redirect-stripper
       - traefik.http.routers.ragapp-cs50-management-api.rule=PathRegexp(`/a/cs50/api/management`)
-      - traefik.http.routers.ragapp-cs50-admin.middlewares=admin-auth
-      - traefik.http.routers.ragapp-cs50-management-api.middlewares=admin-auth
+      - traefik.http.routers.ragapp-cs50-management-api.middlewares=my-keycloakopenid,keycloak-redirect-stripper
     environment:
       - BASE_URL=/a/cs50
       - FILESERVER_URL_PREFIX=/a/cs50/api/files
@@ -55,9 +82,9 @@ services:
       - traefik.http.services.ragapp-cs101.loadbalancer.server.port=8000
       - traefik.http.routers.ragapp-cs101.rule=PathPrefix(`/a/cs101`)
       - traefik.http.routers.ragapp-cs101-admin.rule=PathRegexp(`/a/cs101/admin`)
+      - traefik.http.routers.ragapp-cs101-admin.middlewares=my-keycloakopenid,keycloak-redirect-stripper
       - traefik.http.routers.ragapp-cs101-management-api.rule=PathRegexp(`/a/cs101/api/management`)
-      - traefik.http.routers.ragapp-cs101-admin.middlewares=admin-auth
-      - traefik.http.routers.ragapp-cs101-management-api.middlewares=admin-auth
+      - traefik.http.routers.ragapp-cs101-management-api.middlewares=my-keycloakopenid,keycloak-redirect-stripper
     environment:
       - BASE_URL=/a/cs101
       - FILESERVER_URL_PREFIX=/a/cs101/api/files
@@ -67,24 +94,7 @@ services:
       - EMBEDDING_DIM=1024
     networks:
       - ragapp-network
-  
-  manager:
-    image: ${MANAGER_IMAGE:-ragapp/manager:latest}
-    build: ../../src/manager
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      - BASE_URL=/manager
-      - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.app.loadbalancer.server.port=8000
-      - traefik.http.routers.admin-manager.rule=PathPrefix(`/manager`)
-      - traefik.http.middlewares.strip-manager-path.stripprefix.prefixes=/manager
-      - traefik.http.routers.admin-manager.middlewares=strip-manager-path,admin-auth
-    networks:
-      - ragapp-network
-  
+
 networks:
   ragapp-network:
     name: ragapp-network
