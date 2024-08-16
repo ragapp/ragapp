@@ -5,22 +5,30 @@ services:
       - 80:80
     labels:
       - traefik.enable=true
-      # API and dashboard
       - traefik.docker.network=ragapp-network
       # Keycloak OpenID plugin configuration
-      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.KeycloakURL=http://localhost/auth
-      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.ClientID=ragapp
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakURL=http://localhost/auth
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientID=ragapp
       # Secret from the example ragapp keycloak realm
-      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.ClientSecret=jh4yDlJ5QsBSafVNaqqLxEG3vKcYyNgD 
-      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.KeycloakRealm=ragapp
-      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.Scope=openid
-      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
-      - traefik.http.middlewares.my-keycloakopenid.plugin.keycloakopenid.UseAuthHeader=false
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientSecret=jh4yDlJ5QsBSafVNaqqLxEG3vKcYyNgD 
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakRealm=ragapp
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.Scope=openid
+      # Set UserClaimName and UserHeaderName to extract roles from the token and set them in the header for authorization
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.UserClaimName=roles
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.UserHeaderName=X-Forwarded-Roles
+      # Authorization by compare header field with values
+      - traefik.http.middlewares.admin-authz.plugin.headauth.header.name=X-Forwarded-Roles # The header field to compare
+      - traefik.http.middlewares.admin-authz.plugin.headauth.allowed[0]=[admin-manager] # The allowed values
+      - traefik.http.middlewares.admin-authz.plugin.headauth.methods[0]=GET
+      - traefik.http.middlewares.admin-authz.plugin.headauth.methods[1]=POST
+      - traefik.http.middlewares.admin-authz.plugin.headauth.methods[2]=PUT
+      - traefik.http.middlewares.admin-authz.plugin.headauth.methods[3]=DELETE
     volumes:  
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/traefik_config.yml:ro
     command:
       - --configFile=/traefik_config.yml
+      - --log.level=DEBUG
     networks:
       - ragapp-network
 
@@ -63,8 +71,7 @@ services:
       - traefik.http.services.app.loadbalancer.server.port=8000
       - traefik.http.routers.admin-manager.rule=PathPrefix(`/manager`)
       - traefik.http.middlewares.strip-manager-path.stripprefix.prefixes=/manager
-      - traefik.http.routers.admin-manager.middlewares=my-keycloakopenid,strip-manager-path
-
+      - traefik.http.routers.admin-manager.middlewares=ragapp-keycloakopenid,admin-authz,strip-manager-path
     networks:
       - ragapp-network
 
@@ -79,9 +86,9 @@ services:
       - traefik.http.services.ragapp-cs50.loadbalancer.server.port=8000
       - traefik.http.routers.ragapp-cs50.rule=PathPrefix(`/a/cs50`)
       - traefik.http.routers.ragapp-cs50-admin.rule=PathRegexp(`/a/cs50/admin`)
-      - traefik.http.routers.ragapp-cs50-admin.middlewares=my-keycloakopenid
+      - traefik.http.routers.ragapp-cs50-admin.middlewares=ragapp-keycloakopenid,admin-authz
       - traefik.http.routers.ragapp-cs50-management-api.rule=PathRegexp(`/a/cs50/api/management`)
-      - traefik.http.routers.ragapp-cs50-management-api.middlewares=my-keycloakopenid
+      - traefik.http.routers.ragapp-cs50-management-api.middlewares=ragapp-keycloakopenid,admin-authz
     environment:
       - BASE_URL=/a/cs50
       - FILESERVER_URL_PREFIX=/a/cs50/api/files
@@ -103,9 +110,9 @@ services:
       - traefik.http.services.ragapp-cs101.loadbalancer.server.port=8000
       - traefik.http.routers.ragapp-cs101.rule=PathPrefix(`/a/cs101`)
       - traefik.http.routers.ragapp-cs101-admin.rule=PathRegexp(`/a/cs101/admin`)
-      - traefik.http.routers.ragapp-cs101-admin.middlewares=my-keycloakopenid
+      - traefik.http.routers.ragapp-cs101-admin.middlewares=ragapp-keycloakopenid,admin-authz
       - traefik.http.routers.ragapp-cs101-management-api.rule=PathRegexp(`/a/cs101/api/management`)
-      - traefik.http.routers.ragapp-cs101-management-api.middlewares=my-keycloakopenid
+      - traefik.http.routers.ragapp-cs101-management-api.middlewares=ragapp-keycloakopenid,admin-authz
     environment:
       - BASE_URL=/a/cs101
       - FILESERVER_URL_PREFIX=/a/cs101/api/files
