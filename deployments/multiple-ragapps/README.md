@@ -4,7 +4,7 @@
 
 - Manage RAGApp containers through a manager UI
 - Start/Stop multiple RAGApp containers
-- Use Traefik for routing and to protect admin routes with authentication
+- Deploy with Traefik (reverse proxy) and Keycloak (Authentication and user management)
 
 ## How to start?
 
@@ -37,7 +37,25 @@ RAGAPP_IMAGE=ghcr.io/ragapp/ragapp:latest MANAGER_IMAGE=ghcr.io/ragapp/ragapp-ma
 
 ## App paths:
 
-- Manager UI: http://localhost/manager/
+- Manager UI: http://localhost/manager
+- RAGapps: http://localhost/a/<app_name>
+- Keycloak: http://localhost/auth
+
+All the apps above will requires login to access. In this deployment, we're using Keycloak to manage app users, to know how to use Keycloak, please check this document: https://www.keycloak.org/docs/latest/server_admin/#assembly-managing-users_server_administration_guide .  
+By default, we already provided to you a backup of keycloak which included users for testing, the users are:
+- RAGapp user: Only allowed to use chat app.
+```
+user: test
+password: 123456
+```
+- Admin: Able to use chat app and chat admin to configure the app and login into Keycloak to manage other users.
+```
+user: admin
+password: admin
+```
+
+## Operations:
+
 
 ## Change admin credentials:
 
