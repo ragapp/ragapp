@@ -25,9 +25,6 @@ services:
       - traefik.http.middlewares.admin-auth.plugin.headauth.methods[1]=POST
       - traefik.http.middlewares.admin-auth.plugin.headauth.methods[2]=PUT
       - traefik.http.middlewares.admin-auth.plugin.headauth.methods[3]=DELETE
-      # 2. Alternative, we can just basicAuth for admin access. Please comment out the Keycloak middleware above and uncomment the following lines
-      # username: admin, password: admin
-      # - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME:-admin}:${HASHED_PASSWORD:-$$apr1$$3gG256rA$$BomHrC/uMhL807k/t7Wd6/}
     volumes:  
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/traefik_config.yml:ro
@@ -37,8 +34,6 @@ services:
     networks:
       - ragapp-network
 
-  # IMPORTANT: This keycloak instance is for development purposes only
-  # For production, you should use a more secure setup: https://www.keycloak.org/server/configuration-production
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.2
     command: start-dev --import-realm --hostname=http://localhost/auth
@@ -51,12 +46,9 @@ services:
       - traefik.http.middlewares.keycloak-strip-path.stripprefix.prefixes=/auth
       - traefik.http.routers.keycloak.middlewares=keycloak-strip-path
     environment:
-      # Keycloak admin user
+      # Keycloak admin user (with all permissions to all realms)
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
-      # Example realm: ragapp
-      # test user: test
-      # test password: 123456
     volumes:
       # Mount example realm data
       - ./keycloak/example/:/opt/keycloak/data/
