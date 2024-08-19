@@ -20,8 +20,9 @@ def get_default_app_labels(app_name: str) -> Dict[str, str]:
         f"traefik.http.routers.ragapp-{app_name}.rule": f"PathPrefix(`/a/{app_name}`)",
         f"traefik.http.routers.ragapp-{app_name}-admin.rule": f"PathRegexp(`/a/{app_name}/admin`)",
         f"traefik.http.routers.ragapp-{app_name}-management-api.rule": f"PathPrefix(`/a/{app_name}/api/management`)",
-        f"traefik.http.routers.ragapp-{app_name}-admin.middlewares": "admin-auth",
-        f"traefik.http.routers.ragapp-{app_name}-management-api.middlewares": "admin-auth",
+        f"traefik.http.routers.ragapp-{app_name}.middlewares": "ragapp-keycloakopenid",
+        f"traefik.http.routers.ragapp-{app_name}-admin.middlewares": "ragapp-keycloakopenid,admin-auth",
+        f"traefik.http.routers.ragapp-{app_name}-management-api.middlewares": "ragapp-keycloakopenid,admin-auth",
     }
 
 

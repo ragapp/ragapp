@@ -6,17 +6,72 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=ragapp-network
-      # Default username: admin, password: admin
-      - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME:-admin}:${HASHED_PASSWORD:-$$apr1$$3gG256rA$$BomHrC/uMhL807k/t7Wd6/}
+      # Keycloak OpenID plugin configuration
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakURL=http://localhost/auth
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientID=ragapp
+      # Secret from the example ragapp keycloak realm
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientSecret=jh4yDlJ5QsBSafVNaqqLxEG3vKcYyNgD  # Predefined secret for the example realm
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakRealm=ragapp # Example realm
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.Scope=openid
+      # Admin authentication middleware
+      # 1. Use Keycloak user with role admin-manager
+      # Set UserClaimName and UserHeaderName to extract roles from the token and set them in the header for authorization
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.UserClaimName=X-Forwarded-Roles
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.UserHeaderName=roles
+      # Use headauth plugin to check if the user has exactly the role admin-manager
+      - traefik.http.middlewares.admin-auth.plugin.headauth.header.name=roles
+      - traefik.http.middlewares.admin-auth.plugin.headauth.allowed[0]=[admin-manager]
+      - traefik.http.middlewares.admin-auth.plugin.headauth.methods[0]=GET
+      - traefik.http.middlewares.admin-auth.plugin.headauth.methods[1]=POST
+      - traefik.http.middlewares.admin-auth.plugin.headauth.methods[2]=PUT
+      - traefik.http.middlewares.admin-auth.plugin.headauth.methods[3]=DELETE
+      # 2. Alternative, we can just basicAuth for admin access. Please comment out the Keycloak middleware above and uncomment the following lines
+      # username: admin, password: admin
+      # - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME:-admin}:${HASHED_PASSWORD:-$$apr1$$3gG256rA$$BomHrC/uMhL807k/t7Wd6/}
+    volumes:  
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/traefik_config.yml:ro
+    command:
+      - --configFile=/traefik_config.yml
+      - --log.level=DEBUG
+    networks:
+      - ragapp-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.2
+    command: start-dev --import-realm --hostname=http://localhost/auth
+    ports:
+      - 8080:8080
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.keycloak.loadbalancer.server.port=8080
+      - traefik.http.routers.keycloak.rule=PathPrefix(`/auth`)
+      - traefik.http.middlewares.keycloak-strip-path.stripprefix.prefixes=/auth
+      - traefik.http.routers.keycloak.middlewares=keycloak-strip-path
+    environment:
+      # Keycloak admin user (with all permissions to all realms)
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    volumes:
+      # Mount example realm data
+      - ./keycloak/example/:/opt/keycloak/data/
+    networks:
+      - ragapp-network
+
+  manager:
+    image: ${MANAGER_IMAGE:-ragapp/manager:latest}
+    build: ../../src/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    command:
-      - --providers.docker
-      - --providers.docker.exposedbydefault=false
-      - --entrypoints.http.address=:80
-      - --accesslog
-      - --log
-      - --api
+    environment:
+      - BASE_URL=/manager
+      - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.app.loadbalancer.server.port=8000
+      - traefik.http.routers.admin-manager.rule=PathPrefix(`/manager`)
+      - traefik.http.middlewares.strip-manager-path.stripprefix.prefixes=/manager
+      - traefik.http.routers.admin-manager.middlewares=ragapp-keycloakopenid,admin-auth,strip-manager-path
     networks:
       - ragapp-network
 
@@ -30,10 +85,11 @@ services:
       - traefik.enable=true
       - traefik.http.services.ragapp-cs50.loadbalancer.server.port=8000
       - traefik.http.routers.ragapp-cs50.rule=PathPrefix(`/a/cs50`)
+      - traefik.http.routers.ragapp-cs50.middlewares=ragapp-keycloakopenid
       - traefik.http.routers.ragapp-cs50-admin.rule=PathRegexp(`/a/cs50/admin`)
+      - traefik.http.routers.ragapp-cs50-admin.middlewares=ragapp-keycloakopenid,admin-auth
       - traefik.http.routers.ragapp-cs50-management-api.rule=PathRegexp(`/a/cs50/api/management`)
-      - traefik.http.routers.ragapp-cs50-admin.middlewares=admin-auth
-      - traefik.http.routers.ragapp-cs50-management-api.middlewares=admin-auth
+      - traefik.http.routers.ragapp-cs50-management-api.middlewares=ragapp-keycloakopenid,admin-auth
     environment:
       - BASE_URL=/a/cs50
       - FILESERVER_URL_PREFIX=/a/cs50/api/files
@@ -54,10 +110,11 @@ services:
       - traefik.enable=true
       - traefik.http.services.ragapp-cs101.loadbalancer.server.port=8000
       - traefik.http.routers.ragapp-cs101.rule=PathPrefix(`/a/cs101`)
+      - traefik.http.routers.ragapp-cs101.middlewares=ragapp-keycloakopenid
       - traefik.http.routers.ragapp-cs101-admin.rule=PathRegexp(`/a/cs101/admin`)
+      - traefik.http.routers.ragapp-cs101-admin.middlewares=ragapp-keycloakopenid,admin-auth
       - traefik.http.routers.ragapp-cs101-management-api.rule=PathRegexp(`/a/cs101/api/management`)
-      - traefik.http.routers.ragapp-cs101-admin.middlewares=admin-auth
-      - traefik.http.routers.ragapp-cs101-management-api.middlewares=admin-auth
+      - traefik.http.routers.ragapp-cs101-management-api.middlewares=ragapp-keycloakopenid,admin-auth
     environment:
       - BASE_URL=/a/cs101
       - FILESERVER_URL_PREFIX=/a/cs101/api/files
@@ -67,24 +124,7 @@ services:
       - EMBEDDING_DIM=1024
     networks:
       - ragapp-network
-  
-  manager:
-    image: ${MANAGER_IMAGE:-ragapp/manager:latest}
-    build: ../../src/manager
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      - BASE_URL=/manager
-      - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.app.loadbalancer.server.port=8000
-      - traefik.http.routers.admin-manager.rule=PathPrefix(`/manager`)
-      - traefik.http.middlewares.strip-manager-path.stripprefix.prefixes=/manager
-      - traefik.http.routers.admin-manager.middlewares=strip-manager-path,admin-auth
-    networks:
-      - ragapp-network
-  
+
 networks:
   ragapp-network:
     name: ragapp-network

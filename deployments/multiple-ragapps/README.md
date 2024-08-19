@@ -4,7 +4,7 @@
 
 - Manage RAGApp containers through a manager UI
 - Start/Stop multiple RAGApp containers
-- Use Traefik for routing and to protect admin routes with authentication
+- Deploy with Traefik (reverse proxy) and Keycloak (Authentication and user management)
 
 ## How to start?
 
@@ -37,29 +37,21 @@ RAGAPP_IMAGE=ghcr.io/ragapp/ragapp:latest MANAGER_IMAGE=ghcr.io/ragapp/ragapp-ma
 
 ## App paths:
 
-- Manager UI: http://localhost/manager/
+- Manager UI: http://localhost/manager
+- RAGapps: http://localhost/a/<app_name>
+- Keycloak: http://localhost/auth/admin/ragapp/console/
 
-## Change admin credentials:
+All the apps above will requires login to access. In this deployment, we're using Keycloak to manage app users, to know how to use Keycloak, please check this document: https://www.keycloak.org/docs/latest/server_admin/#assembly-managing-users_server_administration_guide .  
+> _Note: This Keycloak instance is for development purposes only. For production, you should use a more secure setup: https://www.keycloak.org/server/configuration-production
 
-The default username and password is `admin`. You can change it to use your own credentials:
-
-1. Create a new hashed password using `openssl`:
-
-```shell
-openssl passwd -apr1 new_password
+By default, we already provided to you a backup of keycloak which included users for testing, the users are:
+- RAGapp user: Only allowed to use chat app.
 ```
-
-2. Export new user name and password to environment variables:
-
-```shell
-export USERNAME=your_username
-export HASHED_PASSWORD=the_hashed_password
+user: test
+password: 123456
 ```
-
-You can also update them directly in the [./docker-compose.yml](docker-compose.yml) file. By changing the `traefik.http.middlewares.admin-auth.basicauth.users` config of the `traefik` service.
-
-3. Restart the service:
-
+- Manager: Able to use chat app and chat admin to configure the app and login into Keycloak to manage other users.
 ```
-docker compose up
+user: manager
+password: 123456
 ```
