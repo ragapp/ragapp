@@ -1,5 +1,5 @@
 # ======= FRONT-END BUILD ==========
-FROM node:20-alpine as build
+FROM node:20-alpine AS build
 
 # Install pnpm
 RUN npm install -g pnpm@9.4.0

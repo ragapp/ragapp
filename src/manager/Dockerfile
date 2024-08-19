@@ -1,5 +1,5 @@
 # ======= FRONTEND BUILD ==========
-FROM node:20-alpine as frontend-build
+FROM node:20-alpine AS frontend-build
 
 # Install pnpm and make
 RUN npm install -g pnpm@9.4.0
