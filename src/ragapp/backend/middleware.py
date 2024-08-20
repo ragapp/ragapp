@@ -13,30 +13,30 @@ from backend.controllers.chat_request import (
 )
 from backend.database import DB
 
-JWT_COOKIE_NAME = "Authorization"
-JWT_USER_ID_CLAIM = "preferred_username"
-CHAT_REQUEST_LIMIT_THRESHOLD = os.environ.get("CHAT_REQUEST_LIMIT_THRESHOLD", 5)
+JWT_COOKIE_NAME = "Authorization"  # The name of the cookie that stores the JWT token
+JWT_USER_ID_CLAIM = "preferred_username"  # The claim in the JWT token that stores the user ID or user name
+CHAT_REQUEST_LIMIT_THRESHOLD = int(os.environ.get("CHAT_REQUEST_LIMIT_THRESHOLD", 5))
 
 
 async def request_limit_middleware(request: Request) -> Response:
-    window_frame = _get_window_frame()
+    time_frame = _get_time_frame()
     user_id = _extract_user_id_from_request(request)
     db: Session = next(DB.get_session())
-    request_count = get_user_chat_request_count(db, user_id, window_frame)
+    request_count = get_user_chat_request_count(db, user_id, time_frame)
     if request_count >= CHAT_REQUEST_LIMIT_THRESHOLD:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many requests. Please try again later.",
+            detail=f"You have exceeded {CHAT_REQUEST_LIMIT_THRESHOLD} chat requests. Please try again later.",
         )
 
-    update_user_chat_request_count(db, user_id, window_frame, request_count + 1)
+    update_user_chat_request_count(db, user_id, time_frame, request_count + 1)
 
 
-def _get_window_frame():
+def _get_time_frame():
     """
-    Provide the window frame for the request count
+    Provide the time frame for the request count
     """
-    # Use current date as the window frame
+    # Use current date as the time frame
     return time.strftime("%Y-%m-%d")
 
 
