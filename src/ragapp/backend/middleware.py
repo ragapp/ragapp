@@ -11,6 +11,7 @@ from backend.controllers.request import (
     get_user_chat_request_count,
     update_user_chat_request_count,
 )
+from backend.database import get_db_session
 
 JWT_COOKIE_NAME = "Authorization"
 JWT_USER_ID_CLAIM = "preferred_username"
@@ -18,8 +19,6 @@ CHAT_REQUEST_LIMIT_THRESHOLD = os.environ.get("CHAT_REQUEST_LIMIT_THRESHOLD", 5)
 
 
 async def request_limit_middleware(request: Request) -> Response:
-    from backend.database import get_db_session
-
     window_frame = _get_window_frame()
     user_id = _extract_user_id_from_request(request)
     db: Session = next(get_db_session())
@@ -63,7 +62,6 @@ def _extract_user_id_from_request(request: Request) -> str:
 
 def _decode_jwt(token: str):
     try:
-        # Decode without verifying the signature
         # Remove Barear prefix
         token = token.split(" ")[1]
         payload = jwt.decode(token, options={"verify_signature": False})

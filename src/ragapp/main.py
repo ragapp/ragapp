@@ -40,7 +40,12 @@ if environment == "dev":
     )
 
 # Use upload router form create-llama codebase
-app.include_router(file_upload_router, prefix="/api/chat/upload", tags=["Chat"])
+app.include_router(
+    file_upload_router,
+    prefix="/api/chat/upload",
+    tags=["Chat"],
+    dependencies=[Depends(request_limit_middleware)],
+)
 app.include_router(config_router, prefix="/api/chat/config", tags=["Chat"])
 # RAGapp routers
 app.include_router(
