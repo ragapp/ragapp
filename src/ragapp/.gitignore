@@ -5,6 +5,5 @@ ollama/
 tool-output/
 storage/
 output/
-*.sqlite
 
 !config/*
