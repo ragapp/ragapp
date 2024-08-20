@@ -197,13 +197,19 @@ export function ServicesList() {
               <LoaderCircle />
             </div>
           ) : (
-            data?.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                refetch={refetch}
-              />
-            ))
+            data?.length === 0
+              ? (
+                <p className="text-foreground">
+                  No apps found. Let's create one!
+                </p>
+              )
+              : data?.map((service) => (
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  refetch={refetch}
+                />
+              ))
           )}
         </div>
       </section>

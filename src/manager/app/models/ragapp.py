@@ -35,7 +35,6 @@ def get_default_app_environment(app_name: str) -> Dict[str, str]:
         "MODEL": "gpt-4o-mini",
         "EMBEDDING_MODEL": "text-embedding-3-small",
         "EMBEDDING_DIM": "1024",
-        # App settings
         "CHAT_REQUEST_LIMIT_THRESHOLD": "20",  # 20 chat requests per day
     }
 
