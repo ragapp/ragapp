@@ -9,7 +9,7 @@ from backend.tests.utils import mock_empty_db, mock_jwt_token  # noqa: F401
 
 @pytest.fixture
 def test_client():
-    from backend.middleware import request_limit_middleware
+    from backend.middlewares.rate_limit import request_limit_middleware
 
     # Define a test router
     router = APIRouter()
@@ -33,7 +33,7 @@ def test_client():
 
 
 def test_request_within_limit(test_client, mock_jwt_token, mock_empty_db):  # noqa: F811
-    from backend.middleware import CHAT_REQUEST_LIMIT_THRESHOLD
+    from backend.middlewares.rate_limit import CHAT_REQUEST_LIMIT_THRESHOLD
 
     # Simulate requests within the limit
     for _ in range(CHAT_REQUEST_LIMIT_THRESHOLD):
@@ -45,7 +45,7 @@ def test_request_within_limit(test_client, mock_jwt_token, mock_empty_db):  # no
 
 
 def test_request_exceeding_limit(test_client, mock_jwt_token, mock_empty_db):  # noqa: F811
-    from backend.middleware import CHAT_REQUEST_LIMIT_THRESHOLD
+    from backend.middlewares.rate_limit import CHAT_REQUEST_LIMIT_THRESHOLD
 
     # Simulate requests exceeding the limit
     for _ in range(CHAT_REQUEST_LIMIT_THRESHOLD):

@@ -2,4 +2,4 @@
 "ragbox": patch
 ---
 
-Add rate limit for chat api
+Add rate limiting (number of chat messages per user) to chat API

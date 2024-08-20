@@ -19,7 +19,7 @@ from create_llama.backend.app.api.routers.chat_config import config_router
 from backend.models.model_config import ModelConfig
 from backend.routers.chat.index import chat_router
 from backend.routers.management import management_router
-from backend.middleware import request_limit_middleware
+from backend.middlewares.rate_limit import request_limit_middleware
 
 
 init_settings()

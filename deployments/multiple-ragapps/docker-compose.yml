@@ -66,6 +66,7 @@ services:
     environment:
       - BASE_URL=/manager
       - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
+      - CHAT_REQUEST_LIMIT_THRESHOLD=5
     labels:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000
