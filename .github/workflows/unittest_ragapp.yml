@@ -1,4 +1,4 @@
-name: Run Unittest: RAGapp
+name: Run Unittest
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  unittest-ragapp:
     runs-on: ubuntu-latest
 
     strategy:
@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install
+          poetry install --no-root
 
       - name: Run tests
         env:
