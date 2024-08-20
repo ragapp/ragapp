@@ -196,20 +196,18 @@ export function ServicesList() {
             <div className="flex justify-center animate-spin items-start w-10">
               <LoaderCircle />
             </div>
+          ) : data?.length === 0 ? (
+            <p className="text-foreground">
+              No apps found. Let&apos;s create one!
+            </p>
           ) : (
-            data?.length === 0
-              ? (
-                <p className="text-foreground">
-                  No apps found. Let's create one!
-                </p>
-              )
-              : data?.map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  service={service}
-                  refetch={refetch}
-                />
-              ))
+            data?.map((service) => (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                refetch={refetch}
+              />
+            ))
           )}
         </div>
       </section>
