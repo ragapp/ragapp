@@ -1,3 +1,3 @@
-from .request import UserChatRequest
+from .chat_request import UserChatRequest
 
 __all__ = ["UserChatRequest"]

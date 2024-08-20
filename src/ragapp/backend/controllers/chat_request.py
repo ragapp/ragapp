@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 
-from backend.models.orm.request import UserChatRequest
+from backend.models.orm.chat_request import UserChatRequest
 
 
 def get_user_chat_request_count(db: Session, user_id: str, window_frame: str) -> int:

@@ -7,11 +7,11 @@ from fastapi.responses import Response
 from jwt import InvalidTokenError
 from sqlalchemy.orm import Session
 
-from backend.controllers.request import (
+from backend.controllers.chat_request import (
     get_user_chat_request_count,
     update_user_chat_request_count,
 )
-from backend.database import get_db_session
+from backend.database import DB
 
 JWT_COOKIE_NAME = "Authorization"
 JWT_USER_ID_CLAIM = "preferred_username"
@@ -21,7 +21,7 @@ CHAT_REQUEST_LIMIT_THRESHOLD = os.environ.get("CHAT_REQUEST_LIMIT_THRESHOLD", 5)
 async def request_limit_middleware(request: Request) -> Response:
     window_frame = _get_window_frame()
     user_id = _extract_user_id_from_request(request)
-    db: Session = next(get_db_session())
+    db: Session = next(DB.get_session())
     request_count = get_user_chat_request_count(db, user_id, window_frame)
     if request_count >= CHAT_REQUEST_LIMIT_THRESHOLD:
         raise HTTPException(
