@@ -31,11 +31,13 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
 
       - name: Install dependencies
+        working-directory: ${{ github.workspace }}/src/ragapp
         run: |
           poetry install --no-root
 
       - name: Run tests
         env:
           PYTHONPATH: ${{ github.workspace }}/src/ragapp
+        working-directory: ${{ github.workspace }}/src/ragapp
         run: |
-          cd src/ragapp && poetry run pytest
+          poetry run pytest
