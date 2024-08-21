@@ -79,3 +79,5 @@ services:
 networks:
   ragapp-network:
     name: ragapp-network
+    # Set as an external network to avoid conflicts.
+    external: true
