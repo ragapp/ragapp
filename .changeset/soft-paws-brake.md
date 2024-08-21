@@ -2,4 +2,4 @@
 "ragbox": patch
 ---
 
-Use external network to avoid netowork conflicts
+Use external network to avoid network conflicts
