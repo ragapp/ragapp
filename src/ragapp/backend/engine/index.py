@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# flake8: noqa
 import logging
 import os
 

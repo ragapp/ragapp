@@ -1,10 +1,12 @@
 from typing import Dict
+
 from pydantic import BaseModel
+
 from .duckduckgo import DuckDuckGoTool
+from .image_generator import ImageGeneratorTool
+from .interpreter import E2BInterpreterTool
+from .openapi import OpenAPITool
 from .wikipedia import WikipediaTool
-from .openapi import OpenAPITool, OpenAPIToolConfig
-from .interpreter import E2BInterpreterTool, E2BInterpreterToolConfig
-from .image_generator import ImageGeneratorTool, ImageGeneratorToolConfig
 
 
 # Todo: Can simplify to a single function if there is no other logics

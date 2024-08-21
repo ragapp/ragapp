@@ -8,9 +8,6 @@ on:
     branches:
       - main
 
-env:
-  POETRY_VERSION: "1.6.1"
-
 jobs:
   linting-ts-ragapp-admin-ui:
     runs-on: ubuntu-latest
@@ -60,7 +57,7 @@ jobs:
       - name: Run Prettier
         run: pnpm run format
 
-  linting-python:
+  linting-ragapp:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -73,14 +70,31 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install black
+      - name: Install ruff
         shell: bash
-        run: pip install black
+        run: pip install ruff
 
-      - name: Run formatter ragapp
+      - name: Run linter ragapp
         shell: bash
-        run: black --check ./src/ragapp
+        run: ruff check ./src/ragapp
       
-      - name: Run formatter manager
+  linting-manager:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install ruff
         shell: bash
-        run: black --check ./src/manager
+        run: pip install ruff
+
+      - name: Run linter manager
+        shell: bash
+        run: ruff check ./src/manager

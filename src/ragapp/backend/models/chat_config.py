@@ -44,9 +44,9 @@ class ChatConfig(BaseEnvConfig):
         """
         To convert empty string prompt to None automatically and split the string to list
         """
-        if type(value) == list:
+        if value is list:
             return NewlineListEnv(value)
-        if type(value) == str:
+        if value is str:
             if value == "":
                 return None
             else:

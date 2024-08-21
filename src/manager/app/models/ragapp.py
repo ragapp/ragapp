@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, computed_field, validator
 
 DEFAULT_RAGAPP_IMAGE = os.getenv("RAGAPP_IMAGE", "ragapp/ragapp:latest")
 DEFAULT_NETWORK = os.getenv("RAGAPP_NETWORK", "ragapp-network")
+DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD = os.getenv("CHAT_REQUEST_LIMIT_THRESHOLD", 20)
 APP_NAME_TEMPLATE = "ragapp-{app_name}"
 
 
@@ -35,6 +36,7 @@ def get_default_app_environment(app_name: str) -> Dict[str, str]:
         "MODEL": "gpt-4o-mini",
         "EMBEDDING_MODEL": "text-embedding-3-small",
         "EMBEDDING_DIM": "1024",
+        "CHAT_REQUEST_LIMIT_THRESHOLD": DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD,
     }
 
 
@@ -45,6 +47,7 @@ class RAGAppContainerConfig(BaseModel):
     labels: Dict = Field(default_factory=dict)
     environment: Dict = Field(default_factory=dict)
     network: str = Field(default=DEFAULT_NETWORK)
+    chat_request_limit_threshold: int = Field(default=DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD)
 
     class Config:
         # example

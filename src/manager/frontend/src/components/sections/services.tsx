@@ -196,6 +196,10 @@ export function ServicesList() {
             <div className="flex justify-center animate-spin items-start w-10">
               <LoaderCircle />
             </div>
+          ) : data?.length === 0 ? (
+            <p className="text-foreground">
+              No apps found. Let&apos;s create one!
+            </p>
           ) : (
             data?.map((service) => (
               <ServiceCard

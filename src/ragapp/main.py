@@ -8,7 +8,7 @@ import logging
 import os
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -19,12 +19,15 @@ from create_llama.backend.app.api.routers.chat_config import config_router
 from backend.models.model_config import ModelConfig
 from backend.routers.chat.index import chat_router
 from backend.routers.management import management_router
+from backend.middlewares.rate_limit import request_limit_middleware
+
+
+init_settings()
 
 app = FastAPI(
     title="RAGapp",
     root_path=os.getenv("BASE_URL", ""),
 )
-init_settings()
 
 environment = os.getenv("ENVIRONMENT")
 if environment == "dev":
@@ -37,10 +40,20 @@ if environment == "dev":
     )
 
 # Use upload router form create-llama codebase
-app.include_router(file_upload_router, prefix="/api/chat/upload", tags=["Chat"])
+app.include_router(
+    file_upload_router,
+    prefix="/api/chat/upload",
+    tags=["Chat"],
+    dependencies=[Depends(request_limit_middleware)],
+)
 app.include_router(config_router, prefix="/api/chat/config", tags=["Chat"])
 # RAGapp routers
-app.include_router(chat_router, prefix="/api/chat", tags=["Chat"])
+app.include_router(
+    chat_router,
+    prefix="/api/chat",
+    tags=["Chat"],
+    dependencies=[Depends(request_limit_middleware)],
+)
 app.include_router(management_router, prefix="/api/management", tags=["Management"])
 
 

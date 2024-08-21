@@ -55,3 +55,6 @@ password: 123456
 user: manager
 password: 123456
 ```
+
+### Change rate limit for chat requests
+By default, each user can make 20 chat requests per day. If you want to change this limit, just update the `CHAT_REQUEST_LIMIT_THRESHOLD` number in the `manager` config section of the [docker-compose.yml](./docker-compose.yml) file.
