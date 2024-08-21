@@ -1,5 +1,7 @@
-from backend.models.orm.chat_request import UserChatRequest
 from sqlmodel import Session, select
+
+from backend.database import DB
+from backend.models.orm.chat_request import UserChatRequest
 
 
 class UserChatService:
@@ -8,18 +10,16 @@ class UserChatService:
     """
 
     @classmethod
-    def get_user_chat_request_count(
-        cls, db: Session, user_id: str, time_frame: str
-    ) -> int:
+    def get_user_chat_request_count(cls, user_id: str, time_frame: str) -> int:
+        db: Session = next(DB.get_session())
         user_request = cls._get_user_chat_request_record(db, user_id, time_frame)
         if user_request:
             return user_request.count
         return 0
 
     @classmethod
-    def update_user_chat_request_count(
-        cls, db: Session, user_id: str, time_frame: str, count: int
-    ):
+    def update_user_chat_request_count(cls, user_id: str, time_frame: str, count: int):
+        db: Session = next(DB.get_session())
         user_request = cls._get_user_chat_request_record(db, user_id, time_frame)
         if user_request:
             user_request.count = count

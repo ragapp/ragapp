@@ -2,12 +2,10 @@ import os
 import time
 
 import jwt
-from backend.database import DB
 from backend.services.user_chat_service import UserChatService
 from fastapi import HTTPException, Request, status
 from fastapi.responses import Response
 from jwt import InvalidTokenError
-from sqlalchemy.orm import Session
 
 JWT_COOKIE_NAME = "Authorization"  # The name of the cookie that stores the JWT token
 JWT_USER_ID_CLAIM = "preferred_username"  # The claim in the JWT token that stores the user ID or user name
@@ -17,8 +15,7 @@ CHAT_REQUEST_LIMIT_THRESHOLD = int(os.environ.get("CHAT_REQUEST_LIMIT_THRESHOLD"
 async def request_limit_middleware(request: Request) -> Response:
     time_frame = _get_time_frame()
     user_id = _extract_user_id_from_request(request)
-    db: Session = next(DB.get_session())
-    request_count = UserChatService.get_user_chat_request_count(db, user_id, time_frame)
+    request_count = UserChatService.get_user_chat_request_count(user_id, time_frame)
     if request_count >= CHAT_REQUEST_LIMIT_THRESHOLD:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -26,7 +23,7 @@ async def request_limit_middleware(request: Request) -> Response:
         )
 
     UserChatService.update_user_chat_request_count(
-        db, user_id, time_frame, request_count + 1
+        user_id, time_frame, request_count + 1
     )
 
 

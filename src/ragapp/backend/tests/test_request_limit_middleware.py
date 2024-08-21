@@ -51,5 +51,4 @@ def test_request_exceeding_limit(test_client, mock_jwt_token, mock_empty_db):  #
     for _ in range(CHAT_REQUEST_LIMIT_THRESHOLD):
         test_client.get("/api/test", cookies={"Authorization": mock_jwt_token})
     response = test_client.get("/api/test", cookies={"Authorization": mock_jwt_token})
-    print(response.json())
     assert response.status_code == 429  # Assuming 429 Too Many Requests
