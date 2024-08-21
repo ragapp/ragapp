@@ -49,4 +49,4 @@ EXPOSE 8000
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-CMD ["fastapi", "run", "main.py"]
+CMD ["python", "main.py"]
