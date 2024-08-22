@@ -3,7 +3,7 @@ from pydantic import BaseModel, computed_field
 from .jwt import JWT
 
 ADMIN_ROLE = "admin-manager"
-JWT_USER_NAME_CLAIM = "preferred_username"  # The claim in the JWT token that stores the user ID or user name
+JWT_USER_ID_CLAIM = os.getenv("JWT_USER_ID_CLAIM", "preferred_username")  # The claim in the JWT token that stores the user ID (defaults to `preferred_username` from Keycloak)
 JWT_USER_ROLES_CLAIM = (
     "X-Forwarded-Roles"  # The claim in the JWT token that stores the user roles
 )
