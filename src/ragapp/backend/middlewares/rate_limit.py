@@ -18,9 +18,7 @@ async def request_limit_middleware(request: Request) -> Response:
         user = UserInfo.from_jwt_data(jwt.data)
         time_frame = _get_time_frame()
         # Use user name as the key for rate limiting
-        request_count = UserChatService.get_user_chat_request_count(
-            user.username, time_frame
-        )
+        request_count = UserChatService.get_user_chat_request_count(user, time_frame)
         if not user.is_admin and request_count >= CHAT_REQUEST_LIMIT_THRESHOLD:
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -28,7 +26,7 @@ async def request_limit_middleware(request: Request) -> Response:
             )
 
         UserChatService.update_user_chat_request_count(
-            user.username, time_frame, request_count + 1
+            user, time_frame, request_count + 1
         )
 
 
