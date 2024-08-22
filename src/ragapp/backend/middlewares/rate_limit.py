@@ -4,7 +4,6 @@ import time
 from fastapi import HTTPException, Request, status
 from fastapi.responses import Response
 
-from backend.models.jwt import JWT
 from backend.models.user_info import UserInfo
 from backend.services.user_chat_service import UserChatService
 
@@ -14,8 +13,7 @@ CHAT_REQUEST_LIMIT_ENABLED = CHAT_REQUEST_LIMIT_THRESHOLD > 0
 
 async def request_limit_middleware(request: Request) -> Response:
     if CHAT_REQUEST_LIMIT_ENABLED:
-        jwt = JWT(request.cookies)
-        user = UserInfo.from_jwt_data(jwt.data)
+        user = UserInfo.from_request(request)
         time_frame = _get_time_frame()
         # Use user name as the key for rate limiting
         request_count = UserChatService.get_user_chat_request_count(user, time_frame)
