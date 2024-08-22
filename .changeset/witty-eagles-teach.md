@@ -2,4 +2,4 @@
 "ragbox": patch
 ---
 
-feat: add possibility to select custom Ollama embedding models
+Add possibility to select custom Ollama embedding models

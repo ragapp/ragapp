@@ -2,4 +2,4 @@
 "ragbox": patch
 ---
 
-Add config for AZURE_OPENAI_API_VERSION
+Add UI configuration for API version used by Azure

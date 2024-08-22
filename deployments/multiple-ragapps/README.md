@@ -47,6 +47,8 @@ The app provides the following endpoints:
 
 All the endpoints above will require a user to login. Users are managed by [Keycloak](https://www.keycloak.org/). Check [Managing Users](https://www.keycloak.org/docs/latest/server_admin/#assembly-managing-users_server_administration_guide) to configure users and roles.
 
+A user session has a specific timeout which can be [configured in Keycloak](https://www.keycloak.org/docs/latest/server_admin/#_timeouts). To log out before the timeout follow this link: http://localhost/auth/realms/ragapp/protocol/openid-connect/logout
+
 > \_Note: This Keycloak instance is for development purposes only. For production, you should use secure setup: https://www.keycloak.org/server/configuration-production
 
 ### Example users
