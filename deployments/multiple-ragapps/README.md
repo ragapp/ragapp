@@ -12,6 +12,7 @@ Navigate to the `deployments/multiple-ragapps` directory and run Docker Compose:
 
 ```shell
 cd deployments/multiple-ragapps
+docker pull ragapp/ragapp
 docker compose pull # to ensure the latest images are pulled
 docker network create ragapp-network
 docker compose up
