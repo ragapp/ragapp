@@ -14,7 +14,7 @@ JWT_USER_ROLES_CLAIM = (
 
 
 class UserInfo(BaseModel):
-    user_name: str
+    user_id: str
     roles: list[str] = []
 
     @computed_field
@@ -23,9 +23,9 @@ class UserInfo(BaseModel):
 
     @classmethod
     def from_jwt_data(cls, jwt_data: dict) -> "UserInfo":
-        user_name = jwt_data.get(JWT_USER_ID_CLAIM)
+        user_id = jwt_data.get(JWT_USER_ID_CLAIM)
         roles = jwt_data.get(JWT_USER_ROLES_CLAIM, [])
-        return cls(user_name=user_name, roles=roles)
+        return cls(user_id=user_id, roles=roles)
 
     @classmethod
     def from_request(cls, request) -> "UserInfo":
