@@ -1,5 +1,15 @@
 # ragbox
 
+## 0.0.21
+
+### Patch Changes
+
+- 7355971: Fixed broken file upload with LlamaParse
+- 870c038: Add RAGapp user and admin authentication (using Keycloak)
+- 0886008: Add UI configuration for API version used by Azure
+- 410bd09: Add rate limiting (number of chat messages per user) to chat API
+- cf584e5: Add possibility to select custom Ollama embedding models
+
 ## 0.0.20
 
 ### Patch Changes
