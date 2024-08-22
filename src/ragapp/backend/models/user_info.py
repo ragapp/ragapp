@@ -1,9 +1,13 @@
+import os
+
 from pydantic import BaseModel, computed_field
 
 from .jwt import JWT
 
 ADMIN_ROLE = "admin-manager"
-JWT_USER_ID_CLAIM = os.getenv("JWT_USER_ID_CLAIM", "preferred_username")  # The claim in the JWT token that stores the user ID (defaults to `preferred_username` from Keycloak)
+JWT_USER_ID_CLAIM = os.getenv(
+    "JWT_USER_ID_CLAIM", "preferred_username"
+)  # The claim in the JWT token that stores the user ID (defaults to `preferred_username` from Keycloak)
 JWT_USER_ROLES_CLAIM = (
     "X-Forwarded-Roles"  # The claim in the JWT token that stores the user roles
 )
@@ -19,7 +23,7 @@ class UserInfo(BaseModel):
 
     @classmethod
     def from_jwt_data(cls, jwt_data: dict) -> "UserInfo":
-        user_name = jwt_data.get(JWT_USER_NAME_CLAIM)
+        user_name = jwt_data.get(JWT_USER_ID_CLAIM)
         roles = jwt_data.get(JWT_USER_ROLES_CLAIM, [])
         return cls(user_name=user_name, roles=roles)
 
