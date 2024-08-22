@@ -2,29 +2,49 @@ import os
 import time
 
 import jwt
-from backend.services.user_chat_service import UserChatService
 from fastapi import HTTPException, Request, status
 from fastapi.responses import Response
 from jwt import InvalidTokenError
+from pydantic import BaseModel, computed_field
+
+from backend.services.user_chat_service import UserChatService
 
 JWT_COOKIE_NAME = "Authorization"  # The name of the cookie that stores the JWT token
 JWT_USER_ID_CLAIM = "preferred_username"  # The claim in the JWT token that stores the user ID or user name
-CHAT_REQUEST_LIMIT_THRESHOLD = int(os.environ.get("CHAT_REQUEST_LIMIT_THRESHOLD", 5))
+JWT_USER_ROLES_CLAIM = (
+    "X-Forwarded-Roles"  # The claim in the JWT token that stores the user roles
+)
+CHAT_REQUEST_LIMIT_THRESHOLD = int(os.getenv("CHAT_REQUEST_LIMIT_THRESHOLD", 0))
+CHAT_REQUEST_LIMIT_ENABLED = CHAT_REQUEST_LIMIT_THRESHOLD > 0
+ADMIN_ROLE = "admin-manager"
+
+
+class UserInfo(BaseModel):
+    username: str
+    roles: list[str] = []
+
+    @computed_field
+    def is_admin(self) -> bool:
+        return ADMIN_ROLE in self.roles
 
 
 async def request_limit_middleware(request: Request) -> Response:
-    time_frame = _get_time_frame()
-    user_id = _extract_user_id_from_request(request)
-    request_count = UserChatService.get_user_chat_request_count(user_id, time_frame)
-    if request_count >= CHAT_REQUEST_LIMIT_THRESHOLD:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=f"You have exceeded {CHAT_REQUEST_LIMIT_THRESHOLD} chat requests. Please try again later.",
+    if CHAT_REQUEST_LIMIT_ENABLED:
+        time_frame = _get_time_frame()
+        user = _extract_user_info_from_request(request)
+        # Use user name as the key for rate limiting
+        request_count = UserChatService.get_user_chat_request_count(
+            user.username, time_frame
         )
+        if not user.is_admin and request_count >= CHAT_REQUEST_LIMIT_THRESHOLD:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"You have exceeded {CHAT_REQUEST_LIMIT_THRESHOLD} chat requests. Please try again later.",
+            )
 
-    UserChatService.update_user_chat_request_count(
-        user_id, time_frame, request_count + 1
-    )
+        UserChatService.update_user_chat_request_count(
+            user.username, time_frame, request_count + 1
+        )
 
 
 def _get_time_frame():
@@ -35,7 +55,7 @@ def _get_time_frame():
     return time.strftime("%Y-%m-%d")
 
 
-def _extract_user_id_from_request(request: Request) -> str:
+def _extract_user_info_from_request(request: Request) -> UserInfo:
     cookie = request.cookies.get(JWT_COOKIE_NAME)
     if not cookie:
         raise HTTPException(
@@ -44,14 +64,16 @@ def _extract_user_id_from_request(request: Request) -> str:
     try:
         payload = _decode_jwt(cookie)
         username = payload.get(JWT_USER_ID_CLAIM)
-        return username
+        roles = payload.get(JWT_USER_ROLES_CLAIM, [])
+        return UserInfo(username=username, roles=roles)
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired"
         )
     except jwt.InvalidTokenError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication",
         )
 
 

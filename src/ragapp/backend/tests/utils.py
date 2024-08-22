@@ -15,12 +15,25 @@ def mock_empty_db(monkeypatch):
 
 
 @pytest.fixture
-def mock_jwt_token():
+def mock_user_jwt_token():
     """
     Generate a JWT token for testing.
     """
     payload = {
         "preferred_username": "test_user",
+    }
+    token = jwt.encode(payload, "secret", algorithm="HS256")
+    return f"Bearer {token}"
+
+
+@pytest.fixture
+def mock_admin_jwt_token():
+    """
+    Generate a JWT token for testing.
+    """
+    payload = {
+        "preferred_username": "manager",
+        "X-Forwarded-Roles": ["admin-manager"],
     }
     token = jwt.encode(payload, "secret", algorithm="HS256")
     return f"Bearer {token}"
