@@ -15,7 +15,6 @@ async def request_limit_middleware(request: Request) -> Response:
     if CHAT_REQUEST_LIMIT_ENABLED:
         user = UserInfo.from_request(request)
         time_frame = _get_time_frame()
-        # Use user name as the key for rate limiting
         request_count = UserChatService.get_user_chat_request_count(user, time_frame)
         if not user.is_admin and request_count >= CHAT_REQUEST_LIMIT_THRESHOLD:
             raise HTTPException(
