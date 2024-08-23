@@ -54,9 +54,11 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=admin
     volumes:
       # Mount example realm data
-      - ./keycloak/example/:/opt/keycloak/data/
+      - ./data/keycloak/example/:/opt/keycloak/data/
     networks:
       - ragapp-network
+    depends_on:
+      - traefik
 
   manager:
     image: ${MANAGER_IMAGE:-ragapp/manager:latest}
@@ -67,6 +69,7 @@ services:
       - BASE_URL=/manager
       - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
       - CHAT_REQUEST_LIMIT_THRESHOLD=20
+      - RAGAPP_MOUNT_PATH=${PWD}/data/ragapps
     labels:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000
@@ -75,6 +78,9 @@ services:
       - traefik.http.routers.admin-manager.middlewares=ragapp-keycloakopenid,admin-auth,strip-manager-path
     networks:
       - ragapp-network
+    depends_on:
+      - traefik
+      - keycloak
 
 networks:
   ragapp-network:

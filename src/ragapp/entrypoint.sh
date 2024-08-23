@@ -23,5 +23,16 @@ else
     echo "Updated static files successfully!"
 fi
 
+# Use mouted volume
+if [[ -n "$MOUNTED_VOLUME" ]]; then
+    # If the mounted volume config is empty, use the default config
+    if [[ -z "$(ls -A /app/config)" ]]; then
+        cp -r /app/.config/. /app/config/
+        echo "Copied default config to mounted volume!"
+    else
+        echo "Using mounted volume config!"
+    fi
+fi
+
 echo "Running application..."
 exec "$@"
