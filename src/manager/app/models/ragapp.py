@@ -2,9 +2,8 @@ import os
 import re
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field, computed_field, validator
-
 from app.models.volume import RAGAPP_MOUNT_PATH, RAGAppVolumeConfig
+from pydantic import BaseModel, Field, computed_field, validator
 
 DEFAULT_RAGAPP_IMAGE = os.getenv("RAGAPP_IMAGE", "ragapp/ragapp:latest")
 DEFAULT_NETWORK = os.getenv("RAGAPP_NETWORK", "ragapp-network")
@@ -99,6 +98,5 @@ def _get_default_app_environment(app_name: str) -> Dict[str, str]:
         "CHAT_REQUEST_LIMIT_THRESHOLD": DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD,
         # Flag that the app is using volume
         "USE_VOLUME": RAGAPP_MOUNT_PATH is not None,
-        # TODO: Move to another suitable place
-        "DB_URI": "sqlite:///config/db.sqlite",
+        "DB_URI": "sqlite:///storage/db.sqlite",
     }

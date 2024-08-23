@@ -19,7 +19,7 @@ class RAGAppVolumeConfig(BaseModel):
     def to_container_create_kwargs(self) -> dict | None:
         # If host mount path is provided, return the data and config volumes
         # Otherwise, don't mount any volumes
-        # TODO: Simplify this
+        # TODO: Simplify these volumes into a mount path if possible
         if self.host_mount_prefix is not None:
             return {
                 # Data volume (upload/knowledge files)
@@ -30,6 +30,11 @@ class RAGAppVolumeConfig(BaseModel):
                 # Config volume
                 f"{self.host_mount_path}/config": {
                     "bind": self.container_config_mount_path,
+                    "mode": "rw",
+                },
+                # Storage volume
+                f"{self.host_mount_path}/storage": {
+                    "bind": "/app/storage",
                     "mode": "rw",
                 },
             }
