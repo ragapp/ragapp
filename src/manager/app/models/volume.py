@@ -2,14 +2,14 @@ import os
 
 from pydantic import BaseModel, computed_field
 
-DEAFULT_MOUNT_PATH = os.getenv("RAGAPP_MOUNT_PATH")
+RAGAPP_MOUNT_PATH = os.getenv("RAGAPP_MOUNT_PATH")
 
 
 class RAGAppVolumeConfig(BaseModel):
     name: str
     container_data_mount_path: str = "/app/data"
     container_config_mount_path: str = "/app/config"
-    host_mount_prefix: str = DEAFULT_MOUNT_PATH
+    host_mount_prefix: str = RAGAPP_MOUNT_PATH
 
     @computed_field
     @property

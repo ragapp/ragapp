@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field, computed_field, validator
 
-from app.models.volume import DEAFULT_MOUNT_PATH, RAGAppVolumeConfig
+from app.models.volume import RAGAPP_MOUNT_PATH, RAGAppVolumeConfig
 
 DEFAULT_RAGAPP_IMAGE = os.getenv("RAGAPP_IMAGE", "ragapp/ragapp:latest")
 DEFAULT_NETWORK = os.getenv("RAGAPP_NETWORK", "ragapp-network")
@@ -59,7 +59,7 @@ class RAGAppContainerConfig(BaseModel):
         return APP_NAME_TEMPLATE.format(app_name=self.name)
 
     def to_docker_create_kwargs(self):
-        default_config = {
+        return {
             "name": self.container_name,
             "image": self.image,
             "command": self.command,
@@ -68,7 +68,6 @@ class RAGAppContainerConfig(BaseModel):
             "network": self.network,
             "volumes": self.volume_config.to_container_create_kwargs(),
         }
-        return default_config
 
 
 def _get_default_app_labels(app_name: str) -> Dict[str, str]:
@@ -98,7 +97,8 @@ def _get_default_app_environment(app_name: str) -> Dict[str, str]:
         "EMBEDDING_MODEL": "text-embedding-3-small",
         "EMBEDDING_DIM": "1024",
         "CHAT_REQUEST_LIMIT_THRESHOLD": DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD,
-        "MOUNTED_VOLUME": DEAFULT_MOUNT_PATH is not None,
+        # Flag that the app is using volume
+        "USE_VOLUME": RAGAPP_MOUNT_PATH is not None,
         # TODO: Move to another suitable place
         "DB_URI": "sqlite:///config/db.sqlite",
     }
