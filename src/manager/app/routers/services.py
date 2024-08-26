@@ -1,12 +1,14 @@
 import logging
 
+from docker.errors import DockerException
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse, Response
+
 from app.docker_client import get_docker_client
 from app.models.docker_service import ServiceInfo
 from app.models.ragapp import RAGAppContainerConfig
 from app.services import AppConfigService, AppDataService, ContainerService
-from docker.errors import DockerException
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse, Response
+from app.utils import sanitize_app_name
 
 service_router = r = APIRouter()
 
@@ -59,6 +61,7 @@ def stop_service(
     app_name: str,
     docker_client=Depends(get_docker_client),
 ):
+    app_name = sanitize_app_name(app_name)
     try:
         logger.info(f"Stopping app {app_name}")
         container = ContainerService.fetch_ragapp_container(
@@ -75,6 +78,7 @@ def start_service(
     app_name: str,
     docker_client=Depends(get_docker_client),
 ):
+    app_name = sanitize_app_name(app_name)
     try:
         logger.info(f"Starting app {app_name}")
         container = ContainerService.fetch_ragapp_container(
@@ -91,6 +95,7 @@ def remove_service(
     app_name: str,
     docker_client=Depends(get_docker_client),
 ):
+    app_name = sanitize_app_name(app_name)
     logger.info(f"Removing app {app_name}")
     try:
         container = ContainerService.fetch_ragapp_container(
