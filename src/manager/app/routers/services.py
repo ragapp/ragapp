@@ -1,14 +1,12 @@
 import logging
 
-from docker.errors import DockerException
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse, Response
-
 from app.docker_client import get_docker_client
 from app.models.docker_service import ServiceInfo
 from app.models.ragapp import RAGAppContainerConfig
-from app.services.app_config import AppConfigService
-from app.services.container import ContainerService
+from app.services import AppConfigService, AppDataService, ContainerService
+from docker.errors import DockerException
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse, Response
 
 service_router = r = APIRouter()
 
@@ -104,6 +102,8 @@ def remove_service(
     finally:
         # Remove app config
         AppConfigService.delete_app_config(app_name=app_name)
+        # Remove app data
+        AppDataService.remove_app_data(app_name)
     return Response(status_code=204)
 
 

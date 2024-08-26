@@ -66,10 +66,13 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${PWD}/data/manager:/app/config
+      # Mount the ragapps data folder to the manager
+      - ${PWD}/data/ragapps:/app/data/ragapps
     environment:
       - BASE_URL=/manager
       - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
       - CHAT_REQUEST_LIMIT_THRESHOLD=20
+      # The path in host machine where the ragapps are stored
       - RAGAPP_MOUNT_PATH=${PWD}/data/ragapps
     labels:
       - traefik.enable=true
