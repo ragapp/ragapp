@@ -51,3 +51,12 @@ class AppConfigService:
             return RAGAppContainerConfig(**config)
         else:
             return None
+
+    @classmethod
+    def update_app_status(cls, app_name: str, status: str):
+        config = cls.load_config_from_disk(app_name)
+        if config:
+            config.status = status
+            cls.persist_app_config(config)
+            return True
+        return False

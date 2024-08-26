@@ -52,11 +52,7 @@ class AppService:
         docker_client: DockerClient,
     ):
         all_services = AppService.fetch_all_service_info(docker_client)
-        services = [
-            service
-            for service in all_services
-            if service.status == "missing" or service.status == "exited"
-        ]
+        services = [service for service in all_services if service.status == "missing"]
         for service in services:
             logger.info(f"Starting app: {service.app_name}")
             config = AppConfigService.load_config_from_disk(app_name=service.app_name)

@@ -42,6 +42,8 @@ def stop_service(
             docker_client=docker_client, app_name=app_name
         )
         container.stop()
+        # Update app status
+        AppConfigService.update_app_status(app_name, "stopped")
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
     return Response(status_code=204)
