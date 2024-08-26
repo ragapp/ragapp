@@ -1,9 +1,5 @@
 import logging
 
-from docker.errors import DockerException
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse, Response
-
 from app.docker_client import get_docker_client
 from app.models.docker_service import ServiceInfo
 from app.models.ragapp import RAGAppContainerConfig
@@ -11,6 +7,9 @@ from app.services import AppConfigService, AppDataService, ContainerService
 from app.services.app import AppService
 from app.services.container import ContainerServiceError
 from app.utils import check_app_name
+from docker.errors import DockerException
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse, Response
 
 service_router = r = APIRouter()
 
@@ -61,6 +60,8 @@ def start_service(
             docker_client=docker_client, app_name=app_name
         )
         container.start()
+        # Update app status
+        AppConfigService.update_app_status(app_name, "running")
     except DockerException as e:
         raise HTTPException(status_code=500, detail=str(e))
     return Response(status_code=204)

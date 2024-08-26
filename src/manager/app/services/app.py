@@ -1,6 +1,7 @@
 import logging
 
 from docker import DockerClient
+from docker.errors import DockerException
 
 from app.models.docker_service import ServiceInfo
 from app.services.app_config import AppConfigService
@@ -51,18 +52,30 @@ class AppService:
         cls,
         docker_client: DockerClient,
     ):
-        all_services = AppService.fetch_all_service_info(docker_client)
-        services = [service for service in all_services if service.status == "missing"]
-        for service in services:
-            logger.info(f"Starting app: {service.app_name}")
-            config = AppConfigService.load_config_from_disk(app_name=service.app_name)
-            container = ContainerService.create_ragapp_container(
-                config=config,
-                docker_client=docker_client,
-            )
-            container.start()
-
-        return services
+        # Fetch all app configs
+        app_configs = AppConfigService.load_all_configs_from_disk()
+        errors = []
+        for config in app_configs:
+            try:
+                container = ContainerService.fetch_ragapp_container(
+                    docker_client=docker_client, app_name=config.name
+                )
+                # App config is running but container is not running
+                # Start the container
+                if container.status != "running" and config.status == "running":
+                    container.start()
+                    logger.info(f"Started app {config.name}")
+            except DockerException:
+                if config.status == "running":
+                    # If container not found, create it
+                    try:
+                        ContainerService.create_ragapp_container(
+                            config=config, docker_client=docker_client
+                        )
+                        logger.info(f"Created app {config.name}")
+                    except Exception as e:
+                        logger.error(f"Error starting app {config.name}: {e}")
+                        errors.append(config.name)
 
     @classmethod
     def remove_orphaned_apps(

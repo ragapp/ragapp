@@ -61,11 +61,11 @@ class ContainerService:
             logger.error(f"Error creating container: {e}")
             raise ContainerServiceError(str(e))
 
-        # Persist app config
-        AppConfigService.persist_app_config(config)
-
         try:
             container.start()
+            # Persist app config
+            config.status = "running"
+            AppConfigService.persist_app_config(config)
         except DockerException as e:
             logger.error(f"Error starting container: {e}")
             container.remove(force=True)

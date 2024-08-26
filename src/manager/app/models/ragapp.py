@@ -2,9 +2,8 @@ import os
 import re
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field, computed_field, validator
-
 from app.models.volume import RAGAPP_MOUNT_PATH, RAGAppVolumeConfig
+from pydantic import BaseModel, Field, computed_field, validator
 
 DEFAULT_RAGAPP_IMAGE = os.getenv("RAGAPP_IMAGE", "ragapp/ragapp:latest")
 DEFAULT_NETWORK = os.getenv("RAGAPP_NETWORK", "ragapp-network")
@@ -23,6 +22,7 @@ class RAGAppContainerConfig(BaseModel):
         default=DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD
     )
     volume_config: Optional[RAGAppVolumeConfig] = None
+    status: Optional[str] = Field(default=None)
 
     class Config:
         # example

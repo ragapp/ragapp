@@ -10,12 +10,10 @@ def main():
     docker_client = get_docker_client()
 
     # Start missing apps
-    apps = AppService.start_apps(docker_client)
-    print(f"Started apps: {apps}")
+    AppService.start_apps(docker_client)
 
     # Remove orphaned apps
-    orphaned_apps = AppService.remove_orphaned_apps(docker_client)
-    print(f"Removed orphaned apps: {orphaned_apps}")
+    AppService.remove_orphaned_apps(docker_client)
 
 
 if __name__ == "__main__":
