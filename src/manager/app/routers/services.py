@@ -1,11 +1,14 @@
 import logging
 
-from app.docker_client import get_docker_client
-from app.models.docker_service import ServiceInfo
-from app.models.ragapp import RAGAppContainerConfig
 from docker.errors import DockerException
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse, Response
+
+from app.docker_client import get_docker_client
+from app.models.docker_service import ServiceInfo
+from app.models.ragapp import RAGAppContainerConfig
+from app.services.app_config import AppConfigService
+from app.services.container import ContainerService
 
 service_router = r = APIRouter()
 
@@ -18,69 +21,89 @@ def list_services(
     only_ragapp: bool = True,
     docker_client=Depends(get_docker_client),
 ) -> list[ServiceInfo]:
-    # Filter services by label
-    filters = {"label": "ragapp.app_name"} if only_ragapp else {}
-    services = docker_client.containers.list(filters=filters, all=True)
-    service_list = []
+    # Get all RAGapp cotnainers from docker server
+    containers = ContainerService.fetch_all_ragapp_containers(docker_client)
+    services = [
+        ServiceInfo.from_docker_container(container) for container in containers
+    ]
+
+    # Validate with persisted app configs
+    app_configs = AppConfigService.load_all_configs_from_disk()
+    config_app_names = [config.name for config in app_configs]
+    # Find orphaned containers (the ones that are in Docker but don't have app configs)
     for service in services:
-        attrs = service.attrs
-        state = attrs.get("State")
-        # Get app name from label
-        app_name = service.labels.get("ragapp.app_name")
-        service_info = ServiceInfo(
-            id=service.id,
-            name=service.name,
-            app_name=app_name,
-            started_at=state.get("StartedAt"),
-            created_at=attrs.get("Created"),
-            updated_at=attrs.get("Updated"),
-            status=state.get("Status"),
-            image=attrs.get("Image"),
-            restart_count=attrs.get("RestartCount"),
-        )
-        service_list.append(service_info)
-    return service_list
+        if service.app_name not in config_app_names:
+            logger.warning(f"Orphaned container: {service.name}")
+            service.status = "orphaned"
+    service_names = [service.app_name for service in services]
+    # Find missing containers (the ones that have app configs but not in docker)
+    for config in app_configs:
+        if config.name not in service_names:
+            logger.warning(f"Missing container: {config.name}")
+            services.append(
+                ServiceInfo(
+                    name=config.name,
+                    app_name=config.name,
+                    status="missing",
+                    id="",
+                    image=config.image,
+                    command=config.command,
+                    labels=config.labels,
+                    environment=config.environment,
+                    network=config.network,
+                )
+            )
+    return services
 
 
-@r.post("/{service_id}/stop")
+@r.post("/{app_name}/stop")
 def stop_service(
-    service_id: str,
+    app_name: str,
     docker_client=Depends(get_docker_client),
 ):
     try:
-        logger.info(f"Stopping container {service_id}")
-        container = docker_client.containers.get(service_id)
+        logger.info(f"Stopping app {app_name}")
+        container = ContainerService.fetch_ragapp_container(
+            docker_client=docker_client, app_name=app_name
+        )
         container.stop()
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
     return Response(status_code=204)
 
 
-@r.post("/{service_id}/start")
+@r.post("/{app_name}/start")
 def start_service(
-    service_id: str,
+    app_name: str,
     docker_client=Depends(get_docker_client),
 ):
     try:
-        logger.info(f"Starting container {service_id}")
-        container = docker_client.containers.get(service_id)
+        logger.info(f"Starting app {app_name}")
+        container = ContainerService.fetch_ragapp_container(
+            docker_client=docker_client, app_name=app_name
+        )
         container.start()
     except DockerException as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
     return Response(status_code=204)
 
 
-@r.delete("/{service_id}")
+@r.delete("/{app_name}")
 def remove_service(
-    service_id: str,
+    app_name: str,
     docker_client=Depends(get_docker_client),
 ):
+    logger.info(f"Removing app {app_name}")
     try:
-        logger.info(f"Removing container {service_id}")
-        container = docker_client.containers.get(service_id)
+        container = ContainerService.fetch_ragapp_container(
+            docker_client=docker_client, app_name=app_name
+        )
         container.remove(force=True)
     except DockerException as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error(f"Error removing container: {e}")
+    finally:
+        # Remove app config
+        AppConfigService.delete_app_config(app_name=app_name)
     return Response(status_code=204)
 
 
@@ -93,7 +116,9 @@ def create_agent(
     container_config = config.to_docker_create_kwargs()
 
     try:
-        current_container = docker_client.containers.get(container_config["name"])
+        current_container = ContainerService.fetch_ragapp_container(
+            docker_client=docker_client, app_name=config.name
+        )
         if current_container:
             raise HTTPException(status_code=400, detail="Container already exists")
     except DockerException:
@@ -105,6 +130,9 @@ def create_agent(
     except DockerException as e:
         logger.error(f"Error creating container: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+
+    # Persist app config
+    AppConfigService.persist_app_config(config)
 
     try:
         container.start()

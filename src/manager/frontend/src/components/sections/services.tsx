@@ -4,6 +4,7 @@ import {
   removeService,
   startService,
   stopService,
+  createRAGAppService
 } from "@/client/service";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +41,10 @@ function AlertDialogRemoveApp({
   refetch: () => void;
 }) {
   async function handleRemoveService() {
-    await removeService(service.id);
+    if (!service.app_name) {
+      return;
+    }
+    await removeService(service.app_name);
     refetch();
   }
 
@@ -80,17 +84,30 @@ function StartStopButton({
   const [isHandling, setIsHandling] = useState(false);
 
   async function handleStopService() {
-    setIsHandling(true);
-    await stopService(service.id);
-    refetch();
-    setIsHandling(false);
+    if (service.app_name !== null) {
+      setIsHandling(true);
+      await stopService(service.app_name);
+      refetch();
+      setIsHandling(false);
+    }
   }
 
   async function handleStartService() {
-    setIsHandling(true);
-    await startService(service.id);
-    refetch();
-    setIsHandling(false);
+    if (service.app_name !== null) {
+      setIsHandling(true);
+      await startService(service.app_name);
+      refetch();
+      setIsHandling(false);
+    }
+  }
+
+  async function handleRecreateService() {
+    if (service.app_name !== null) {
+      setIsHandling(true);
+      await createRAGAppService({ name: service.app_name });
+      refetch();
+      setIsHandling(false);
+    }
   }
 
   return service.status === "running" ? (
@@ -102,15 +119,29 @@ function StartStopButton({
     >
       <Pause size={20} />
     </Button>
-  ) : (
+  ) : service.status === "exited" ? (
+    (
+      <Button
+        variant="outline"
+        className="flex items-center text-muted-foreground"
+        onClick={handleStartService}
+        disabled={isHandling}
+      >
+        <Play size={20} />
+      </Button>
+    )
+  ) : service.status === "missing" ? (
     <Button
       variant="outline"
       className="flex items-center text-muted-foreground"
-      onClick={handleStartService}
+      onClick={handleRecreateService}
       disabled={isHandling}
     >
       <Play size={20} />
     </Button>
+  ) : (
+    // Don't show start/stop button for other states (orphaned/unknown/...)
+    null
   );
 }
 
@@ -138,14 +169,14 @@ function ServiceCard({
             {service.status === "running" ? (
               <Tooltip>
                 <TooltipTrigger>
-                  <span className="text-green">Running</span>
+                  <span className="text-green">{service.status.toUpperCase()}</span>
                 </TooltipTrigger>
                 <TooltipContent side="right">
                   <span>since {service.started_at}</span>
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <span className="text-red">Stopped</span>
+              <span className="text-red">{service.status.toUpperCase()}</span>
             )}
           </p>
         </CardContent>

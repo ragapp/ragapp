@@ -2,8 +2,9 @@ import os
 import re
 from typing import Dict, List, Optional
 
-from app.models.volume import RAGAPP_MOUNT_PATH, RAGAppVolumeConfig
 from pydantic import BaseModel, Field, computed_field, validator
+
+from app.models.volume import RAGAPP_MOUNT_PATH, RAGAppVolumeConfig
 
 DEFAULT_RAGAPP_IMAGE = os.getenv("RAGAPP_IMAGE", "ragapp/ragapp:latest")
 DEFAULT_NETWORK = os.getenv("RAGAPP_NETWORK", "ragapp-network")
@@ -36,11 +37,11 @@ class RAGAppContainerConfig(BaseModel):
         if "labels" not in data:
             data["labels"] = _get_default_app_labels(data["name"])
         else:
-            data["labels"] += _get_default_app_labels(data["name"])
+            data["labels"].update(_get_default_app_labels(data["name"]))
         if "environment" not in data:
             data["environment"] = _get_default_app_environment(data["name"])
         else:
-            data["environment"] += _get_default_app_environment(data["name"])
+            data["environment"].update(_get_default_app_environment(data["name"]))
         super().__init__(**data)
         self.volume_config = RAGAppVolumeConfig(name=self.name)
 
@@ -57,7 +58,7 @@ class RAGAppContainerConfig(BaseModel):
     def container_name(self) -> str:
         return APP_NAME_TEMPLATE.format(app_name=self.name)
 
-    def to_docker_create_kwargs(self):
+    def to_docker_create_kwargs(self) -> dict:
         return {
             "name": self.container_name,
             "image": self.image,

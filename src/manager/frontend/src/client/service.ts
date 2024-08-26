@@ -15,10 +15,10 @@ export const getServices = async (): Promise<Service[]> => {
   }
 };
 
-export const stopService = async (serviceId: string): Promise<void> => {
+export const stopService = async (appName: string): Promise<void> => {
   try {
     const response = await fetch(
-      `${getBaseURL()}/api/services/${serviceId}/stop`,
+      `${getBaseURL()}/api/services/${appName}/stop`,
       {
         method: "POST",
       },
@@ -32,10 +32,10 @@ export const stopService = async (serviceId: string): Promise<void> => {
   }
 };
 
-export const startService = async (serviceId: string): Promise<void> => {
+export const startService = async (appName: string): Promise<void> => {
   try {
     const response = await fetch(
-      `${getBaseURL()}/api/services/${serviceId}/start`,
+      `${getBaseURL()}/api/services/${appName}/start`,
       {
         method: "POST",
       },
@@ -49,9 +49,9 @@ export const startService = async (serviceId: string): Promise<void> => {
   }
 };
 
-export const removeService = async (serviceId: string): Promise<void> => {
+export const removeService = async (appName: string): Promise<void> => {
   try {
-    const response = await fetch(`${getBaseURL()}/api/services/${serviceId}`, {
+    const response = await fetch(`${getBaseURL()}/api/services/${appName}`, {
       method: "DELETE",
     });
 
