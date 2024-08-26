@@ -41,3 +41,13 @@ class AppConfigService:
             return True
         else:
             return False
+
+    @classmethod
+    def load_config_from_disk(cls, app_name: str) -> RAGAppContainerConfig:
+        file_path = os.path.join(cls.persist_dir, f"{app_name}.json")
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            with open(file_path, "r") as f:
+                config = json.loads(f.read())
+            return RAGAppContainerConfig(**config)
+        else:
+            return None

@@ -12,4 +12,7 @@ if [[ -n "$BASE_URL" ]]; then
     echo "Running application..."
 fi
 
+# Initiate ragapps
+python app/tasks/init_apps.py
+
 exec "$@"
