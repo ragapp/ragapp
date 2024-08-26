@@ -24,13 +24,11 @@ else
 fi
 
 # Copy default config to mounted volume if it is empty
-if [[ -n "$USE_VOLUME" ]]; then
-    if [[ -z "$(ls -A /app/config)" ]]; then
-        cp -r /app/.config/. /app/config/
-        echo "Copied default config to mounted volume!"
-    else
-        echo "Using mounted volume config!"
-    fi
+if [[ -z "$(ls -A /app/config)" ]]; then
+    cp -r /app/.config/. /app/config/
+    echo "Copied default config to mounted volume!"
+else
+    echo "Using mounted volume config!"
 fi
 
 echo "Running application..."
