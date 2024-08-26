@@ -10,7 +10,7 @@ from app.models.ragapp import RAGAppContainerConfig
 from app.services import AppConfigService, AppDataService, ContainerService
 from app.services.app import AppService
 from app.services.container import ContainerServiceError
-from app.utils import sanitize_app_name
+from app.utils import check_app_name
 
 service_router = r = APIRouter()
 
@@ -35,7 +35,7 @@ def stop_service(
     app_name: str,
     docker_client=Depends(get_docker_client),
 ):
-    app_name = sanitize_app_name(app_name)
+    app_name = check_app_name(app_name)
     try:
         logger.info(f"Stopping app {app_name}")
         container = ContainerService.fetch_ragapp_container(
@@ -54,7 +54,7 @@ def start_service(
     app_name: str,
     docker_client=Depends(get_docker_client),
 ):
-    app_name = sanitize_app_name(app_name)
+    app_name = check_app_name(app_name)
     try:
         logger.info(f"Starting app {app_name}")
         container = ContainerService.fetch_ragapp_container(
@@ -71,7 +71,7 @@ def remove_service(
     app_name: str,
     docker_client=Depends(get_docker_client),
 ):
-    app_name = sanitize_app_name(app_name)
+    app_name = check_app_name(app_name)
     logger.info(f"Removing app {app_name}")
     try:
         container = ContainerService.fetch_ragapp_container(

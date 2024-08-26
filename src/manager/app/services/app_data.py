@@ -3,7 +3,7 @@ import os
 import shutil
 
 from app.models.volume import RAGAPP_MOUNT_PATH
-from app.utils import sanitize_app_name
+from app.utils import check_app_name
 
 logger = logging.getLogger("uvicorn")
 # The default data directory (in container) for RAGapp data
@@ -17,7 +17,7 @@ class AppDataService:
     def remove_app_data(
         app_name: str,
     ):
-        app_name = sanitize_app_name(app_name)
+        app_name = check_app_name(app_name)
         if RAGAPP_MOUNT_PATH is not None:
             # Remove app data
             app_data_dir = f"{DEFAULT_RAGAPP_DATA_DIR}/{app_name}"
