@@ -30,7 +30,7 @@ services:
       # - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME:-admin}:${HASHED_PASSWORD:-$$apr1$$3gG256rA$$BomHrC/uMhL807k/t7Wd6/}
     volumes:  
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/traefik.yml:/traefik_config.yml:ro
+      - ./data/traefik/traefik.yml:/traefik_config.yml:ro
     command:
       - --configFile=/traefik_config.yml
       - --log.level=DEBUG
@@ -65,6 +65,7 @@ services:
     build: ../../src/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${PWD}/data/manager:/app/config
     environment:
       - BASE_URL=/manager
       - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
