@@ -30,7 +30,7 @@ services:
       # - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME:-admin}:${HASHED_PASSWORD:-$$apr1$$3gG256rA$$BomHrC/uMhL807k/t7Wd6/}
     volumes:  
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./data/traefik/traefik.yml:/traefik_config.yml:ro
+      - ${STATE_DIR:-${PWD}/data}/traefik/traefik.yml:/traefik_config.yml:ro
     command:
       - --configFile=/traefik_config.yml
       - --log.level=DEBUG
@@ -54,7 +54,7 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=admin
     volumes:
       # Mount example realm data
-      - ./data/keycloak/example/:/opt/keycloak/data/
+      - ${STATE_DIR:-${PWD}/data}/keycloak/example/:/opt/keycloak/data/
     networks:
       - ragapp-network
     depends_on:
@@ -65,15 +65,15 @@ services:
     build: ../../src/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${PWD}/data/manager:/app/config
+      - ${STATE_DIR:-${PWD}/data}/manager:/app/config
       # Mount the ragapps data folder to the manager
-      - ${PWD}/data/ragapps:/app/data/ragapps
+      - ${STATE_DIR:-${PWD}/data}/ragapps:/app/data/ragapps
     environment:
       - BASE_URL=/manager
       - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
       - CHAT_REQUEST_LIMIT_THRESHOLD=20
       # The path in host machine where the ragapps are stored
-      - RAGAPP_MOUNT_PATH=${PWD}/data/ragapps
+      - RAGAPP_MOUNT_PATH=${STATE_DIR:-${PWD}/data}/ragapps
     labels:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000
