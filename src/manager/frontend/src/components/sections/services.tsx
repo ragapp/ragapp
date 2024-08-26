@@ -1,10 +1,10 @@
 import { Service } from "@/client/models/service";
 import {
+  createRAGAppService,
   getServices,
   removeService,
   startService,
   stopService,
-  createRAGAppService
 } from "@/client/service";
 import { Button } from "@/components/ui/button";
 import {
@@ -120,16 +120,14 @@ function StartStopButton({
       <Pause size={20} />
     </Button>
   ) : service.status === "exited" ? (
-    (
-      <Button
-        variant="outline"
-        className="flex items-center text-muted-foreground"
-        onClick={handleStartService}
-        disabled={isHandling}
-      >
-        <Play size={20} />
-      </Button>
-    )
+    <Button
+      variant="outline"
+      className="flex items-center text-muted-foreground"
+      onClick={handleStartService}
+      disabled={isHandling}
+    >
+      <Play size={20} />
+    </Button>
   ) : service.status === "missing" ? (
     <Button
       variant="outline"
@@ -139,10 +137,8 @@ function StartStopButton({
     >
       <Play size={20} />
     </Button>
-  ) : (
-    // Don't show start/stop button for other states (orphaned/unknown/...)
-    null
-  );
+  ) : // Don't show start/stop button for other states (orphaned/unknown/...)
+  null;
 }
 
 function ServiceCard({
@@ -169,7 +165,9 @@ function ServiceCard({
             {service.status === "running" ? (
               <Tooltip>
                 <TooltipTrigger>
-                  <span className="text-green">{service.status.toUpperCase()}</span>
+                  <span className="text-green">
+                    {service.status.toUpperCase()}
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent side="right">
                   <span>since {service.started_at}</span>
