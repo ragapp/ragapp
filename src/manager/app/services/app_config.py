@@ -6,6 +6,7 @@ from app.models.ragapp import RAGAppContainerConfig
 DEFAULT_CONFIG_DIR = os.environ.get("CONFIG_DIR", "config/app_configs")
 
 
+# TODO: once the manager keeps more state, we can persist `RAGAppContainerConfig` using `SQLModel`
 class AppConfigService:
     persist_dir = DEFAULT_CONFIG_DIR
 

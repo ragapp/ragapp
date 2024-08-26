@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from app.models.volume import RAGAPP_MOUNT_PATH
+from app.models.volume import STATE_HOST_DIR
 from app.utils import check_app_name
 
 logger = logging.getLogger("uvicorn")
@@ -18,7 +18,7 @@ class AppDataService:
         app_name: str,
     ):
         app_name = check_app_name(app_name)
-        if RAGAPP_MOUNT_PATH is not None:
+        if STATE_HOST_DIR is not None:
             # Remove app data
             app_data_dir = f"{DEFAULT_RAGAPP_DATA_DIR}/{app_name}"
             if os.path.exists(app_data_dir):
