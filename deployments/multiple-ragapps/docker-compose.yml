@@ -65,15 +65,16 @@ services:
     build: ../../src/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      # Mount the ragapps data folder to the manager
-      # Note: Please don't change the container path `/app/data`
+      # Mount the state folder to the manager
+      # Note: The container path `/app/data`, must be the same as the STATE_DIR_LOCAL
       - ${STATE_DIR:-${PWD}/data}:/app/data
     environment:
       - BASE_URL=/manager
       - RAGAPP_IMAGE=${RAGAPP_IMAGE:-ragapp/ragapp:latest}
       - CHAT_REQUEST_LIMIT_THRESHOLD=20
-      # The path in host machine where the state is stored
-      - STATE_HOST_DIR=${STATE_DIR:-${PWD}/data}
+      # The path in host machine where the state is stored (needed for creating volumes dynamically)
+      - STATE_DIR=${STATE_DIR:-${PWD}/data}
+      - STATE_DIR_LOCAL=/app/data
     labels:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000

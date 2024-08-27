@@ -91,5 +91,5 @@ class AppService:
             container = ContainerService.fetch_ragapp_container(
                 docker_client=docker_client, app_name=service.app_name
             )
-            container.remove()
+            container.remove(force=True)
         return orphaned_services
