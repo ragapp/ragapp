@@ -138,7 +138,7 @@ function StartStopButton({
       <Play size={20} />
     </Button>
   ) : // Don't show start/stop button for other states (orphaned/unknown/...)
-  null;
+    null;
 }
 
 function ServiceCard({
@@ -165,16 +165,14 @@ function ServiceCard({
             {service.status === "running" ? (
               <Tooltip>
                 <TooltipTrigger>
-                  <span className="text-green">
-                    {service.status.toUpperCase()}
-                  </span>
+                  <span className="text-green">Running</span>
                 </TooltipTrigger>
                 <TooltipContent side="right">
                   <span>since {service.started_at}</span>
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <span className="text-red">{service.status.toUpperCase()}</span>
+              <span className="text-red">Stopped</span>
             )}
           </p>
         </CardContent>
