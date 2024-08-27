@@ -1,6 +1,5 @@
 from pydantic import BaseModel, computed_field
 
-from app.constants import RAGAPP_STATE_NAME
 from app.settings import settings
 
 
@@ -19,7 +18,7 @@ class RAGAppVolumeConfig(BaseModel):
         """
         The path to the directory in the host machine where the app's state will be stored
         """
-        return f"{settings.state_dir}/{RAGAPP_STATE_NAME}/{self.name}"
+        return f"{settings.state_dir}/{settings.RAGAPP_STATE_NAME}/{self.name}"
 
     def to_container_create_kwargs(self) -> dict | None:
         return {

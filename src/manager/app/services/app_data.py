@@ -2,13 +2,12 @@ import logging
 import os
 import shutil
 
-from app.constants import RAGAPP_STATE_NAME
 from app.settings import settings
 from app.utils import check_app_name
 
 logger = logging.getLogger("uvicorn")
 # The directory in the container where the state data of the ragapps is mounted.
-RAGAPPS_DIR = f"{settings.state_dir_local}/{RAGAPP_STATE_NAME}"
+RAGAPPS_DIR = f"{settings.state_dir_local}/{settings.RAGAPP_STATE_NAME}"
 
 
 class AppDataService:

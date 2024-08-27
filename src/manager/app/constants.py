@@ -1,1 +1,0 @@
-RAGAPP_STATE_NAME = "ragapps"

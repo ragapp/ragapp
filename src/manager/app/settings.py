@@ -1,25 +1,17 @@
-import os
 from typing import Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-
-def default_state_dir() -> str:
-    """
-    Use the current working directory as the default state directory
-    """
-    # Get current working directory
-    current_dir = os.getcwd()
-    # Create a directory named `data` in the current working directory
-    state_dir = os.path.join(current_dir, "data")
-    if not os.path.exists(state_dir):
-        os.makedirs(state_dir)
-
-    return state_dir
+from app.utils import default_state_dir
 
 
 class ManagerSettings(BaseSettings):
+    # Constants
+    # The name of ragapp state directory
+    RAGAPP_STATE_NAME: str = "ragapps"
+
+    # Configurations for ragapp template
     ragapp_image: str = Field(default="ragapp/ragapp:latest", env="RAGAPP_IMAGE")
     ragapp_network: str = Field(default="ragapp-network", env="RAGAPP_NETWORK")
     chat_request_limit_threshold: int = Field(
@@ -32,6 +24,7 @@ class ManagerSettings(BaseSettings):
         env="STATE_DIR",
     )
 
+    # Configurations for manager
     state_dir_local: Optional[str] = Field(
         description="The directory where the state of the local services are stored. This config is used for manage service states. It is the same as `state_dir` by default",
         default_factory=default_state_dir,
