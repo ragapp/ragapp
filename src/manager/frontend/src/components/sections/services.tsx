@@ -138,7 +138,7 @@ function StartStopButton({
       <Play size={20} />
     </Button>
   ) : // Don't show start/stop button for other states (orphaned/unknown/...)
-    null;
+  null;
 }
 
 function ServiceCard({
