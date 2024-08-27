@@ -9,7 +9,7 @@ readme = "README.md"
 python = ">=3.10,<3.13"
 fastapi = "^0.111.1"
 python-dotenv = "^1.0.0"
-llama-index = "0.10.56"
+llama-index = "0.10.58"
 uvicorn = { version = "^0.23.2", extras = ["standard"] }
 pydantic-settings = "^2.2.1"
 python-multipart = "^0.0.9"
