@@ -1,6 +1,5 @@
 import os
 
-# from app.services.app_data import RAGAPP_STATE_NAME
 from pydantic import BaseModel, computed_field
 
 STATE_DIR = os.getenv("STATE_DIR")
