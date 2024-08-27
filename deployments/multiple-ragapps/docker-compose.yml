@@ -65,8 +65,8 @@ services:
     build: ../../src/manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${STATE_DIR:-${PWD}/data}/manager:/app/config
       # Mount the ragapps data folder to the manager
+      # Note: Please don't change the container path `/app/data`
       - ${STATE_DIR:-${PWD}/data}:/app/data
     environment:
       - BASE_URL=/manager

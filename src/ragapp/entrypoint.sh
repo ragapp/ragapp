@@ -24,12 +24,11 @@ else
 fi
 
 # Copy default config to mounted volume if it is empty
-if [[ -z "$(ls -A /app/state/manager/config)" ]]; then
+if [[ -z "$(ls -A /app/config)" ]]; then
     cp -r /app/.config/. /app/config/
-    echo "Copied default config to mounted volume!"
-else
-    echo "Using mounted volume config!"
+    echo "Config folder is empty, use default configuration!"
 fi
 
 echo "Running application..."
+
 exec "$@"

@@ -13,7 +13,7 @@ logger = logging.getLogger("uvicorn")
 class AppService:
     @classmethod
     def fetch_all_service_info(cls, docker_client: DockerClient) -> list[ServiceInfo]:
-        # Get all RAGapp cotnainers from docker server
+        # Get all RAGapp containers from docker server
         containers = ContainerService.fetch_all_ragapp_containers(docker_client)
         services = [
             ServiceInfo.from_docker_container(container) for container in containers
