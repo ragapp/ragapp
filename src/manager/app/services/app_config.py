@@ -2,8 +2,9 @@ import json
 import os
 
 from app.models.ragapp import RAGAppContainerConfig
+from app.settings import settings
 
-CONFIG_DIR = f"{os.getenv('STATE_DIR_LOCAL')}/manager/config/apps"
+CONFIG_DIR = f"{settings.state_dir_local}/manager/config/apps"
 
 
 # TODO: once the manager keeps more state, we can persist `RAGAppContainerConfig` using `SQLModel`

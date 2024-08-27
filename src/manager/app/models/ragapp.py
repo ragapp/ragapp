@@ -1,25 +1,21 @@
-import os
 import re
 from typing import Dict, List, Optional
 
-from app.models.volume import RAGAppVolumeConfig
 from pydantic import BaseModel, Field, computed_field, validator
 
-DEFAULT_RAGAPP_IMAGE = os.getenv("RAGAPP_IMAGE", "ragapp/ragapp:latest")
-DEFAULT_NETWORK = os.getenv("RAGAPP_NETWORK", "ragapp-network")
-DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD = os.getenv("CHAT_REQUEST_LIMIT_THRESHOLD", 20)
-APP_NAME_TEMPLATE = "ragapp-{app_name}"
+from app.models.volume import RAGAppVolumeConfig
+from app.settings import settings
 
 
 class RAGAppContainerConfig(BaseModel):
     name: str
-    image: str = Field(default=DEFAULT_RAGAPP_IMAGE)
+    image: str = Field(default=settings.ragapp_image)
     command: Optional[List[str]] = Field(default=None)
     labels: Dict = Field(default_factory=dict)
     environment: Dict = Field(default_factory=dict)
-    network: str = Field(default=DEFAULT_NETWORK)
+    network: str = Field(default=settings.ragapp_network)
     chat_request_limit_threshold: int = Field(
-        default=DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD
+        default=settings.chat_request_limit_threshold
     )
     volume_config: Optional[RAGAppVolumeConfig] = None
     status: Optional[str] = Field(default=None)
@@ -29,7 +25,7 @@ class RAGAppContainerConfig(BaseModel):
         json_schema_extra = {
             "example": {
                 "name": "my-app",
-                "image": DEFAULT_RAGAPP_IMAGE,
+                "image": settings.ragapp_image,
             }
         }
 
@@ -56,7 +52,7 @@ class RAGAppContainerConfig(BaseModel):
     @computed_field
     @property
     def container_name(self) -> str:
-        return APP_NAME_TEMPLATE.format(app_name=self.name)
+        return settings.app_name_template.format(app_name=self.name)
 
     def to_docker_create_kwargs(self) -> dict:
         return {
@@ -96,6 +92,6 @@ def _get_default_app_environment(app_name: str) -> Dict[str, str]:
         "MODEL": "gpt-4o-mini",
         "EMBEDDING_MODEL": "text-embedding-3-small",
         "EMBEDDING_DIM": "1024",
-        "CHAT_REQUEST_LIMIT_THRESHOLD": DEFAULT_CHAT_REQUEST_LIMIT_THRESHOLD,
+        "CHAT_REQUEST_LIMIT_THRESHOLD": settings.chat_request_limit_threshold,
         "DB_URI": "sqlite:///storage/db.sqlite",
     }
