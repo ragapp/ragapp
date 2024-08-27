@@ -6,7 +6,7 @@ from app.utils import check_app_name
 
 logger = logging.getLogger("uvicorn")
 RAGAPP_STATE_NAME = "ragapps"
-# The directory in the container where the state data is mounted.
+# The directory in the container where the state data of the ragapps is mounted.
 RAGAPPS_DIR = f"{os.getenv('STATE_DIR_LOCAL')}/{RAGAPP_STATE_NAME}"
 
 
