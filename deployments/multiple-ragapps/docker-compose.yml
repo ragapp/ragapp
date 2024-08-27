@@ -74,6 +74,7 @@ services:
       - CHAT_REQUEST_LIMIT_THRESHOLD=20
       # The path in host machine where the state is stored (needed for creating volumes dynamically)
       - STATE_DIR=${STATE_DIR:-${PWD}/data}
+      # The path of the state inside of the manager container
       - STATE_DIR_LOCAL=/app/data
     labels:
       - traefik.enable=true
