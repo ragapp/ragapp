@@ -1,1 +1,1 @@
-DEFAULT_PROJECT_PREFIX = "ragapp"
+RAGAPP_STATE_NAME = "ragapps"

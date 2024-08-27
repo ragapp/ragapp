@@ -2,6 +2,8 @@ import os
 
 from pydantic import BaseModel, computed_field
 
+from app.constants import RAGAPP_STATE_NAME
+
 STATE_DIR = os.getenv("STATE_DIR")
 
 
@@ -20,7 +22,7 @@ class RAGAppVolumeConfig(BaseModel):
         """
         The path to the directory in the host machine where the app's state will be stored
         """
-        return f"{STATE_DIR}/ragapps/{self.name}"
+        return f"{STATE_DIR}/{RAGAPP_STATE_NAME}/{self.name}"
 
     def to_container_create_kwargs(self) -> dict | None:
         return {
