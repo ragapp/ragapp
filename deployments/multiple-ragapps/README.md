@@ -5,6 +5,7 @@
 - Manage RAGApp containers through a manager UI
 - Start/Stop multiple RAGApp containers
 - Deploy with Traefik (reverse proxy) and Keycloak (Authentication and user management)
+- Persistence of the RAGApps data and configuration in the file system
 
 ## How to start?
 
@@ -19,6 +20,8 @@ docker compose up
 ```
 
 > _Note_: This will use the release images from from Docker Hub.
+
+The whole state of all services (RAGApps, Manager and Keycloak) will be persisted in the directory set by the `STATE_DIR` environment variable (defaults to `./data`).
 
 ### Start local build
 
