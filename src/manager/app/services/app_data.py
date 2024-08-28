@@ -15,12 +15,14 @@ class AppDataService:
     def remove_app_data(
         app_name: str,
     ):
-        app_name = check_app_name(app_name)
-        # Remove app data
-        app_data_dir = f"{RAGAPPS_DIR}/{app_name}"
-        if os.path.exists(app_data_dir):
-            shutil.rmtree(app_data_dir)
-            return True
-        else:
-            logger.error(f"App data directory {app_data_dir} not found")
-            return False
+        # development mode doesn't use volumes, so no need to remove app data
+        if settings.environment != "dev":
+            app_name = check_app_name(app_name)
+            # Remove app data
+            app_data_dir = f"{RAGAPPS_DIR}/{app_name}"
+            if os.path.exists(app_data_dir):
+                shutil.rmtree(app_data_dir)
+                return True
+            else:
+                logger.error(f"App data directory {app_data_dir} not found")
+                return False

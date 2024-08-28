@@ -21,10 +21,12 @@ class RAGAppVolumeConfig(BaseModel):
         return f"{settings.state_dir}/{settings.RAGAPP_STATE_NAME}/{self.name}"
 
     def to_container_create_kwargs(self) -> dict | None:
-        return {
-            f"{self.host_mount_path}/{volume}": {
-                "bind": f"/app/{volume}",
-                "mode": "rw",
+        # development mode, no need to mount volumes
+        if settings.environment != "dev":
+            return {
+                f"{self.host_mount_path}/{volume}": {
+                    "bind": f"/app/{volume}",
+                    "mode": "rw",
+                }
+                for volume in self.volumes
             }
-            for volume in self.volumes
-        }
