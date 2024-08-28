@@ -8,4 +8,5 @@
 
 # deployments
 deployments/**/data/
+!deployments/multiple-ragapps/data/traefik
 deployments/**/ollama/

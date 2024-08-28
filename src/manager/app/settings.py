@@ -10,7 +10,7 @@ class ManagerSettings(BaseSettings):
     RAGAPP_STATE_NAME: str = (
         "ragapps"  # The name of ragapp folder in the state directory
     )
-    environment: str = Field(default="dev", env="ENVIRONMENT")
+    environment: str = Field(default="prod", env="ENVIRONMENT")
 
     ragapp_image: str = Field(default="ragapp/ragapp:latest", env="RAGAPP_IMAGE")
     ragapp_network: str = Field(default="ragapp-network", env="RAGAPP_NETWORK")
