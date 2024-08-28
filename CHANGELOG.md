@@ -1,5 +1,12 @@
 # ragbox
 
+## 0.0.22
+
+### Patch Changes
+
+- fb7e94f: Use volume for app persistence
+- e12d8b5: Fix data source is not shown
+
 ## 0.0.21
 
 ### Patch Changes
