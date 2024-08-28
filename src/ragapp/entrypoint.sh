@@ -23,5 +23,12 @@ else
     echo "Updated static files successfully!"
 fi
 
+# Copy default config to mounted volume if it is empty
+if [[ -z "$(ls -A /app/config)" ]]; then
+    cp -r /app/.config/. /app/config/
+    echo "Config folder is empty, use default configuration!"
+fi
+
 echo "Running application..."
+
 exec "$@"

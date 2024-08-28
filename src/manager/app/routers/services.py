@@ -3,6 +3,10 @@ import logging
 from app.docker_client import get_docker_client
 from app.models.docker_service import ServiceInfo
 from app.models.ragapp import RAGAppContainerConfig
+from app.services import AppConfigService, AppDataService, ContainerService
+from app.services.app import AppService
+from app.services.container import ContainerServiceError
+from app.utils import check_app_name
 from docker.errors import DockerException
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse, Response
@@ -18,69 +22,70 @@ def list_services(
     only_ragapp: bool = True,
     docker_client=Depends(get_docker_client),
 ) -> list[ServiceInfo]:
-    # Filter services by label
-    filters = {"label": "ragapp.app_name"} if only_ragapp else {}
-    services = docker_client.containers.list(filters=filters, all=True)
-    service_list = []
-    for service in services:
-        attrs = service.attrs
-        state = attrs.get("State")
-        # Get app name from label
-        app_name = service.labels.get("ragapp.app_name")
-        service_info = ServiceInfo(
-            id=service.id,
-            name=service.name,
-            app_name=app_name,
-            started_at=state.get("StartedAt"),
-            created_at=attrs.get("Created"),
-            updated_at=attrs.get("Updated"),
-            status=state.get("Status"),
-            image=attrs.get("Image"),
-            restart_count=attrs.get("RestartCount"),
-        )
-        service_list.append(service_info)
-    return service_list
+    try:
+        return AppService.fetch_all_service_info(docker_client)
+    except DockerException as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    pass
 
 
-@r.post("/{service_id}/stop")
+@r.post("/{app_name}/stop")
 def stop_service(
-    service_id: str,
+    app_name: str,
     docker_client=Depends(get_docker_client),
 ):
+    app_name = check_app_name(app_name)
     try:
-        logger.info(f"Stopping container {service_id}")
-        container = docker_client.containers.get(service_id)
+        logger.info(f"Stopping app {app_name}")
+        container = ContainerService.fetch_ragapp_container(
+            docker_client=docker_client, app_name=app_name
+        )
         container.stop()
+        # Update app status
+        AppConfigService.update_app_status(app_name, "stopped")
     except DockerException as e:
         raise HTTPException(status_code=400, detail=str(e))
     return Response(status_code=204)
 
 
-@r.post("/{service_id}/start")
+@r.post("/{app_name}/start")
 def start_service(
-    service_id: str,
+    app_name: str,
     docker_client=Depends(get_docker_client),
 ):
+    app_name = check_app_name(app_name)
     try:
-        logger.info(f"Starting container {service_id}")
-        container = docker_client.containers.get(service_id)
+        logger.info(f"Starting app {app_name}")
+        container = ContainerService.fetch_ragapp_container(
+            docker_client=docker_client, app_name=app_name
+        )
         container.start()
+        # Update app status
+        AppConfigService.update_app_status(app_name, "running")
     except DockerException as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
     return Response(status_code=204)
 
 
-@r.delete("/{service_id}")
+@r.delete("/{app_name}")
 def remove_service(
-    service_id: str,
+    app_name: str,
     docker_client=Depends(get_docker_client),
 ):
+    app_name = check_app_name(app_name)
+    logger.info(f"Removing app {app_name}")
     try:
-        logger.info(f"Removing container {service_id}")
-        container = docker_client.containers.get(service_id)
+        container = ContainerService.fetch_ragapp_container(
+            docker_client=docker_client, app_name=app_name
+        )
         container.remove(force=True)
     except DockerException as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error(f"Error removing container: {e}")
+    finally:
+        # Remove app config
+        AppConfigService.delete_app_config(app_name=app_name)
+        # Remove app data
+        AppDataService.remove_app_data(app_name)
     return Response(status_code=204)
 
 
@@ -90,28 +95,10 @@ def create_agent(
     config: RAGAppContainerConfig,
     docker_client=Depends(get_docker_client),
 ):
-    container_config = config.to_docker_create_kwargs()
-
     try:
-        current_container = docker_client.containers.get(container_config["name"])
-        if current_container:
-            raise HTTPException(status_code=400, detail="Container already exists")
-    except DockerException:
-        pass
-
-    try:
-        logger.info(f"Creating container with config: {container_config}")
-        container = docker_client.containers.create(**container_config)
-    except DockerException as e:
-        logger.error(f"Error creating container: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
-
-    try:
-        container.start()
-    except DockerException as e:
-        logger.error(f"Error starting container: {e}")
-        container.remove(force=True)
-        raise HTTPException(status_code=400, detail=str(e))
+        container = ContainerService.create_ragapp_container(config, docker_client)
+    except ContainerServiceError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
     return JSONResponse(
         status_code=201,

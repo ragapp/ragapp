@@ -1,5 +1,6 @@
 import { Service } from "@/client/models/service";
 import {
+  createRAGAppService,
   getServices,
   removeService,
   startService,
@@ -40,7 +41,10 @@ function AlertDialogRemoveApp({
   refetch: () => void;
 }) {
   async function handleRemoveService() {
-    await removeService(service.id);
+    if (!service.app_name) {
+      return;
+    }
+    await removeService(service.app_name);
     refetch();
   }
 
@@ -80,17 +84,30 @@ function StartStopButton({
   const [isHandling, setIsHandling] = useState(false);
 
   async function handleStopService() {
-    setIsHandling(true);
-    await stopService(service.id);
-    refetch();
-    setIsHandling(false);
+    if (service.app_name !== null) {
+      setIsHandling(true);
+      await stopService(service.app_name);
+      refetch();
+      setIsHandling(false);
+    }
   }
 
   async function handleStartService() {
-    setIsHandling(true);
-    await startService(service.id);
-    refetch();
-    setIsHandling(false);
+    if (service.app_name !== null) {
+      setIsHandling(true);
+      await startService(service.app_name);
+      refetch();
+      setIsHandling(false);
+    }
+  }
+
+  async function handleRecreateService() {
+    if (service.app_name !== null) {
+      setIsHandling(true);
+      await createRAGAppService({ name: service.app_name });
+      refetch();
+      setIsHandling(false);
+    }
   }
 
   return service.status === "running" ? (
@@ -102,7 +119,7 @@ function StartStopButton({
     >
       <Pause size={20} />
     </Button>
-  ) : (
+  ) : service.status === "exited" ? (
     <Button
       variant="outline"
       className="flex items-center text-muted-foreground"
@@ -111,7 +128,17 @@ function StartStopButton({
     >
       <Play size={20} />
     </Button>
-  );
+  ) : service.status === "missing" ? (
+    <Button
+      variant="outline"
+      className="flex items-center text-muted-foreground"
+      onClick={handleRecreateService}
+      disabled={isHandling}
+    >
+      <Play size={20} />
+    </Button>
+  ) : // Don't show start/stop button for other states (orphaned/unknown/...)
+  null;
 }
 
 function ServiceCard({

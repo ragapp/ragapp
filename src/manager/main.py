@@ -1,16 +1,15 @@
-import os
-
-from app.routers.services import service_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+
+from app.routers.services import service_router
+from app.settings import settings
 
 
 def create_app() -> FastAPI:
     app = FastAPI()
 
-    environment = os.getenv("ENVIRONMENT")
-    if environment == "dev":
+    if settings.environment == "dev":
         app.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],

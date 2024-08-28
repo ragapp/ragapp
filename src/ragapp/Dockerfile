@@ -41,6 +41,8 @@ COPY --from=build /app/create_llama/frontend/out /app/static
 COPY --from=build /app/admin-ui/out /app/static/admin
 COPY --from=build /app/create_llama/backend /app/create_llama/backend
 COPY . .
+# Copy config as default config
+COPY config .config
 
 # Create an empty data folder
 RUN mkdir -p data
