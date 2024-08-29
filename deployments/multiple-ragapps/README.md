@@ -23,6 +23,8 @@ docker compose up
 
 The whole state of all services (RAGApps, Manager and Keycloak) will be persisted in the directory set by the `STATE_DIR` environment variable (defaults to `./data`).
 
+As Docker Compose doesn't work with relative paths on Windows, you'll need set the `STATE_DIR` variable in the `.env` file to the absolute path of the `data` directory.
+
 ### Start local build
 
 To use a local build instead, call:
