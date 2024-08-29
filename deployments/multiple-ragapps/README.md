@@ -21,9 +21,9 @@ docker compose up
 
 > _Note_: This will use the release images from from Docker Hub.
 
-The whole state of all services (RAGApps, Manager and Keycloak) will be persisted in the directory set by the `STATE_DIR` environment variable (defaults to `${PWD}/data`).
+The whole state of all services (RAGApps, Manager and Keycloak) will be persisted in the directory set by the `STATE_DIR` environment variable (defaults to `./data`).
 
-As `PWD` doesn't work on Windows, you'll need to rename the provided `.env.windows` file to `.env` and adjust the `STATE_DIR` variable to the absolute path of the `data` directory.
+As Docker Compose doesn't work with relative paths on Windows, you'll need set the `STATE_DIR` variable in the `.env` file to the absolute path of the `data` directory.
 
 ### Start local build
 
