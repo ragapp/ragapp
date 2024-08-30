@@ -5,14 +5,12 @@ api:
 providers:
   docker:
     exposedByDefault: false
+  file:
+    filename: /opt/traefik/config/dynamic.yml
+    watch: true
 entryPoints:
   web:
     address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          permanent: true
   websecure:
     address: ":443"
     http:

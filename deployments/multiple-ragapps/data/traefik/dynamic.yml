@@ -1,0 +1,20 @@
+http:
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  routers:
+    # Redirect all HTTP traffic to HTTPS (except localhost)
+    http-catchall:
+      rule: "HostRegexp(`{host:.+}`) && Host(`!localhost`)"
+      entryPoints:
+        - web
+      middlewares:
+        - redirect-to-https
+
+    localhost:
+      rule: "Host(`localhost`)"
+      entryPoints:
+        - web
