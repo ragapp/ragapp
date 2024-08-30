@@ -6,9 +6,26 @@ providers:
   docker:
     exposedByDefault: false
 entryPoints:
-  http:
+  web:
     address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          permanent: true
+  websecure:
+    address: ":443"
+    http:
+      tls: true
 
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      # Please change your email in the production environment
+      # email: your@email.com
+      storage: /opt/traefik/config/acme.json
+      httpChallenge:
+        entryPoint: web
 
 experimental:
   plugins:
