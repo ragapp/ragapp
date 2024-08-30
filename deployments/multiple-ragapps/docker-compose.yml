@@ -7,6 +7,9 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=ragapp-network
+      # Resolve TLS cert for domain - but except localhost
+      - traefik.http.routers.traefik.rule=Host(`${DOMAIN}`) && HostRegexp(`{domain:.*}`)
+      - traefik.http.routers.traefik.tls.certresolver=letsencrypt
       # Keycloak OpenID plugin configuration
       - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakURL=http${TLS:+s}://${DOMAIN}/auth
       - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientID=ragapp

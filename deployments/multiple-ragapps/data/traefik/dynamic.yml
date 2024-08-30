@@ -13,8 +13,18 @@ http:
         - web
       middlewares:
         - redirect-to-https
+      service: noop@internal
 
+    # Router for localhost that does not redirect
     localhost:
       rule: "Host(`localhost`)"
       entryPoints:
         - web
+      service: noop@internal
+    
+    # Catch-all for HTTPS traffic
+    https-catchall:
+      rule: "HostRegexp(`{host:.+}`)"
+      entryPoints:
+        - websecure
+      service: noop@internal
