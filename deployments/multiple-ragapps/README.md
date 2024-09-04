@@ -13,27 +13,6 @@ Navigate to the `deployments/multiple-ragapps` directory and run Docker Compose:
 
 ```shell
 cd deployments/multiple-ragapps
-```
-
-### Config environment variables:
-Please update below variables in the [.env](./.env) file or set it directly in your shell:
-
-`STATE_DIR` (required): The absolute path to the directory hold all state of all services (RAGApps, Manager and Keycloak). If you're starting with the example data, please set it to the `data` folder from the current directory.
-
-`DOMAIN` (required): The deployment domain, default is `localhost`.
-
-`TLS`: To enable/disable HTTPS. Don't set this if you're using `localhost` domain.
-
-
-> _Notes_:  
-- If you enable TLS for the domain, please make sure the [acme.json](./data/traefik/acme.json) has `600` permission.  
-- Please also change the requesting email in LetsEncrypt config to your email [here](./data/traefik/traefik.yml)
-
-### Run services
-
-Run these commands to pull all latest images and start them in Docker:
-
-```shell
 docker pull ragapp/ragapp
 docker compose pull # to ensure the latest images are pulled
 docker network create ragapp-network
@@ -41,6 +20,22 @@ docker compose up
 ```
 
 > _Note_: This will use the release images from from Docker Hub.
+
+The whole state of all services (RAGApps, Manager and Keycloak) will be persisted in the directory set by the `STATE_DIR` environment variable (defaults to `${PWD}/data`).
+
+As Docker Compose doesn't work with relative paths on Windows, you'll need set the `STATE_DIR` variable in the `.env` file to the absolute path of the `data` directory.
+
+### Using your own domain
+
+Instead of using `localhost`, you can use your own domain with TLS. To do so, please update these variables in the [.env](./.env) file:
+
+- `DOMAIN`: The deployment domain, e.g. `ragapp.org`
+- `TLS`: To enable/disable HTTPS. Don't enable TLS if you're using your `localhost` domain.
+
+If you enable TLS for a domain, please make sure of the following:
+
+- The [acme.json](./data/traefik/acme.json) file has `600` permission.
+- To set your email address in the [Traefik config](./data/traefik/traefik.yml)
 
 ### Start local build
 
