@@ -25,7 +25,9 @@ Please update below variables in the [.env](./.env) file or set it directly in y
 `TLS`: To enable/disable HTTPS. Don't set this if you're using `localhost` domain.
 
 
-> _Note_: If you enable TLS for the domain, please make sure the [acme.json](./data/traefik/acme.json) has `600` permission.
+> _Notes_:  
+- If you enable TLS for the domain, please make sure the [acme.json](./data/traefik/acme.json) has `600` permission.  
+- Please also change the requesting email in LetsEncrypt config to your email [here](./data/traefik/traefik.yml)
 
 ### Run services
 
