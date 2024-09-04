@@ -1,0 +1,30 @@
+http:
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  routers:
+    # Redirect all HTTP traffic to HTTPS (except localhost)
+    http-catchall:
+      rule: "HostRegexp(`{host:.+}`) && Host(`!localhost`)"
+      entryPoints:
+        - web
+      middlewares:
+        - redirect-to-https
+      service: noop@internal
+
+    # Router for localhost that does not redirect
+    localhost:
+      rule: "Host(`localhost`)"
+      entryPoints:
+        - web
+      service: noop@internal
+    
+    # Catch-all for HTTPS traffic
+    https-catchall:
+      rule: "HostRegexp(`{host:.+}`)"
+      entryPoints:
+        - websecure
+      service: noop@internal

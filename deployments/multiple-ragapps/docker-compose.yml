@@ -3,11 +3,15 @@ services:
     image: "traefik:v3.1"
     ports:
       - 80:80
+      - 443:443
     labels:
       - traefik.enable=true
       - traefik.docker.network=ragapp-network
+      # Resolve TLS cert for domain - but except localhost
+      - traefik.http.routers.traefik.rule=Host(`${DOMAIN}`) && HostRegexp(`{domain:.*}`)
+      - traefik.http.routers.traefik.tls.certresolver=letsencrypt
       # Keycloak OpenID plugin configuration
-      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakURL=http://localhost/auth
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakURL=http${TLS:+s}://${DOMAIN}/auth
       - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientID=ragapp
       # Secret from the example ragapp keycloak realm
       - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientSecret=jh4yDlJ5QsBSafVNaqqLxEG3vKcYyNgD  # Predefined secret for the example realm
@@ -30,22 +34,22 @@ services:
       # - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME:-admin}:${HASHED_PASSWORD:-$$apr1$$3gG256rA$$BomHrC/uMhL807k/t7Wd6/}
     volumes:  
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${STATE_DIR}/traefik/traefik.yml:/traefik_config.yml:ro
+      - ${STATE_DIR}/traefik:/opt/traefik/config
     command:
-      - --configFile=/traefik_config.yml
+      - --configFile=/opt/traefik/config/traefik.yml
       - --log.level=DEBUG
     networks:
       - ragapp-network
 
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.2
-    command: start-dev --import-realm --hostname=http://localhost/auth
+    command: start-dev --import-realm --hostname=http${TLS:+s}://${DOMAIN}/auth
     ports:
       - 8080:8080
     labels:
       - traefik.enable=true
       - traefik.http.services.keycloak.loadbalancer.server.port=8080
-      - traefik.http.routers.keycloak.rule=PathPrefix(`/auth`)
+      - traefik.http.routers.keycloak.rule=Host(`${DOMAIN}`) && PathPrefix(`/auth`)
       - traefik.http.middlewares.keycloak-strip-path.stripprefix.prefixes=/auth
       - traefik.http.routers.keycloak.middlewares=keycloak-strip-path
     environment:
@@ -79,7 +83,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000
-      - traefik.http.routers.admin-manager.rule=PathPrefix(`/manager`)
+      - traefik.http.routers.admin-manager.rule=Host(`${DOMAIN}`) && PathPrefix(`/manager`)
       - traefik.http.middlewares.strip-manager-path.stripprefix.prefixes=/manager
       - traefik.http.routers.admin-manager.middlewares=ragapp-keycloakopenid,admin-auth,strip-manager-path
     networks:

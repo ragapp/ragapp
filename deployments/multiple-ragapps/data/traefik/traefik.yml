@@ -5,10 +5,25 @@ api:
 providers:
   docker:
     exposedByDefault: false
+  file:
+    filename: /opt/traefik/config/dynamic.yml
+    watch: true
 entryPoints:
-  http:
+  web:
     address: ":80"
+  websecure:
+    address: ":443"
+    http:
+      tls: true
 
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      # Please change your email in the production environment
+      # email: your@email.com
+      storage: /opt/traefik/config/acme.json
+      httpChallenge:
+        entryPoint: web
 
 experimental:
   plugins:

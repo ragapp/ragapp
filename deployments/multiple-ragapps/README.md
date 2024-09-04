@@ -21,9 +21,21 @@ docker compose up
 
 > _Note_: This will use the release images from from Docker Hub.
 
-The whole state of all services (RAGApps, Manager and Keycloak) will be persisted in the directory set by the `STATE_DIR` environment variable (defaults to `./data`).
+The whole state of all services (RAGApps, Manager and Keycloak) will be persisted in the directory set by the `STATE_DIR` environment variable (defaults to `${PWD}/data`).
 
 As Docker Compose doesn't work with relative paths on Windows, you'll need set the `STATE_DIR` variable in the `.env` file to the absolute path of the `data` directory.
+
+### Using your own domain
+
+Instead of using `localhost`, you can use your own domain with TLS. To do so, please update these variables in the [.env](./.env) file:
+
+- `DOMAIN`: The deployment domain, e.g. `ragapp.org`
+- `TLS`: To enable/disable HTTPS. Don't enable TLS if you're using your `localhost` domain.
+
+If you enable TLS for a domain, please make sure of the following:
+
+- The [acme.json](./data/traefik/acme.json) file has `600` permission.
+- To set your email address in the [Traefik config](./data/traefik/traefik.yml)
 
 ### Start local build
 
