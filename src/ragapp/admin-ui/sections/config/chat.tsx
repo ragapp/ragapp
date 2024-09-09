@@ -16,7 +16,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
@@ -84,7 +83,7 @@ export const ChatConfig = ({}: {}) => {
           className="space-y-4 mb-4"
           onBlur={handleSubmit}
         >
-          <FormField
+          {/* <FormField
             disabled={isLoading}
             control={form.control}
             name="custom_prompt"
@@ -100,7 +99,7 @@ export const ChatConfig = ({}: {}) => {
                 </FormDescription>
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             disabled={isLoading}
             control={form.control}

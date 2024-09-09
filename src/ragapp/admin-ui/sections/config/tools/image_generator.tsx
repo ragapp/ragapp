@@ -26,7 +26,7 @@ export const ImageGeneratorConfig = ({
     <>
       <FormField
         control={form.control}
-        name="image_generator"
+        name="tool_config.image_generator"
         render={({ field }) => (
           <FormItem
             key={field.value.name}

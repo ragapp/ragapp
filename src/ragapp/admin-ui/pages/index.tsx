@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import { AgentConfig } from "@/sections/config/agent";
 import { ChatConfig } from "@/sections/config/chat";
 import { ModelConfig } from "@/sections/config/model";
-import { ToolConfig } from "@/sections/config/tool";
 import { DemoChat } from "@/sections/demoChat";
 import { Footer } from "@/sections/footer";
 import { Knowledge } from "@/sections/knowledge";
@@ -79,9 +79,9 @@ export default function Home() {
               />
               {configured && (
                 <>
-                  <ChatConfig />
-                  <ToolConfig />
+                  <AgentConfig />
                   <Knowledge />
+                  <ChatConfig />
                 </>
               )}
             </div>

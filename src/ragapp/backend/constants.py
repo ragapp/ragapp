@@ -1,6 +1,7 @@
 ENV_FILE_PATH = "config/.env"
 TOOL_CONFIG_FILE = "config/tools.yaml"
 LOADER_CONFIG_FILE = "config/loaders.yaml"
+AGENT_CONFIG_FILE = "config/agents.yaml"
 
 
 DEFAULT_SYSTEM_PROMPT = (

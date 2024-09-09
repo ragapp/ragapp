@@ -26,7 +26,7 @@ export const E2BInterpreterConfig = ({
     <>
       <FormField
         control={form.control}
-        name="interpreter"
+        name="tool_config.interpreter"
         render={({ field }) => (
           <FormItem
             key={field.value.name}
