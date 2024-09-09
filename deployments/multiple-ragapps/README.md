@@ -90,3 +90,43 @@ password: 123456
 ### Rate limiting for chat requests
 
 By default, each user can make 20 chat requests per day. If you want to change this limit, just update the `CHAT_REQUEST_LIMIT_THRESHOLD` number in the `manager` config section of the [docker-compose.yml](./docker-compose.yml) file. To disable the limit, you can remove the treshold or set it to `0`.
+
+### Disabling SSL
+
+The data flow between your instance and the public internet is by default protected by SSL encryption.
+If you want to use Keycloak under a self-signed certificate (letsencrypt default certificate when encountering any error during certificate validation or your domain is not already configured), the browser will throw a "SSL_ERROR" or timeout depending on the browser.
+
+Are you having trouble generating the certificate for your domain? Check the following:
+
+- Check that `acme.json` wasn't already generated with an invalid/incomplete key. If so, delete acme.json and re-generate the key.
+- Check for read/write permissions on `data/traefik/acme.json`
+
+Disabling SSL:
+
+- Enter the container in interactive mode:
+
+```shell
+docker exec -it KEYCLOAK_CONTAINER_ID bash
+```
+
+- In the container set the path to use the kcadm.sh script
+
+```bash
+export PATH=$PATH:/opt/keycloak/bin
+```
+
+- Set keycloak server
+
+```bash
+kcadm.sh config credentials --server http://localhost:8080/ \
+  --realm master \
+  --user admin --password admin
+```
+
+- Disable SSL for the main realm
+
+```bash
+kcadm.sh update realms/master -s enabled=true -s sslRequired=none
+```
+
+From now, you should be able to login into Keycloak, from there you can enable SSL again or disable it for the other realms.
