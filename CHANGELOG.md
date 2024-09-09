@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.23
+
+### Patch Changes
+
+- 9f3c8a9: Add support for domain and https deployment
+
 ## 0.0.22
 
 ### Patch Changes
