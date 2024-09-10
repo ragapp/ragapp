@@ -5,6 +5,8 @@ import { getBaseURL } from "./utils";
 export const ChatConfigSchema = z.object({
   custom_prompt: z.string().optional(),
   conversation_starters: z.array(z.string()),
+  suggest_next_questions_enabled: z.boolean(),
+  inline_text_citations_enabled: z.boolean(),
 });
 
 export type ChatConfigFormType = z.TypeOf<typeof ChatConfigSchema>;
