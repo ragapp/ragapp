@@ -28,7 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 
-export const ChatConfig = ({}: {}) => {
+export const ChatConfig = ({ }: {}) => {
   const {
     data,
     isLoading: isFetching,
@@ -84,6 +84,44 @@ export const ChatConfig = ({}: {}) => {
           className="space-y-4 mb-4"
           onBlur={handleSubmit}
         >
+          <FormField
+            disabled={isLoading}
+            control={form.control}
+            name="custom_prompt"
+            render={({ field }) => (
+              <FormItem className="pt-4">
+                <FormLabel>Custom Prompt</FormLabel>
+                <FormControl>
+                  <Textarea rows={3} {...field} />
+                </FormControl>
+                <FormDescription>
+                  Use system prompt to define the responsibilities and behaviors
+                  of the assistant.
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            disabled={isLoading}
+            control={form.control}
+            name="conversation_starters"
+            render={({ field }) => (
+              <FormItem className="pt-4">
+                <FormLabel>Conversation questions</FormLabel>
+                <FormControl>
+                  <MultiInput {...field} onDelete={handleSubmit} />
+                </FormControl>
+                <FormDescription>
+                  Add suggested questions to help users start a conversation
+                  with the app.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <hr className="my-6 border-t border-gray-200 dark:border-gray-700" />
+
           <FormField
             disabled={isLoading}
             control={form.control}
@@ -148,42 +186,6 @@ export const ChatConfig = ({}: {}) => {
                     Whether to cite the text in the response.
                   </FormDescription>
                 </div>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            disabled={isLoading}
-            control={form.control}
-            name="custom_prompt"
-            render={({ field }) => (
-              <FormItem className="pt-4">
-                <FormLabel>Custom Prompt</FormLabel>
-                <FormControl>
-                  <Textarea rows={3} {...field} />
-                </FormControl>
-                <FormDescription>
-                  Use system prompt to define the responsibilities and behaviors
-                  of the assistant.
-                </FormDescription>
-              </FormItem>
-            )}
-          />
-          <FormField
-            disabled={isLoading}
-            control={form.control}
-            name="conversation_starters"
-            render={({ field }) => (
-              <FormItem className="pt-4">
-                <FormLabel>Conversation questions</FormLabel>
-                <FormControl>
-                  <MultiInput {...field} onDelete={handleSubmit} />
-                </FormControl>
-                <FormDescription>
-                  Add suggested questions to help users start a conversation
-                  with the app.
-                </FormDescription>
-                <FormMessage />
               </FormItem>
             )}
           />
