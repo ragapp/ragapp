@@ -20,8 +20,15 @@ import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export const ChatConfig = ({}: {}) => {
+export const ChatConfig = ({ }: {}) => {
   const {
     data,
     isLoading: isFetching,
@@ -35,6 +42,8 @@ export const ChatConfig = ({}: {}) => {
     defaultValues: {
       custom_prompt: "",
       conversation_starters: [],
+      suggest_next_questions_enabled: false,
+      inline_text_citations_enabled: false,
     },
     values: data,
   });
@@ -78,9 +87,75 @@ export const ChatConfig = ({}: {}) => {
           <FormField
             disabled={isLoading}
             control={form.control}
+            name="suggest_next_questions_enabled"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      handleSubmit();
+                    }}
+                  />
+                </FormControl>
+                <div className="space-y-1">
+                  <FormLabel className="mb-0">
+                    Suggest next questions
+                  </FormLabel>
+                  <FormDescription>
+                    Whether to suggest next questions to the users based on the conversation.
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            disabled={isLoading}
+            control={form.control}
+            name="inline_text_citations_enabled"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      handleSubmit();
+                    }}
+                  />
+                </FormControl>
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <FormLabel className="mb-0">
+                      Inlining text citations
+                    </FormLabel>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <p className="text-xs text-muted-foreground">ⓘ</p>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Note: Inlining text citations don&apos;t work for multi-agents and/or tools activated</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <FormDescription>
+                    Whether to cite the text in the response.
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            disabled={isLoading}
+            control={form.control}
             name="custom_prompt"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="pt-4">
                 <FormLabel>Custom Prompt</FormLabel>
                 <FormControl>
                   <Textarea rows={3} {...field} />

@@ -33,10 +33,12 @@ def update_chat_config(
 ):
     EnvConfigManager.update(config, new_config, rollback_on_failure=True)
 
+    updated_config = ChatConfig.get_config()
+
     return JSONResponse(
         {
             "message": "Config updated successfully.",
-            "data": new_config.to_api_response(),
+            "data": updated_config.to_api_response(),
         }
     )
 
