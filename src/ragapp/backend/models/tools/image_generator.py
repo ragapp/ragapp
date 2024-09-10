@@ -17,9 +17,7 @@ class ImageGeneratorTool(BaseModel):
     description: str = (
         "Generate images from the provided text using the Stability AI API"
     )
-    custom_prompt: ClassVar[
-        str
-    ] = """- Provide a text prompt to generate an image.
+    custom_prompt: ClassVar[str] = """- Provide a text prompt to generate an image.
 - Show the image to the user by using the absolute link to the image from the tool output."""
     config: ImageGeneratorToolConfig | None = Field(
         default=ImageGeneratorToolConfig(),

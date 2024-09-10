@@ -4,6 +4,7 @@ import {
   getChatConfig,
   updateChatConfig,
 } from "@/client/chatConfig";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { MultiInput } from "@/components/ui/custom/multiInput";
 import {
@@ -16,19 +17,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "react-query";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "@/components/ui/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useMutation, useQuery } from "react-query";
 
-export const ChatConfig = ({ }: {}) => {
+export const ChatConfig = ({}: {}) => {
   const {
     data,
     isLoading: isFetching,
@@ -100,11 +100,10 @@ export const ChatConfig = ({ }: {}) => {
                   />
                 </FormControl>
                 <div className="space-y-1">
-                  <FormLabel className="mb-0">
-                    Suggest next questions
-                  </FormLabel>
+                  <FormLabel className="mb-0">Suggest next questions</FormLabel>
                   <FormDescription>
-                    Whether to suggest next questions to the users based on the conversation.
+                    Whether to suggest next questions to the users based on the
+                    conversation.
                   </FormDescription>
                 </div>
               </FormItem>
@@ -137,7 +136,10 @@ export const ChatConfig = ({ }: {}) => {
                           <p className="text-xs text-muted-foreground">ⓘ</p>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Note: Inlining text citations don&apos;t work for multi-agents and/or tools activated</p>
+                          <p>
+                            Note: Inlining text citations don&apos;t work for
+                            multi-agents and/or tools activated
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
