@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.0.24
+
+### Patch Changes
+
+- 6cc4d2d: Add citations and next questions configs
+
 ## 0.0.23
 
 ### Patch Changes
