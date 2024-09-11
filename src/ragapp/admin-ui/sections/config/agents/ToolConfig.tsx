@@ -16,7 +16,7 @@ export const TOOL_ORDER = [
     "DuckDuckGo",
     "Wikipedia",
     "OpenAPI",
-    "E2BInterpreter",
+    "Interpreter",
     "ImageGenerator",
 ];
 
@@ -52,7 +52,7 @@ export const ToolConfig: React.FC<ToolConfigProps> = ({ form }) => {
         switch (toolName) {
             case "ImageGenerator":
                 return <ImageGeneratorConfig form={form} />;
-            case "E2BInterpreter":
+            case "Interpreter":
                 return <E2BInterpreterConfig form={form} />;
             case "OpenAPI":
                 return <OpenAPIConfig form={form} />;

@@ -21,7 +21,7 @@ export const E2BInterpreterConfig = ({
     <>
       <FormField
         control={form.control}
-        name="tools.interpreter.enabled"
+        name="tools.Interpreter.enabled"
         render={({ field }) => (
           <FormItem className="flex flex-row items-center space-x-3 space-y-0">
             <FormControl>
@@ -41,11 +41,11 @@ export const E2BInterpreterConfig = ({
           </FormItem>
         )}
       />
-      {form.watch("tools.interpreter.enabled") && (
+      {form.watch("tools.Interpreter.enabled") && (
         <div className="flex flex-col space-y-4 pl-6">
           <FormField
             control={form.control}
-            name="tools.interpreter.config.api_key"
+            name="tools.Interpreter.config.api_key"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>API Key (*)</FormLabel>

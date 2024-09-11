@@ -32,9 +32,9 @@ class ToolsManager:
                 return WikipediaTool(**kwargs)
             case "OpenAPI" | "openapi.OpenAPIActionToolSpec" | "openapi":
                 return OpenAPITool(**kwargs)
-            case "E2BInterpreter" | "interpreter":
+            case "E2BInterpreter" | "Interpreter":
                 return E2BInterpreterTool(**kwargs)
-            case "ImageGenerator" | "image_generator":
+            case "ImageGenerator":
                 return ImageGeneratorTool(**kwargs)
             case _:
                 raise ValueError(f"Tool {tool_name} not found")

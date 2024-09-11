@@ -1,55 +1,25 @@
 agent1:
-  name: GeneralAssistant
-  system_prompt: You are a helpful assistant capable of using various tools to assist
-    users with their queries.
+  name: Researcher
+  role: Information Gatherer
+  system_prompt: I'm helpful on using tool to get helpful information
   tools:
     DuckDuckGo:
-      config:
-        max_results: 5
-      enabled: true
-    OpenAPI:
-      config: {}
-      enabled: false
-    Wikipedia:
-      config:
-        language: en
-      enabled: true
-agent2:
-  name: CodeInterpreter
-  system_prompt: You are a specialized assistant focused on interpreting and executing
-    code snippets.
-  tools:
-    DuckDuckGo:
-      config:
-        max_results: 3
-      enabled: true
-    E2BInterpreter:
-      config:
-        timeout: 30
-      enabled: false
-    ImageGenerator:
-      config: {}
-      enabled: false
-agent3:
-  name: CreativeAssistant
-  system_prompt: You are a creative assistant designed to help with various artistic
-    and imaginative tasks.
-  tools:
-    DuckDuckGo:
-      config: {}
-      enabled: false
-    E2BInterpreter:
       config: {}
       enabled: false
     ImageGenerator:
       config:
-        model: dall-e-3
-        size: 1024x1024
-      enabled: true
+        api_key: ''
+      enabled: false
+    Interpreter:
+      config:
+        api_key: ''
+      enabled: false
     OpenAPI:
       config: {}
       enabled: false
+    QueryEngine:
+      config: {}
+      enabled: true
     Wikipedia:
-      config:
-        language: en
+      config: {}
       enabled: false

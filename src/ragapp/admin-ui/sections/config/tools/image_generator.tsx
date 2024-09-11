@@ -23,7 +23,7 @@ export const ImageGeneratorConfig = ({
     <>
       <FormField
         control={form.control}
-        name="tools.image_generator.enabled"
+        name="tools.ImageGenerator.enabled"
         render={({ field }) => (
           <FormItem className="flex flex-row items-center space-x-3 space-y-0">
             <FormControl>
@@ -43,11 +43,11 @@ export const ImageGeneratorConfig = ({
           </FormItem>
         )}
       />
-      {form.watch("tools.image_generator.enabled") && (
+      {form.watch("tools.ImageGenerator.enabled") && (
         <div className="flex flex-col space-y-4 pl-6">
           <FormField
             control={form.control}
-            name="tools.image_generator.config.api_key"
+            name="tools.ImageGenerator.config.api_key"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>API Key (*)</FormLabel>

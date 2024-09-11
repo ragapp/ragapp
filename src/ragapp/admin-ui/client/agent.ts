@@ -89,7 +89,7 @@ export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
         name: key,
         label: key,
         description: "",
-        priority: 999,
+        priority: Infinity,
         ...value,
       },
     ]),

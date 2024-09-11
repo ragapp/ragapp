@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const ImageGeneratorToolConfig = z.object({
-  name: z.literal("image_generator"),
+  name: z.literal("ImageGenerator"),
   label: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   enabled: z.boolean().nullable().optional(),

@@ -21,12 +21,12 @@ class AgentManager:
             "DuckDuckGo": DuckDuckGoTool,
             "Wikipedia": WikipediaTool,
             "OpenAPI": OpenAPITool,
-            "E2BInterpreter": E2BInterpreterTool,
+            "Interpreter": E2BInterpreterTool,
             "ImageGenerator": ImageGeneratorTool,
             "QueryEngine": QueryEngineTool,
         }
         self.config = self.load_config_file()
-        self._update_config_with_new_tools()
+        self._ensure_all_tools_exist()
 
     @staticmethod
     def load_config_file() -> Dict:
@@ -36,12 +36,13 @@ class AgentManager:
         except FileNotFoundError:
             raise FileNotFoundError(f"Agent config file {AGENT_CONFIG_FILE} not found!")
 
-    def _update_config_with_new_tools(self):
+    def _ensure_all_tools_exist(self):
         updated = False
         for agent_id, agent_data in self.config.items():
             if "tools" not in agent_data:
                 agent_data["tools"] = {}
 
+            # Add missing tools
             for tool_name in self.available_tools:
                 if tool_name not in agent_data["tools"]:
                     agent_data["tools"][tool_name] = ToolConfig().dict()
