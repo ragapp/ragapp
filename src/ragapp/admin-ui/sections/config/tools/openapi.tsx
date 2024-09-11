@@ -1,4 +1,5 @@
 import { AgentConfigType } from "@/client/agent";
+import { DEFAULT_OPENAPI_TOOL_CONFIG } from "@/client/tools/openapi";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -12,11 +13,11 @@ import { UseFormReturn } from "react-hook-form";
 
 export const OpenAPIConfig = ({
   form,
-  onSubmit,
 }: {
   form: UseFormReturn<AgentConfigType>;
-  onSubmit: (data: AgentConfigType) => void;
 }) => {
+  const toolConfig = form.watch("tools.OpenAPI") || DEFAULT_OPENAPI_TOOL_CONFIG;
+
   return (
     <>
       <FormField
@@ -26,17 +27,14 @@ export const OpenAPIConfig = ({
           <FormItem className="flex flex-row items-center space-x-3 space-y-0">
             <FormControl>
               <Checkbox
-                checked={field.value}
-                onCheckedChange={(checked) => {
-                  field.onChange(checked);
-                  form.handleSubmit(onSubmit)();
-                }}
+                checked={field.value as boolean}
+                onCheckedChange={field.onChange}
               />
             </FormControl>
             <div className="leading-none">
               <FormLabel className="text-sm font-medium">OpenAPI</FormLabel>
               <FormDescription className="text-xs">
-                Enable or disable the OpenAPI tool
+                {toolConfig.description}
               </FormDescription>
             </div>
           </FormItem>
@@ -56,9 +54,6 @@ export const OpenAPIConfig = ({
                   value={field.value as string}
                 />
               </FormControl>
-              <FormDescription>
-                The URL to the OpenAPI specification file (YAML or JSON).
-              </FormDescription>
             </FormItem>
           )}
         />

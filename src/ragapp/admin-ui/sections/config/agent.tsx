@@ -36,6 +36,9 @@ import { PlusCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { ImageGeneratorConfig } from "./tools/image_generator";
+import { OpenAPIConfig } from "./tools/openapi";
+import { E2BInterpreterConfig } from "./tools/interpreter";
 
 const RemoveAgentDialog = ({
   agentName,
@@ -156,9 +159,9 @@ export const AgentConfig = () => {
     onSuccess: () => queryClient.invalidateQueries("agents"),
   });
 
-  const form = useForm<Omit<AgentConfigType, "agent_id">>({
-    resolver: zodResolver(AgentConfigSchema.omit({ agent_id: true })),
-    defaultValues: DEFAULT_AGENT_CONFIG,
+  const form = useForm<AgentConfigType>({
+    resolver: zodResolver(AgentConfigSchema),
+    defaultValues: DEFAULT_AGENT_CONFIG as AgentConfigType,
   });
 
   useEffect(() => {
@@ -186,9 +189,15 @@ export const AgentConfig = () => {
     }
   };
 
+  // Add this new function
+  const handleSaveChanges = () => {
+    handleSubmit(form.getValues());
+  };
+
   const addNewAgent = () => {
     const newAgentName = `New Agent ${agents.length + 1}`;
-    const newAgentConfig: Omit<AgentConfigType, "agent_id"> = {
+    const newAgentConfig: AgentConfigType = {
+      agent_id: "temp_id",
       ...DEFAULT_AGENT_CONFIG,
       name: newAgentName,
     };
@@ -211,6 +220,54 @@ export const AgentConfig = () => {
     }
     if (activeAgent === agentId) {
       setActiveAgent(agents[0]?.agent_id || null);
+    }
+  };
+
+  const simpleSelection = (toolName: string) => {
+    return (
+      <FormField
+        control={form.control}
+        name={`tools.${toolName}.enabled`}
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+            <FormControl>
+              <Checkbox
+                checked={field.value as boolean}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <FormLabel className="font-normal">{toolName}</FormLabel>
+          </FormItem>
+        )}
+      />
+    );
+  };
+
+  const renderToolConfig = (toolName: string) => {
+    switch (toolName) {
+      case "ImageGenerator":
+        return (
+          <ImageGeneratorConfig
+            form={form}
+          />
+        );
+      case "E2BInterpreter":
+        return (
+          <E2BInterpreterConfig
+            form={form}
+          />
+        );
+      case "OpenAPI":
+        return (
+          <OpenAPIConfig
+            form={form}
+          />
+        );
+      case "DuckDuckGo":
+      case "Wikipedia":
+        return simpleSelection(toolName);
+      default:
+        return null;
     }
   };
 
@@ -260,7 +317,10 @@ export const AgentConfig = () => {
           <TabsContent key={agent.agent_id} value={agent.agent_id}>
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(handleSubmit)}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSaveChanges();
+                }}
                 className="space-y-6"
               >
                 <FormField
@@ -292,31 +352,9 @@ export const AgentConfig = () => {
                   )}
                 />
                 <h3 className="text-lg font-medium">Tools</h3>
-                <div className="space-y-2">
-                  {Object.entries(agent.tools).map(([toolName, toolConfig]) => (
-                    <FormField
-                      key={toolName}
-                      control={form.control}
-                      name={`tools.${toolName}.enabled`}
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center space-x-3 space-y-2">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={(value) => field.onChange(value)}
-                            />
-                          </FormControl>
-                          <div className="leading-none">
-                            <FormLabel className="text-sm font-medium">
-                              {toolName}
-                            </FormLabel>
-                            <FormDescription className="text-xs">
-                              Enable or disable the {toolName} tool
-                            </FormDescription>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
+                <div className="space-y-6">
+                  {Object.keys(form.watch("tools")).map((toolName) => (
+                    renderToolConfig(toolName)
                   ))}
                 </div>
                 <Button type="submit">

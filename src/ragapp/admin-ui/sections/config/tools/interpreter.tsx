@@ -1,4 +1,4 @@
-import { ToolConfigType } from "@/client/tool";
+import { AgentConfigType } from "@/client/agent";
 import {
   DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
   E2BInterpreterToolConfigType,
@@ -17,86 +17,44 @@ import { UseFormReturn } from "react-hook-form";
 
 export const E2BInterpreterConfig = ({
   form,
-  onSubmit,
 }: {
-  form: UseFormReturn<ToolConfigType>;
-  onSubmit: (tool_name: string, data: E2BInterpreterToolConfigType) => void;
+  form: UseFormReturn<AgentConfigType>;
 }) => {
   return (
     <>
       <FormField
         control={form.control}
-        name="tool_config.interpreter"
+        name="tools.interpreter.enabled"
         render={({ field }) => (
-          <FormItem
-            key={field.value.name}
-            className="flex flex-row items-center space-x-3 space-y-0"
-          >
+          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
             <FormControl>
               <Checkbox
-                checked={field.value.enabled ?? false}
+                checked={field.value ?? false}
                 onCheckedChange={(checked) => {
-                  // Submit the interpreter config when the checkbox has changed and either:
-                  // 1. The checkbox is unchecked
-                  // 2. Or the checkbox is checked and the api_key is valid
-                  field.onChange({
-                    ...field.value,
-                    enabled: checked,
-                  });
-                  const interpreterConfig = form.getValues().interpreter;
-                  if (
-                    (checked &&
-                      interpreterConfig &&
-                      interpreterConfig?.config?.api_key) ||
-                    !checked
-                  ) {
-                    onSubmit(
-                      field.value.name,
-                      interpreterConfig ?? DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
-                    );
-                  }
+                  field.onChange(checked);
                 }}
               />
             </FormControl>
             <div>
-              <FormLabel className="font-normal">{field.value.label}</FormLabel>
-              <FormDescription>{field.value.description}</FormDescription>
+              <FormLabel className="font-normal">Code Interpreter</FormLabel>
+              <FormDescription>{DEFAULT_E2B_INTERPRETER_TOOL_CONFIG.description}</FormDescription>
             </div>
           </FormItem>
         )}
       />
-      {form.watch("interpreter.enabled") && (
+      {form.watch("tools.interpreter.enabled") && (
         <div className="flex flex-col space-y-4 pl-6">
           <FormField
             control={form.control}
-            name="interpreter.config.api_key"
+            name="tools.interpreter.config.api_key"
             render={({ field }) => (
               <FormItem>
-                <FormLabel
-                  className={field.value ? "text-gray-700" : "text-red-500"}
-                >
-                  API Key (*)
-                </FormLabel>
-                <FormControl
-                  onBlur={() => {
-                    const interpreterConfig = form.getValues().interpreter;
-                    if (
-                      interpreterConfig &&
-                      interpreterConfig?.config?.api_key &&
-                      interpreterConfig?.enabled
-                    ) {
-                      onSubmit(
-                        "interpreter",
-                        interpreterConfig ??
-                          DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
-                      );
-                    }
-                  }}
-                >
+                <FormLabel>API Key (*)</FormLabel>
+                <FormControl>
                   <PasswordInput
                     {...field}
-                    placeholder="API Key"
                     value={field.value ?? ""}
+                    placeholder="API Key"
                   />
                 </FormControl>
                 <FormDescription>

@@ -1,5 +1,25 @@
 import { z } from "zod";
+import {
+  DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
+} from "./tools/duckduckgo";
+import {
+  DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
+} from "./tools/image_generator";
+import {
+  DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
+} from "./tools/interpreter";
+import {
+  DEFAULT_OPENAPI_TOOL_CONFIG,
+} from "./tools/openapi";
+import {
+  DEFAULT_WIKIPEDIA_TOOL_CONFIG,
+} from "./tools/wikipedia";
 import { getBaseURL } from "./utils";
+import { ImageGeneratorToolConfigType } from "./tools/image_generator";
+import { OpenAPIToolConfigType } from "./tools/openapi";
+import { E2BInterpreterToolConfigType } from "./tools/interpreter";
+import { DuckDuckGoToolConfigType } from "./tools/duckduckgo";
+import { WikipediaToolConfigType } from "./tools/wikipedia";
 
 // Define the tool config schema
 const ToolConfigSchema = z.object({
@@ -18,27 +38,55 @@ export const AgentConfigSchema = z.object({
   tools: ToolsSchema,
 });
 
-export type AgentConfigType = z.infer<typeof AgentConfigSchema>;
+export type ToolConfigType = {
+  name: string;
+  label: string;
+  description: string;
+  enabled: boolean;
+  config: 
+    | ImageGeneratorToolConfigType['config']
+    | OpenAPIToolConfigType['config']
+    | E2BInterpreterToolConfigType['config']
+    | DuckDuckGoToolConfigType['config']
+    | WikipediaToolConfigType['config'];
+};
+
+
+export type AgentConfigType = {
+  agent_id: string;
+  name: string;
+  system_prompt: string;
+  tools: {
+    [key: string]: ToolConfigType;
+  };
+};
 
 // Define default configurations
 export const DEFAULT_TOOL_CONFIG: Record<
   string,
   { enabled: boolean; config: Record<string, unknown> }
 > = {
-  DuckDuckGo: { enabled: false, config: { max_results: 5 } },
-  Wikipedia: { enabled: false, config: { language: "en" } },
-  OpenAPI: { enabled: false, config: {} },
-  E2BInterpreter: { enabled: false, config: { timeout: 30 } },
-  ImageGenerator: {
-    enabled: false,
-    config: { model: "dall-e-3", size: "1024x1024" },
-  },
+  ImageGenerator: DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
+  OpenAPI: DEFAULT_OPENAPI_TOOL_CONFIG,
+  E2BInterpreter: DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
+  DuckDuckGo: DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
+  Wikipedia: DEFAULT_WIKIPEDIA_TOOL_CONFIG,
 };
 
 export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   name: "New Agent",
   system_prompt: "You are a helpful assistant.",
-  tools: DEFAULT_TOOL_CONFIG,
+  tools: Object.fromEntries(
+    Object.entries(DEFAULT_TOOL_CONFIG).map(([key, value]) => [
+      key,
+      {
+        name: key,
+        label: key,
+        description: "",
+        ...value,
+      },
+    ])
+  ),
 };
 
 // API functions

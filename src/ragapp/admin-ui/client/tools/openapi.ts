@@ -25,10 +25,9 @@ export const OpenAPIToolConfig = z.object({
             message: "OpenAPI URL is not valid",
           },
         ),
-    })
-    .nullable()
-    .optional(),
+    }),
 });
+
 export type OpenAPIToolConfigType = z.infer<typeof OpenAPIToolConfig>;
 export const DEFAULT_OPENAPI_TOOL_CONFIG: OpenAPIToolConfigType = {
   name: "openapi",
