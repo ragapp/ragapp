@@ -1,42 +1,56 @@
-import { UseFormReturn } from "react-hook-form";
 import { AgentConfigType } from "@/client/agent";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+} from "@/components/ui/form";
+import { UseFormReturn } from "react-hook-form";
 import { ImageGeneratorConfig } from "../tools/image_generator";
 import { E2BInterpreterConfig } from "../tools/interpreter";
 import { OpenAPIConfig } from "../tools/openapi";
-import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
 
-interface ToolsConfigProps {
+export const TOOL_ORDER = [
+    "QueryEngine",
+    "DuckDuckGo",
+    "Wikipedia",
+    "OpenAPI",
+    "Interpreter",
+    "ImageGenerator",
+];
+
+interface ToolConfigProps {
     form: UseFormReturn<AgentConfigType>;
+    isPrimary?: boolean; // weather tools of primary agent
 }
 
-const SimpleToolSelection = ({
-    form,
-    toolName,
-}: {
+const SimpleSelection: React.FC<{
     form: UseFormReturn<AgentConfigType>;
     toolName: string;
-}) => {
-    return (
-        <FormField
-            control={form.control}
-            name={`tools.${toolName}.enabled`}
-            render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                    <FormControl>
-                        <Checkbox
-                            checked={field.value as boolean}
-                            onCheckedChange={field.onChange}
-                        />
-                    </FormControl>
-                    <FormLabel className="font-normal">{toolName}</FormLabel>
-                </FormItem>
-            )}
-        />
-    );
-};
+    disabled?: boolean;
+}> = ({ form, toolName, disabled }) => (
+    <FormField
+        control={form.control}
+        name={`tools.${toolName}.enabled`}
+        render={({ field }) => (
+            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                <FormControl>
+                    <Checkbox
+                        checked={field.value as boolean}
+                        onCheckedChange={field.onChange}
+                        disabled={disabled}
+                    />
+                </FormControl>
+                <FormLabel className="font-normal">{toolName}</FormLabel>
+            </FormItem>
+        )}
+    />
+);
 
-export const ToolsConfig: React.FC<ToolsConfigProps> = ({ form }) => {
+export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary }) => {
+    const tools = form.watch("tools");
+
     const renderToolConfig = (toolName: string) => {
         switch (toolName) {
             case "ImageGenerator":
@@ -47,7 +61,14 @@ export const ToolsConfig: React.FC<ToolsConfigProps> = ({ form }) => {
                 return <OpenAPIConfig form={form} />;
             case "DuckDuckGo":
             case "Wikipedia":
-                return <SimpleToolSelection form={form} toolName={toolName} />;
+            case "QueryEngine":
+                return (
+                    <SimpleSelection
+                        form={form}
+                        toolName={toolName}
+                        disabled={isPrimary && toolName === "QueryEngine"}
+                    />
+                );
             default:
                 return null;
         }
@@ -57,7 +78,12 @@ export const ToolsConfig: React.FC<ToolsConfigProps> = ({ form }) => {
         <>
             <h3 className="text-lg font-medium">Tools</h3>
             <div className="space-y-6">
-                {Object.keys(form.watch("tools")).map((toolName) => renderToolConfig(toolName))}
+                {/* Display tools in the order specified in TOOL_ORDER */}
+                {TOOL_ORDER.map((toolName) => (
+                    tools[toolName] && (
+                        <div key={toolName}>{renderToolConfig(toolName)}</div>
+                    )
+                ))}
             </div>
         </>
     );

@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { RemoveAgentDialog } from "./agents/RemoveAgentDialog";
 import { ToolConfig } from "./agents/ToolConfig";
+import { ToolsConfig } from "./agents/ToolsConfig";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -269,7 +270,10 @@ export const AgentConfig = () => {
                 />
 
                 {/* Tools configuration */}
-                <ToolConfig form={form} />
+                <ToolsConfig 
+                  form={form} 
+                  isPrimary={agents.length === 1} 
+                />
 
                 <Button type="submit">
                   {agent.agent_id === "temp_id"
