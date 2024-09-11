@@ -119,6 +119,7 @@ export const AgentConfig = () => {
     if (currentAgent) {
       form.reset({
         name: currentAgent.name,
+        role: currentAgent.role, // Add this line
         system_prompt: currentAgent.system_prompt,
         tools: currentAgent.tools,
       });
@@ -237,6 +238,22 @@ export const AgentConfig = () => {
                 />
                 <FormField
                   control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Agent Role</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Define the role of this agent. It&apos;s used to help
+                        orchestrator assign right tasks to the agent.
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="system_prompt"
                   render={({ field }) => (
                     <FormItem>
@@ -245,13 +262,15 @@ export const AgentConfig = () => {
                         <Textarea {...field} rows={3} />
                       </FormControl>
                       <FormDescription>
-                        Define the responsibilities and behaviors of the
-                        assistant.
+                        Define the responsibilities and behaviors of the assistant.
                       </FormDescription>
                     </FormItem>
                   )}
                 />
+
+                {/* Tools configuration */}
                 <ToolConfig form={form} />
+
                 <Button type="submit">
                   {agent.agent_id === "temp_id"
                     ? "Create Agent"

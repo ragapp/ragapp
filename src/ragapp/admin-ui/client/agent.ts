@@ -20,6 +20,7 @@ import {
   WikipediaToolConfigType,
 } from "./tools/wikipedia";
 import { getBaseURL } from "./utils";
+import { DEFAULT_QUERY_ENGINE_TOOL_CONFIG, QueryEngineToolConfigType } from "./tools/query_engine";
 
 // Define the tool config schema
 const ToolConfigSchema = z.object({
@@ -34,6 +35,7 @@ const ToolsSchema = z.record(ToolConfigSchema);
 export const AgentConfigSchema = z.object({
   agent_id: z.string(),
   name: z.string(),
+  role: z.string(),
   system_prompt: z.string(),
   tools: ToolsSchema,
 });
@@ -48,12 +50,15 @@ export type ToolConfigType = {
     | OpenAPIToolConfigType["config"]
     | E2BInterpreterToolConfigType["config"]
     | DuckDuckGoToolConfigType["config"]
-    | WikipediaToolConfigType["config"];
+    | WikipediaToolConfigType["config"]
+    | QueryEngineToolConfigType["config"];
+  priority: number;
 };
 
 export type AgentConfigType = {
   agent_id: string;
   name: string;
+  role: string;
   system_prompt: string;
   tools: {
     [key: string]: ToolConfigType;
@@ -70,10 +75,12 @@ export const DEFAULT_TOOL_CONFIG: Record<
   E2BInterpreter: DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
   DuckDuckGo: DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
   Wikipedia: DEFAULT_WIKIPEDIA_TOOL_CONFIG,
+  QueryEngine: DEFAULT_QUERY_ENGINE_TOOL_CONFIG,
 };
 
 export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   name: "New Agent",
+  role: "",
   system_prompt: "You are a helpful assistant.",
   tools: Object.fromEntries(
     Object.entries(DEFAULT_TOOL_CONFIG).map(([key, value]) => [
@@ -82,6 +89,7 @@ export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
         name: key,
         label: key,
         description: "",
+        priority: 999,
         ...value,
       },
     ]),

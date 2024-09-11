@@ -6,6 +6,7 @@ export const DuckDuckGoToolConfig = z.object({
   description: z.string().nullable().optional(),
   enabled: z.boolean().nullable().optional(),
   config: z.object({}).nullable().optional(),
+  priority: z.number().default(1),
 });
 export type DuckDuckGoToolConfigType = z.infer<typeof DuckDuckGoToolConfig>;
 export const DEFAULT_DUCKDUCKGO_TOOL_CONFIG = {
@@ -13,4 +14,5 @@ export const DEFAULT_DUCKDUCKGO_TOOL_CONFIG = {
   description: "",
   config: {},
   enabled: false,
+  priority: 1,
 };

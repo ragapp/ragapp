@@ -6,6 +6,7 @@ from .duckduckgo import DuckDuckGoTool
 from .image_generator import ImageGeneratorTool
 from .interpreter import E2BInterpreterTool
 from .openapi import OpenAPITool
+from .query_engine import QueryEngineTool
 from .wikipedia import WikipediaTool
 
 
@@ -16,6 +17,7 @@ class Tools(BaseModel):
     openapi: OpenAPITool = OpenAPITool()
     interpreter: E2BInterpreterTool = E2BInterpreterTool()
     image_generator: ImageGeneratorTool = ImageGeneratorTool()
+    query_engine: QueryEngineTool = QueryEngineTool()
 
     @classmethod
     def from_config(cls, config: Dict):
@@ -23,6 +25,10 @@ class Tools(BaseModel):
         local_config = config.get("local", {})
 
         return cls(
+            query_engine=QueryEngineTool(
+                enabled=local_config.get(QueryEngineTool.config_id) is not None,
+                config=local_config.get(QueryEngineTool.config_id, {}),
+            ),
             wikipedia=WikipediaTool(
                 enabled=llama_hub_config.get(WikipediaTool.config_id) is not None,
                 config=llama_hub_config.get(WikipediaTool.config_id, {}),

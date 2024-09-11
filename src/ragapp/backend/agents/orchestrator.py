@@ -1,84 +1,45 @@
-# Copy from: https://github.com/run-llama/create-llama/blob/6e70eb4d119ba2f922543d534d0847116f840801/templates/types/multiagent/fastapi/app/agents/multi.py
+from typing import List, Optional
 
-import asyncio
-from typing import Any, List
+from llama_index.core.chat_engine.types import ChatMessage
 
-from app.agents.planner import StructuredPlannerAgent
-from app.agents.single import (
-    AgentRunResult,
-    ContextAwareTool,
-    FunctionCallingAgent,
-)
-from llama_index.core.tools.types import ToolMetadata, ToolOutput
-from llama_index.core.tools.utils import create_schema_from_function
-from llama_index.core.workflow import Context, Workflow
+from backend.agents.multi import AgentOrchestrator
+from backend.agents.single import FunctionCallingAgent
+from backend.controllers.agents import AgentManager
 
 
-class AgentCallTool(ContextAwareTool):
-    def __init__(self, agent: Workflow) -> None:
-        self.agent = agent
-        name = f"call_{agent.name}"
+def get_tool(tool_name: str, config: dict):
+    from app.engine.tools import ToolFactory
 
-        async def schema_call(input: str) -> str:
-            pass
+    tools = ToolFactory.load_tools(config.tool_type, config.name, config.dict())
+    return tools[0]
 
-        # create the schema without the Context
-        fn_schema = create_schema_from_function(name, schema_call)
-        self._metadata = ToolMetadata(
-            name=name,
-            description=(
-                f"Use this tool to delegate a sub task to the {agent.name} agent."
-                + (f" The agent is an {agent.role}." if agent.role else "")
-            ),
-            fn_schema=fn_schema,
+
+def get_agents(
+    chat_history: Optional[List[ChatMessage]] = None,
+) -> List[FunctionCallingAgent]:
+    agent_manager = AgentManager()
+    agents_config = agent_manager.get_agents()
+    agents = []
+    for agent_config in agents_config:
+        agent_tools_config = agent_manager.get_agent_tools(agent_config.agent_id)
+        tools = [
+            get_tool(tool_name, tool_config)
+            for tool_name, tool_config in agent_tools_config
+            if tool_config.enabled
+        ]
+        agents.append(
+            FunctionCallingAgent(
+                name=agent_config.name,
+                role=agent_config.role,
+                system_prompt=agent_config.system_prompt,
+                tools=tools,
+                chat_history=chat_history,
+                verbose=True,
+            )
         )
-
-    # overload the acall function with the ctx argument as it's needed for bubbling the events
-    async def acall(self, ctx: Context, input: str) -> ToolOutput:
-        task = asyncio.create_task(self.agent.run(input=input))
-        # bubble all events while running the agent to the calling agent
-        async for ev in self.agent.stream_events():
-            ctx.write_event_to_stream(ev)
-        ret: AgentRunResult = await task
-        response = ret.response.message.content
-        return ToolOutput(
-            content=str(response),
-            tool_name=self.metadata.name,
-            raw_input={"args": input, "kwargs": {}},
-            raw_output=response,
-        )
+    return agents
 
 
-class AgentCallingAgent(FunctionCallingAgent):
-    def __init__(
-        self,
-        *args: Any,
-        name: str,
-        agents: List[FunctionCallingAgent] | None = None,
-        **kwargs: Any,
-    ) -> None:
-        agents = agents or []
-        tools = [AgentCallTool(agent=agent) for agent in agents]
-        super().__init__(*args, name=name, tools=tools, **kwargs)
-        # call add_workflows so agents will get detected by llama agents automatically
-        self.add_workflows(**{agent.name: agent for agent in agents})
-
-
-class AgentOrchestrator(StructuredPlannerAgent):
-    def __init__(
-        self,
-        *args: Any,
-        name: str = "orchestrator",
-        agents: List[FunctionCallingAgent] | None = None,
-        **kwargs: Any,
-    ) -> None:
-        agents = agents or []
-        tools = [AgentCallTool(agent=agent) for agent in agents]
-        super().__init__(
-            *args,
-            name=name,
-            tools=tools,
-            **kwargs,
-        )
-        # call add_workflows so agents will get detected by llama agents automatically
-        self.add_workflows(**{agent.name: agent for agent in agents})
+def create_orchestrator(chat_history: Optional[List[ChatMessage]] = None):
+    agents = get_agents(chat_history)
+    return AgentOrchestrator(agents=agents, refine_plan=False)

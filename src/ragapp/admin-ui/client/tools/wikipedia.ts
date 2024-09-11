@@ -6,6 +6,7 @@ export const WikipediaToolConfig = z.object({
   description: z.string().nullable().optional(),
   enabled: z.boolean().nullable().optional(),
   config: z.object({}).nullable().optional(),
+  priority: z.number().default(2),
 });
 export type WikipediaToolConfigType = z.infer<typeof WikipediaToolConfig>;
 export const DEFAULT_WIKIPEDIA_TOOL_CONFIG = {
@@ -13,4 +14,5 @@ export const DEFAULT_WIKIPEDIA_TOOL_CONFIG = {
   description: "",
   config: {},
   enabled: false,
+  priority: 2,
 };

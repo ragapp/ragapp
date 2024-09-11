@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import List
 
@@ -8,22 +9,46 @@ from app.api.routers.models import (
     Result,
     SourceNodes,
 )
-from app.api.routers.vercel_response import VercelStreamResponse
 from app.engine.query_filter import generate_filters
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from llama_index.core.chat_engine.types import BaseChatEngine, NodeWithScore
 from llama_index.core.llms import MessageRole
+from llama_index.core.workflow import Workflow
 
+from backend.agents.orchestrator import create_orchestrator
 from backend.engine import get_chat_engine
+from backend.routers.chat.vercel_response import VercelStreamResponse
 
 chat_router = r = APIRouter()
 
 logger = logging.getLogger("uvicorn")
 
 
-# streaming endpoint - delete if not needed
 @r.post("")
 async def chat(
+    request: Request,
+    data: ChatData,
+):
+    try:
+        last_message_content = data.get_last_message_content()
+        messages = data.get_history_messages()
+        agent: Workflow = create_orchestrator(chat_history=messages)
+        task = asyncio.create_task(
+            agent.run(input=last_message_content, streaming=True)
+        )
+
+        return VercelStreamResponse(request, task, agent.stream_events, data)
+    except Exception as e:
+        logger.exception("Error in agent", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error in agent: {e}",
+        ) from e
+
+
+# streaming endpoint - delete if not needed
+@r.post("/v1")
+async def chat_v1(
     request: Request,
     data: ChatData,
     background_tasks: BackgroundTasks,

@@ -2,9 +2,12 @@ import os
 
 from app.engine.index import IndexConfig, get_index
 from app.engine.tools import ToolFactory
+from llama_index.core.agent import AgentRunner
 from llama_index.core.callbacks import CallbackManager
+from llama_index.core.chat_engine import CondensePlusContextChatEngine
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.settings import Settings
+from llama_index.core.tools.query_engine import QueryEngineTool
 
 from backend.engine.constants import DEFAULT_MAX_TOP_K, DEFAULT_TOP_K
 from backend.engine.postprocessors import NodeCitationProcessor, get_reranker
@@ -36,28 +39,19 @@ def get_chat_engine(filters=None, params=None, event_handlers=None):
 
     # Use the context chat engine if no tools are provided
     if len(tools) == 0:
-        from llama_index.core.chat_engine import CondensePlusContextChatEngine
-
-        memory = ChatMemoryBuffer.from_defaults(
-            token_limit=Settings.llm.metadata.context_window - 256
-        )
-
-        retriever = index.as_retriever(
-            filters=filters, **({"similarity_top_k": top_k} if top_k != 0 else {})
-        )
-
         return CondensePlusContextChatEngine(
             llm=Settings.llm,
-            memory=memory,
+            memory=ChatMemoryBuffer.from_defaults(
+                token_limit=Settings.llm.metadata.context_window - 256
+            ),
             system_prompt=system_prompt,
-            retriever=retriever,
+            retriever=index.as_retriever(
+                filters=filters, **({"similarity_top_k": top_k} if top_k != 0 else {})
+            ),
             node_postprocessors=node_postprocessors,
             callback_manager=callback_manager,
         )
     else:
-        from llama_index.core.agent import AgentRunner
-        from llama_index.core.tools.query_engine import QueryEngineTool
-
         # Add the query engine tool to the list of tools
         query_engine_tool = QueryEngineTool.from_defaults(
             query_engine=index.as_query_engine(
