@@ -1,25 +1,25 @@
 import { z } from "zod";
 import {
   DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
+  DuckDuckGoToolConfigType,
 } from "./tools/duckduckgo";
 import {
   DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
+  ImageGeneratorToolConfigType,
 } from "./tools/image_generator";
 import {
   DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
+  E2BInterpreterToolConfigType,
 } from "./tools/interpreter";
 import {
   DEFAULT_OPENAPI_TOOL_CONFIG,
+  OpenAPIToolConfigType,
 } from "./tools/openapi";
 import {
   DEFAULT_WIKIPEDIA_TOOL_CONFIG,
+  WikipediaToolConfigType,
 } from "./tools/wikipedia";
 import { getBaseURL } from "./utils";
-import { ImageGeneratorToolConfigType } from "./tools/image_generator";
-import { OpenAPIToolConfigType } from "./tools/openapi";
-import { E2BInterpreterToolConfigType } from "./tools/interpreter";
-import { DuckDuckGoToolConfigType } from "./tools/duckduckgo";
-import { WikipediaToolConfigType } from "./tools/wikipedia";
 
 // Define the tool config schema
 const ToolConfigSchema = z.object({
@@ -43,14 +43,13 @@ export type ToolConfigType = {
   label: string;
   description: string;
   enabled: boolean;
-  config: 
-    | ImageGeneratorToolConfigType['config']
-    | OpenAPIToolConfigType['config']
-    | E2BInterpreterToolConfigType['config']
-    | DuckDuckGoToolConfigType['config']
-    | WikipediaToolConfigType['config'];
+  config:
+    | ImageGeneratorToolConfigType["config"]
+    | OpenAPIToolConfigType["config"]
+    | E2BInterpreterToolConfigType["config"]
+    | DuckDuckGoToolConfigType["config"]
+    | WikipediaToolConfigType["config"];
 };
-
 
 export type AgentConfigType = {
   agent_id: string;
@@ -85,7 +84,7 @@ export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
         description: "",
         ...value,
       },
-    ])
+    ]),
   ),
 };
 

@@ -8,7 +8,6 @@ import {
   updateAgent,
 } from "@/client/agent";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import {
   Form,
@@ -27,8 +26,8 @@ import { PlusCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { ToolConfig } from "./agents/ToolConfig";
 import { RemoveAgentDialog } from "./agents/RemoveAgentDialog";
+import { ToolConfig } from "./agents/ToolConfig";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -72,13 +71,8 @@ export const AgentConfig = () => {
   });
 
   const { mutate: updateAgentMutation } = useMutation(
-    ({
-      agentId,
-      data,
-    }: {
-      agentId: string;
-      data: AgentConfigType;
-    }) => updateAgent(agentId, data),
+    ({ agentId, data }: { agentId: string; data: AgentConfigType }) =>
+      updateAgent(agentId, data),
     {
       onSuccess: (updatedAgent) => {
         queryClient.invalidateQueries("agents");
@@ -133,7 +127,7 @@ export const AgentConfig = () => {
 
   const handleSubmit = (data: AgentConfigType) => {
     if (isNewAgent) {
-      const newAgentId = data.name.toLowerCase().replace(/\s+/g, '_');
+      const newAgentId = data.name.toLowerCase().replace(/\s+/g, "_");
       createAgentMutation({ ...data, agent_id: newAgentId } as AgentConfigType);
     } else if (activeAgent) {
       updateAgentMutation({ agentId: activeAgent, data });
@@ -154,7 +148,10 @@ export const AgentConfig = () => {
     };
     setAgents([
       ...agents,
-      { ...newAgentConfig, agent_id: `unnamed_${agents.length + 1}` } as AgentConfigType,
+      {
+        ...newAgentConfig,
+        agent_id: `unnamed_${agents.length + 1}`,
+      } as AgentConfigType,
     ]);
     setActiveAgent(`unnamed_${agents.length + 1}`);
     setIsNewAgent(true);

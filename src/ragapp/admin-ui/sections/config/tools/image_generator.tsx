@@ -1,8 +1,5 @@
 import { AgentConfigType } from "@/client/agent";
-import {
-  DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
-  ImageGeneratorToolConfigType,
-} from "@/client/tools/image_generator";
+import { DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG } from "@/client/tools/image_generator";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -39,7 +36,9 @@ export const ImageGeneratorConfig = ({
             </FormControl>
             <div>
               <FormLabel className="font-normal">Image Generator</FormLabel>
-              <FormDescription>{DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG.description}</FormDescription>
+              <FormDescription>
+                {DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG.description}
+              </FormDescription>
             </div>
           </FormItem>
         )}

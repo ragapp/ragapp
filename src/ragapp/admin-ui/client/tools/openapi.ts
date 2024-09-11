@@ -5,27 +5,26 @@ export const OpenAPIToolConfig = z.object({
   label: z.string(),
   description: z.string(),
   enabled: z.boolean(),
-  config: z
-    .object({
-      openapi_uri: z
-        .string()
-        .nullable()
-        .refine(
-          (data) => {
-            if (data) {
-              try {
-                new URL(data);
-                return true;
-              } catch (error) {
-                return false;
-              }
+  config: z.object({
+    openapi_uri: z
+      .string()
+      .nullable()
+      .refine(
+        (data) => {
+          if (data) {
+            try {
+              new URL(data);
+              return true;
+            } catch (error) {
+              return false;
             }
-          },
-          {
-            message: "OpenAPI URL is not valid",
-          },
-        ),
-    }),
+          }
+        },
+        {
+          message: "OpenAPI URL is not valid",
+        },
+      ),
+  }),
 });
 
 export type OpenAPIToolConfigType = z.infer<typeof OpenAPIToolConfig>;

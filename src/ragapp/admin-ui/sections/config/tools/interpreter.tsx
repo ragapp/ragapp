@@ -1,8 +1,5 @@
 import { AgentConfigType } from "@/client/agent";
-import {
-  DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
-  E2BInterpreterToolConfigType,
-} from "@/client/tools/interpreter";
+import { DEFAULT_E2B_INTERPRETER_TOOL_CONFIG } from "@/client/tools/interpreter";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -37,7 +34,9 @@ export const E2BInterpreterConfig = ({
             </FormControl>
             <div>
               <FormLabel className="font-normal">Code Interpreter</FormLabel>
-              <FormDescription>{DEFAULT_E2B_INTERPRETER_TOOL_CONFIG.description}</FormDescription>
+              <FormDescription>
+                {DEFAULT_E2B_INTERPRETER_TOOL_CONFIG.description}
+              </FormDescription>
             </div>
           </FormItem>
         )}

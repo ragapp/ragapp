@@ -1,16 +1,24 @@
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
-import { UseFormReturn } from "react-hook-form";
 import { AgentConfigType } from "@/client/agent";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { UseFormReturn } from "react-hook-form";
 import { ImageGeneratorConfig } from "../tools/image_generator";
-import { OpenAPIConfig } from "../tools/openapi";
 import { E2BInterpreterConfig } from "../tools/interpreter";
+import { OpenAPIConfig } from "../tools/openapi";
 
 interface ToolConfigProps {
   form: UseFormReturn<AgentConfigType>;
 }
 
-const SimpleSelection: React.FC<{ form: UseFormReturn<AgentConfigType>; toolName: string }> = ({ form, toolName }) => (
+const SimpleSelection: React.FC<{
+  form: UseFormReturn<AgentConfigType>;
+  toolName: string;
+}> = ({ form, toolName }) => (
   <FormField
     control={form.control}
     name={`tools.${toolName}.enabled`}
