@@ -11,15 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   Form,
   FormControl,
   FormDescription,
@@ -36,49 +27,8 @@ import { PlusCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { ImageGeneratorConfig } from "./tools/image_generator";
-import { OpenAPIConfig } from "./tools/openapi";
-import { E2BInterpreterConfig } from "./tools/interpreter";
-
-const RemoveAgentDialog = ({
-  agentName,
-  onRemove,
-  children,
-}: {
-  agentName: string;
-  onRemove: () => void;
-  children: React.ReactNode;
-}) => {
-  const [open, setOpen] = useState(false);
-
-  const handleRemove = () => {
-    onRemove();
-    setOpen(false);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete the agent
-            configuration.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button variant="destructive" onClick={handleRemove}>
-            Remove
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
+import { ToolConfig } from "./agents/ToolConfig";
+import { RemoveAgentDialog } from "./agents/RemoveAgentDialog";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -127,7 +77,7 @@ export const AgentConfig = () => {
       data,
     }: {
       agentId: string;
-      data: Omit<AgentConfigType, "agent_id">;
+      data: AgentConfigType;
     }) => updateAgent(agentId, data),
     {
       onSuccess: (updatedAgent) => {
@@ -181,9 +131,10 @@ export const AgentConfig = () => {
     }
   }, [activeAgent, agents, form]);
 
-  const handleSubmit = (data: Omit<AgentConfigType, "agent_id">) => {
+  const handleSubmit = (data: AgentConfigType) => {
     if (isNewAgent) {
-      createAgentMutation(data);
+      const newAgentId = data.name.toLowerCase().replace(/\s+/g, '_');
+      createAgentMutation({ ...data, agent_id: newAgentId } as AgentConfigType);
     } else if (activeAgent) {
       updateAgentMutation({ agentId: activeAgent, data });
     }
@@ -195,17 +146,17 @@ export const AgentConfig = () => {
   };
 
   const addNewAgent = () => {
-    const newAgentName = `New Agent ${agents.length + 1}`;
+    const newAgentName = `Unnamed Agent ${agents.length + 1}`;
     const newAgentConfig: AgentConfigType = {
-      agent_id: "temp_id",
+      agent_id: `unnamed_${agents.length + 1}`,
       ...DEFAULT_AGENT_CONFIG,
       name: newAgentName,
     };
     setAgents([
       ...agents,
-      { ...newAgentConfig, agent_id: "temp_id" } as AgentConfigType,
+      { ...newAgentConfig, agent_id: `unnamed_${agents.length + 1}` } as AgentConfigType,
     ]);
-    setActiveAgent("temp_id");
+    setActiveAgent(`unnamed_${agents.length + 1}`);
     setIsNewAgent(true);
     form.reset(newAgentConfig);
   };
@@ -220,54 +171,6 @@ export const AgentConfig = () => {
     }
     if (activeAgent === agentId) {
       setActiveAgent(agents[0]?.agent_id || null);
-    }
-  };
-
-  const simpleSelection = (toolName: string) => {
-    return (
-      <FormField
-        control={form.control}
-        name={`tools.${toolName}.enabled`}
-        render={({ field }) => (
-          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-            <FormControl>
-              <Checkbox
-                checked={field.value as boolean}
-                onCheckedChange={field.onChange}
-              />
-            </FormControl>
-            <FormLabel className="font-normal">{toolName}</FormLabel>
-          </FormItem>
-        )}
-      />
-    );
-  };
-
-  const renderToolConfig = (toolName: string) => {
-    switch (toolName) {
-      case "ImageGenerator":
-        return (
-          <ImageGeneratorConfig
-            form={form}
-          />
-        );
-      case "E2BInterpreter":
-        return (
-          <E2BInterpreterConfig
-            form={form}
-          />
-        );
-      case "OpenAPI":
-        return (
-          <OpenAPIConfig
-            form={form}
-          />
-        );
-      case "DuckDuckGo":
-      case "Wikipedia":
-        return simpleSelection(toolName);
-      default:
-        return null;
     }
   };
 
@@ -288,7 +191,7 @@ export const AgentConfig = () => {
               <TabsTrigger
                 key={agent.agent_id}
                 value={agent.agent_id}
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-input m-1 hover:bg-accent hover:text-accent-foreground relative group"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-input m-1 hover:bg-accent hover:text-accent-foreground relative group"
               >
                 {agent.name}
                 {agent.agent_id !== "default" && agents.length > 1 && (
@@ -351,12 +254,7 @@ export const AgentConfig = () => {
                     </FormItem>
                   )}
                 />
-                <h3 className="text-lg font-medium">Tools</h3>
-                <div className="space-y-6">
-                  {Object.keys(form.watch("tools")).map((toolName) => (
-                    renderToolConfig(toolName)
-                  ))}
-                </div>
+                <ToolConfig form={form} />
                 <Button type="submit">
                   {agent.agent_id === "temp_id"
                     ? "Create Agent"
