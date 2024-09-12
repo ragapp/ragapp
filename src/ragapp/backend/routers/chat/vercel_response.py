@@ -1,5 +1,6 @@
 import json
 import logging
+from abc import ABC, abstractmethod
 from asyncio import Task
 from typing import AsyncGenerator, List
 
@@ -16,13 +17,23 @@ from backend.agents.single import AgentRunEvent, AgentRunResult
 logger = logging.getLogger("uvicorn")
 
 
-class BaseVercelStreamResponse(StreamingResponse):
+class BaseVercelStreamResponse(StreamingResponse, ABC):
     """
     Base class to convert the response from the chat engine to the streaming format expected by Vercel
     """
 
     TEXT_PREFIX = "0:"
     DATA_PREFIX = "8:"
+
+    def __init__(self, request: Request, chat_data: ChatData, *args, **kwargs):
+        content = self.content_generator(request, chat_data, *args, **kwargs)
+        super().__init__(content=content)
+
+    @abstractmethod
+    async def content_generator(
+        self, request: Request, chat_data: ChatData, *args, **kwargs
+    ):
+        raise NotImplementedError("Subclasses must implement content_generator")
 
     @classmethod
     def convert_text(cls, token: str):
@@ -53,52 +64,33 @@ class ContextEngineVercelStreamResponse(BaseVercelStreamResponse):
     Class to convert the response from the chat engine to the streaming format expected by Vercel
     """
 
-    def __init__(
+    async def content_generator(
         self,
         request: Request,
+        chat_data: ChatData,
         event_handler: EventCallbackHandler,
         response: StreamingAgentChatResponse,
-        chat_data: ChatData,
-    ):
-        content = self.content_generator(request, event_handler, response, chat_data)
-        super().__init__(content=content)
-
-    @classmethod
-    async def content_generator(
-        cls,
-        request: Request,
-        event_handler: EventCallbackHandler,
-        response: StreamingAgentChatResponse,
-        chat_data: ChatData,
     ):
         # Yield the text response
         async def _chat_response_generator():
             final_response = ""
             async for token in response.async_response_gen():
                 final_response += token
-                yield cls.convert_text(token)
+                yield self.convert_text(token)
 
             # Generate next questions if next question prompt is configured
-            question_data = await cls._generate_next_questions(
+            question_data = await self._generate_next_questions(
                 chat_data.messages, final_response
             )
             if question_data:
-                yield cls.convert_data(question_data)
+                yield self.convert_data(question_data)
 
             # the text_generator is the leading stream, once it's finished, also finish the event stream
             event_handler.is_done = True
 
             # Yield the source nodes
-            yield cls.convert_data(
-                {
-                    "type": "sources",
-                    "data": {
-                        "nodes": [
-                            SourceNodes.from_source_node(node).model_dump()
-                            for node in response.source_nodes
-                        ]
-                    },
-                }
+            yield self.convert_data(
+                self._source_nodes_to_response(response.source_nodes)
             )
 
         # Yield the events from the event handler
@@ -106,7 +98,7 @@ class ContextEngineVercelStreamResponse(BaseVercelStreamResponse):
             async for event in event_handler.async_event_gen():
                 event_response = event.to_response()
                 if event_response is not None:
-                    yield cls.convert_data(event_response)
+                    yield self.convert_data(event_response)
 
         combine = stream.merge(_chat_response_generator(), _event_generator())
         is_stream_started = False
@@ -115,12 +107,24 @@ class ContextEngineVercelStreamResponse(BaseVercelStreamResponse):
                 if not is_stream_started:
                     is_stream_started = True
                     # Stream a blank message to start the stream
-                    yield cls.convert_text("")
+                    yield self.convert_text("")
 
                 yield output
 
                 if await request.is_disconnected():
                     break
+
+    @staticmethod
+    def _source_nodes_to_response(source_nodes: List):
+        return {
+            "type": "sources",
+            "data": {
+                "nodes": [
+                    SourceNodes.from_source_node(node).model_dump()
+                    for node in source_nodes
+                ]
+            },
+        }
 
 
 class MultiAgentsVercelStreamResponse(BaseVercelStreamResponse):
@@ -128,24 +132,12 @@ class MultiAgentsVercelStreamResponse(BaseVercelStreamResponse):
     Class to convert the response from the chat engine to the streaming format expected by Vercel
     """
 
-    def __init__(
+    async def content_generator(
         self,
         request: Request,
+        chat_data: ChatData,
         task: Task[AgentRunResult | AsyncGenerator],
         events: AsyncGenerator[AgentRunEvent, None],
-        chat_data: ChatData,
-        verbose: bool = True,
-    ):
-        content = self.content_generator(request, task, events, chat_data)
-        super().__init__(content=content)
-
-    @classmethod
-    async def content_generator(
-        cls,
-        request: Request,
-        task: Task[AgentRunResult | AsyncGenerator],
-        events: AsyncGenerator[AgentRunEvent, None],
-        chat_data: ChatData,
         verbose: bool = True,
     ):
         # Yield the text response
@@ -156,30 +148,30 @@ class MultiAgentsVercelStreamResponse(BaseVercelStreamResponse):
             if isinstance(result, AgentRunResult):
                 for token in result.response.message.content:
                     final_response += token
-                    yield cls.convert_text(token)
+                    yield self.convert_text(token)
 
             if isinstance(result, AsyncGenerator):
                 async for token in result:
                     final_response += token.delta
-                    yield cls.convert_text(token.delta)
+                    yield self.convert_text(token.delta)
 
             # Generate next questions if next question prompt is configured
-            question_data = await cls._generate_next_questions(
+            question_data = await self._generate_next_questions(
                 chat_data.messages, final_response
             )
             if question_data:
-                yield cls.convert_data(question_data)
+                yield self.convert_data(question_data)
 
             # TODO: stream sources
 
         # Yield the events from the event handler
         async def _event_generator():
-            async for event in events():
-                event_response = cls._event_to_response(event)
+            async for event in events:
+                event_response = self._event_to_response(event)
                 if verbose:
                     logger.debug(event_response)
                 if event_response is not None:
-                    yield cls.convert_data(event_response)
+                    yield self.convert_data(event_response)
 
         combine = stream.merge(_chat_response_generator(), _event_generator())
 
@@ -188,7 +180,7 @@ class MultiAgentsVercelStreamResponse(BaseVercelStreamResponse):
             if not is_stream_started:
                 is_stream_started = True
                 # Stream a blank message to start the stream
-                yield cls.convert_text("")
+                yield self.convert_text("")
 
             async for output in streamer:
                 yield output

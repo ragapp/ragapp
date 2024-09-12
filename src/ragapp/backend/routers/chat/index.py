@@ -58,14 +58,20 @@ async def chat_v1(
             process_response_nodes(response.source_nodes, background_tasks)
 
             return ContextEngineVercelStreamResponse(
-                request, event_handler, response, data
+                request=request,
+                chat_data=data,
+                event_handler=event_handler,
+                response=response,
             )
         else:
             task = asyncio.create_task(
                 chat_engine.run(input=last_message_content, streaming=True)
             )
             return MultiAgentsVercelStreamResponse(
-                request, task, chat_engine.stream_events, data
+                request=request,
+                chat_data=data,
+                task=task,
+                events=chat_engine.stream_events(),  # Call the method to get the generator
             )
     except Exception as e:
         logger.exception("Error in chat engine", exc_info=True)
