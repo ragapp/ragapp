@@ -104,7 +104,7 @@ def test_update_agent_tool(agent_manager):
         ):
             agent_manager.update_agent_tool("agent1", "Wikipedia", new_tool_data)
 
-    assert agent_manager.config["agent1"]["tools"]["Wikipedia"]["enabled"] == True
+    assert agent_manager.config["agent1"]["tools"]["Wikipedia"]["enabled"]
     assert (
         agent_manager.config["agent1"]["tools"]["Wikipedia"]["config"]["param1"]
         == "new_value"
