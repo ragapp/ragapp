@@ -20,7 +20,8 @@ export type E2BInterpreterToolConfigType = z.infer<
 >;
 export const DEFAULT_E2B_INTERPRETER_TOOL_CONFIG = {
   label: "Code Interpreter",
-  description: "Execute python code in a sandboxed environment using E2B code interpreter",
+  description:
+    "Execute python code in a sandboxed environment using E2B code interpreter",
   config: {
     api_key: "",
   },

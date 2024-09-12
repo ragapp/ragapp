@@ -16,11 +16,14 @@ import {
   OpenAPIToolConfigType,
 } from "./tools/openapi";
 import {
+  DEFAULT_QUERY_ENGINE_TOOL_CONFIG,
+  QueryEngineToolConfigType,
+} from "./tools/query_engine";
+import {
   DEFAULT_WIKIPEDIA_TOOL_CONFIG,
   WikipediaToolConfigType,
 } from "./tools/wikipedia";
 import { getBaseURL } from "./utils";
-import { DEFAULT_QUERY_ENGINE_TOOL_CONFIG, QueryEngineToolConfigType } from "./tools/query_engine";
 
 // Define the tool config schema
 const ToolConfigSchema = z.object({

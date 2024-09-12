@@ -262,17 +262,15 @@ export const AgentConfig = () => {
                         <Textarea {...field} rows={3} />
                       </FormControl>
                       <FormDescription>
-                        Define the responsibilities and behaviors of the assistant.
+                        Define the responsibilities and behaviors of the
+                        assistant.
                       </FormDescription>
                     </FormItem>
                   )}
                 />
 
                 {/* Tools configuration */}
-                <ToolsConfig
-                  form={form}
-                  isPrimary={agents.length === 1}
-                />
+                <ToolsConfig form={form} isPrimary={agents.length === 1} />
 
                 <Button type="submit">
                   {agent.agent_id === "temp_id"
