@@ -9,7 +9,9 @@ from llama_index.core.chat_engine import CondensePlusContextChatEngine
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.settings import Settings
 
-from backend.agents.orchestrator import create_orchestrator, get_agents
+from backend.agents.multi import AgentOrchestrator
+from backend.agents.orchestrator import get_agents
+from backend.agents.single import FunctionCallingAgent
 from backend.engine.constants import DEFAULT_MAX_TOP_K, DEFAULT_TOP_K
 from backend.engine.postprocessors import NodeCitationProcessor, get_reranker
 
@@ -21,7 +23,13 @@ def create_chat_engine(
     params=None,
     event_handlers=None,
     chat_history: Optional[List[ChatMessage]] = None,
-):
+) -> CondensePlusContextChatEngine | AgentOrchestrator | FunctionCallingAgent:
+    """
+    Create chat engine based on the configurations.
+    If there is only one agent and no tool enabled, use the context chat engine.
+    Otherwise, use the agent workflow.
+    """
+
     top_k = int(os.getenv("TOP_K", "3"))
     system_prompt = os.getenv("SYSTEM_PROMPT")
     citation_prompt = os.getenv("SYSTEM_CITATION_PROMPT")
@@ -38,17 +46,23 @@ def create_chat_engine(
     else:
         top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
 
+    # We need to create index here because we need to pass the callback manager to the index
+    # and we need to pass the index to the agents
+    # TODO: Refactor code to create index independently
     index_config = IndexConfig(callback_manager=callback_manager, **(params or {}))
     index = get_index(index_config)
     if index is None:
         raise RuntimeError("Index is not found")
 
-    # If there is only one agent and no tool enabled, use the context chat engine
-    agents = get_agents()
+    query_engine = index.as_query_engine(
+        similarity_top_k=top_k,
+        node_postprocessors=node_postprocessors,
+        filters=filters,
+    )
+    agents = get_agents(chat_history, query_engine)
     if len(agents) == 1:
-        if len(agents[0].tools) == 1:
-            logger.info("Using context chat engine")
-
+        tools = agents[0].tools
+        if len(tools) == 1:
             return CondensePlusContextChatEngine(
                 llm=Settings.llm,
                 memory=ChatMemoryBuffer.from_defaults(
@@ -63,13 +77,6 @@ def create_chat_engine(
                 callback_manager=callback_manager,
             )
         else:
-            raise NotImplementedError("Not implemented")
+            return agents[0]
     else:
-        logger.info("Using agent workflow")
-        query_engine = index.as_query_engine(
-            similarity_top_k=top_k,
-            node_postprocessors=node_postprocessors,
-            filters=filters,
-        )
-        workflow = create_orchestrator(chat_history, query_engine)
-        return workflow
+        return AgentOrchestrator(agents=agents, refine_plan=False)

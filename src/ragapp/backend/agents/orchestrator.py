@@ -14,9 +14,11 @@ def get_tool(tool_name: str, config: dict, query_engine=None):
     Note: this function does not create query engine tools
     """
     if tool_name == "QueryEngine":
+        # Improve tool usage by setting priority for query engine
+        description = f"{config.description or ''}\nThis is a preferred tool to use"
         return QueryEngineTool(
             query_engine=query_engine,
-            metadata=ToolMetadata(name=config.name, description=config.description),
+            metadata=ToolMetadata(name=config.name, description=description),
         )
     tools = ToolFactory.load_tools(config.tool_type, config.name, config.dict())
     return tools[0]

@@ -1,31 +1,21 @@
-from typing import List, Tuple
+from typing import List
 
-from backend.controllers.tools import tools_manager
 from backend.models.agent import AgentConfig
 
 
 class AgentPromptManager:
     @staticmethod
-    def get_tool_custom_prompts(tools: List[Tuple[str, object]]) -> str:
+    def get_tool_custom_prompts(agent: AgentConfig) -> str:
         tool_custom_prompts = ""
-        for tool_name, tool in tools:
-            if hasattr(tool, "custom_prompt") and getattr(tool, "enabled", False):
-                tool_custom_prompts += (
-                    f"\n==={tool_name}===\n{tool.custom_prompt}\n==={tool_name}==="
-                )
+        for tool_name, tool_config in agent.tools.items():
+            if tool_config.enabled and tool_config.custom_prompt:
+                tool_custom_prompts += f"\n==={tool_name}===\n{tool_config.custom_prompt}\n==={tool_name}==="
         return tool_custom_prompts
 
     @classmethod
     def generate_agent_system_prompt(cls, agent: AgentConfig) -> str:
         base_prompt = agent.system_prompt
-        tools = tools_manager().get_tools()
-        agent_tools = [
-            (tool_name, tool)
-            for tool_name, tool in tools
-            if tool_name in agent.tools and agent.tools[tool_name].enabled
-        ]
-
-        tool_custom_prompts = cls.get_tool_custom_prompts(agent_tools)
+        tool_custom_prompts = cls.get_tool_custom_prompts(agent)
 
         if tool_custom_prompts:
             return f"{base_prompt}\n\nYou have access to the following tools:\n{tool_custom_prompts}"
@@ -35,4 +25,4 @@ class AgentPromptManager:
     @classmethod
     def update_agent_system_prompts(cls, agents: List[AgentConfig]):
         for agent in agents:
-            _ = cls.generate_agent_system_prompt(agent)
+            agent.system_prompt = cls.generate_agent_system_prompt(agent)

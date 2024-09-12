@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, validator
 
 class ToolConfig(BaseModel):
     enabled: bool = False
+    custom_prompt: str = ""
     config: Dict = Field(default_factory=dict)
 
 

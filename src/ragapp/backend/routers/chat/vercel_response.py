@@ -136,7 +136,7 @@ class ContextEngineVercelStreamResponse(BaseVercelStreamResponse):
         }
 
 
-class MultiAgentsVercelStreamResponse(BaseVercelStreamResponse):
+class AgentsVercelStreamResponse(BaseVercelStreamResponse):
     """
     Class to convert the response from the chat engine to the streaming format expected by Vercel
     """

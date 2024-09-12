@@ -1,32 +1,14 @@
 import os
-from string import Template
 
 import dotenv
 
 from backend.constants import (
     DEFAULT_SYSTEM_PROMPT,
     ENV_FILE_PATH,
-    SYSTEM_PROMPT_WITH_TOOLS_TPL,
 )
 
 
 class SystemPromptManager:
-    @staticmethod
-    def get_tool_custom_prompts(tools: list = None) -> str:
-        if tools is None:
-            # Only import tools_manager if not provided to avoid circular import
-            from backend.controllers.tools import tools_manager
-
-            tools = tools_manager().get_tools()
-
-        tool_custom_prompts = ""
-        for tool_name, tool in tools:
-            if hasattr(tool, "custom_prompt") and tool.enabled:
-                tool_custom_prompts += (
-                    f"\n==={tool.name}===\n{tool.custom_prompt}\n==={tool.name}==="
-                )
-        return tool_custom_prompts
-
     @classmethod
     def update_system_prompts(cls, tools: list = None):
         """
@@ -38,13 +20,6 @@ class SystemPromptManager:
         """
         # Initialize the system prompt from custom prompt or default prompt
         system_prompt = os.getenv("CUSTOM_PROMPT", DEFAULT_SYSTEM_PROMPT)
-
-        tool_custom_prompts = cls.get_tool_custom_prompts(tools)
-        # Update the system prompt with the tool custom prompts
-        if tool_custom_prompts != "":
-            system_prompt = Template(SYSTEM_PROMPT_WITH_TOOLS_TPL).substitute(
-                system_prompt=system_prompt, tool_custom_prompts=tool_custom_prompts
-            )
 
         # Update the system prompt to runtime and dotenv file
         os.environ["SYSTEM_PROMPT"] = system_prompt

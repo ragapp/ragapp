@@ -17,8 +17,8 @@ from llama_index.core.llms import MessageRole
 
 from backend.engine import create_chat_engine
 from backend.routers.chat.vercel_response import (
+    AgentsVercelStreamResponse,
     ContextEngineVercelStreamResponse,
-    MultiAgentsVercelStreamResponse,
 )
 
 chat_router = r = APIRouter()
@@ -27,7 +27,7 @@ logger = logging.getLogger("uvicorn")
 
 
 @r.post("")
-async def chat_v1(
+async def chat(
     request: Request,
     data: ChatData,
     background_tasks: BackgroundTasks,
@@ -67,7 +67,7 @@ async def chat_v1(
             task = asyncio.create_task(
                 chat_engine.run(input=last_message_content, streaming=True)
             )
-            return MultiAgentsVercelStreamResponse(
+            return AgentsVercelStreamResponse(
                 request=request,
                 chat_data=data,
                 task=task,
