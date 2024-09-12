@@ -16,7 +16,6 @@ export const OpenAPIConfig = ({
 }: {
   form: UseFormReturn<AgentConfigType>;
 }) => {
-
   return (
     <>
       <FormField

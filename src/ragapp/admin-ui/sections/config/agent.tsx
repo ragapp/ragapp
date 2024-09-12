@@ -11,12 +11,12 @@ import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Tabs } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { AgentTabList } from "./agents/AgentTabList";
 import { AgentTabContent } from "./agents/AgentTabContent";
-import { Loader2 } from "lucide-react";
+import { AgentTabList } from "./agents/AgentTabList";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -187,6 +187,7 @@ export const AgentConfig = () => {
               form={form}
               isNewAgent={isNewAgent && agent.agent_id === activeAgent}
               handleSaveChanges={handleSaveChanges}
+              isPrimary={agents.length === 1} // isPrimary is true when there's only one agent
             />
           ))}
         </Tabs>
