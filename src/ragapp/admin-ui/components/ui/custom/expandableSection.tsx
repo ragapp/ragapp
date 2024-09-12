@@ -62,7 +62,7 @@ const ExpandableSection = ({
       <div className="z-10 pl-2 max-w-5xl w-full items-center justify-between">
         <p className="text-gray-500 italic">{description}</p>
       </div>
-      <div className="z-10 p-4 max-w-5xl w-full items-center justify-between">
+      <div className="z-10 p-2 max-w-5xl w-full items-center justify-between">
         {isOpen && children}
       </div>
     </section>

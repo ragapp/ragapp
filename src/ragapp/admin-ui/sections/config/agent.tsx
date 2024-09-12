@@ -183,13 +183,13 @@ export const AgentConfig = () => {
       description="Configure tools and agents"
     >
       <Tabs value={activeAgent || undefined} onValueChange={setActiveAgent}>
-        <div className="mb-4">
-          <TabsList className="inline-flex h-auto items-center justify-center rounded-md bg-muted p-1 text-muted-foreground flex-wrap">
+        <div className="mb-2">
+          <TabsList className="inline-flex h-auto items-center justify-center rounded-md bg-muted text-muted-foreground flex-wrap">
             {agents.map((agent) => (
               <TabsTrigger
                 key={agent.agent_id}
                 value={agent.agent_id}
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-input m-1 hover:bg-accent hover:text-accent-foreground relative group"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-input hover:bg-accent hover:text-accent-foreground relative group px-3 py-1.5"
               >
                 {agent.name}
                 {agent.agent_id !== "default" && agents.length > 1 && (
@@ -197,7 +197,7 @@ export const AgentConfig = () => {
                     agentName={agent.name}
                     onRemove={() => removeAgent(agent.agent_id)}
                   >
-                    <button className="absolute -top-1 -right-1 p-0.5 bg-background border border-input hover:bg-accent hover:text-accent-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button className="absolute -top-1 -right-1 bg-background border border-input hover:bg-accent hover:text-accent-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                       <X size={12} />
                     </button>
                   </RemoveAgentDialog>
@@ -208,14 +208,14 @@ export const AgentConfig = () => {
               onClick={addNewAgent}
               variant="outline"
               size="sm"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium m-1 border border-input hover:bg-accent hover:text-accent-foreground"
+              className="inline-flex ml-2 items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium border border-input hover:bg-accent hover:text-accent-foreground px-3 py-1.5"
             >
               <PlusCircle className="h-4 w-4" />
             </Button>
           </TabsList>
         </div>
         {agents.map((agent) => (
-          <TabsContent key={agent.agent_id} value={agent.agent_id}>
+          <TabsContent key={agent.agent_id} value={agent.agent_id} className="p-4 rounded-md border">
             <Form {...form}>
               <form
                 onSubmit={(e) => {

@@ -26,10 +26,11 @@ class BaseVercelStreamResponse(StreamingResponse, ABC):
     DATA_PREFIX = "8:"
 
     def __init__(self, request: Request, chat_data: ChatData, *args, **kwargs):
-        # content = self.content_generator(request, chat_data, *args, **kwargs)
         self.request = request
+
         stream = self._create_stream(request, chat_data, *args, **kwargs)
         content = self.content_generator(stream)
+
         super().__init__(content=content)
 
     @abstractmethod
