@@ -27,7 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 
-export const ChatConfig = ({ }: {}) => {
+export const ChatConfig = ({}: {}) => {
   const {
     data,
     isLoading: isFetching,
