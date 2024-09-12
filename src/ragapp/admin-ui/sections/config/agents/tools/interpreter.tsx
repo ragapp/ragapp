@@ -23,26 +23,27 @@ export const E2BInterpreterConfig = ({
         control={form.control}
         name="tools.Interpreter.enabled"
         render={({ field }) => (
-          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-            <FormControl>
-              <Checkbox
-                checked={field.value ?? false}
-                onCheckedChange={(checked) => {
-                  field.onChange(checked);
-                }}
-              />
-            </FormControl>
-            <div>
+          <FormItem className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <FormControl>
+                <Checkbox
+                  checked={field.value ?? false}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+                  }}
+                />
+              </FormControl>
               <FormLabel className="font-normal">Code Interpreter</FormLabel>
-              <FormDescription className="text-xs">
-                {DEFAULT_E2B_INTERPRETER_TOOL_CONFIG.description}
-              </FormDescription>
             </div>
+
+            <FormDescription className="text-xs">
+              {DEFAULT_E2B_INTERPRETER_TOOL_CONFIG.description}
+            </FormDescription>
           </FormItem>
         )}
       />
       {form.watch("tools.Interpreter.enabled") && (
-        <div className="flex flex-col space-y-4 pl-6">
+        <div className="flex flex-col space-y-4 pt-4">
           <FormField
             control={form.control}
             name="tools.Interpreter.config.api_key"
@@ -56,7 +57,7 @@ export const E2BInterpreterConfig = ({
                     placeholder="API Key"
                   />
                 </FormControl>
-                <FormDescription>
+                <FormDescription className="text-xs">
                   The E2B API Key to use for the interpreter tool. Get it here:{" "}
                   <a
                     href="https://e2b.dev/docs/getting-started/api-key"

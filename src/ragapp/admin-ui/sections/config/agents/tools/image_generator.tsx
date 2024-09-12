@@ -14,10 +14,8 @@ import { UseFormReturn } from "react-hook-form";
 
 export const ImageGeneratorConfig = ({
   form,
-  // onSubmit,
 }: {
   form: UseFormReturn<AgentConfigType>;
-  // onSubmit: (data: AgentConfigType) => void;
 }) => {
   return (
     <>
@@ -25,26 +23,26 @@ export const ImageGeneratorConfig = ({
         control={form.control}
         name="tools.ImageGenerator.enabled"
         render={({ field }) => (
-          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-            <FormControl>
-              <Checkbox
-                checked={field.value as boolean}
-                onCheckedChange={(checked) => {
-                  field.onChange(checked);
-                }}
-              />
-            </FormControl>
-            <div>
+          <FormItem className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <FormControl>
+                <Checkbox
+                  checked={field.value as boolean}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+                  }}
+                />
+              </FormControl>
               <FormLabel className="font-normal">Image Generator</FormLabel>
-              <FormDescription className="text-xs">
-                {DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG.description}
-              </FormDescription>
             </div>
+            <FormDescription className="text-xs">
+              {DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG.description}
+            </FormDescription>
           </FormItem>
         )}
       />
       {form.watch("tools.ImageGenerator.enabled") && (
-        <div className="flex flex-col space-y-4 pl-6">
+        <div className="flex flex-col space-y-4 pt-4">
           <FormField
             control={form.control}
             name="tools.ImageGenerator.config.api_key"
@@ -58,7 +56,7 @@ export const ImageGeneratorConfig = ({
                     placeholder="API Key"
                   />
                 </FormControl>
-                <FormDescription>
+                <FormDescription className="text-xs">
                   Get the Stability AI API Key from{" "}
                   <a
                     href="https://platform.stability.ai/account/keys"

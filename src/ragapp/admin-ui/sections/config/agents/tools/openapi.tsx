@@ -16,7 +16,6 @@ export const OpenAPIConfig = ({
 }: {
   form: UseFormReturn<AgentConfigType>;
 }) => {
-  const toolConfig = form.watch("tools.OpenAPI") || DEFAULT_OPENAPI_TOOL_CONFIG;
 
   return (
     <>
@@ -24,39 +23,41 @@ export const OpenAPIConfig = ({
         control={form.control}
         name="tools.OpenAPI.enabled"
         render={({ field }) => (
-          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-            <FormControl>
-              <Checkbox
-                checked={field.value as boolean}
-                onCheckedChange={field.onChange}
-              />
-            </FormControl>
-            <div className="leading-none">
-              <FormLabel className="text-sm font-medium">OpenAPI</FormLabel>
-              <FormDescription className="text-xs">
-                {DEFAULT_OPENAPI_TOOL_CONFIG.description}
-              </FormDescription>
+          <FormItem className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <FormControl>
+                <Checkbox
+                  checked={field.value as boolean}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel className="font-normal">OpenAPI</FormLabel>
             </div>
+            <FormDescription className="text-xs">
+              {DEFAULT_OPENAPI_TOOL_CONFIG.description}
+            </FormDescription>
           </FormItem>
         )}
       />
       {form.watch("tools.OpenAPI.enabled") && (
-        <FormField
-          control={form.control}
-          name="tools.OpenAPI.config.openapi_uri"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>URL to OpenAPI spec</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="https://example.com/openapi.yaml"
-                  value={field.value as string}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <div className="flex flex-col space-y-4 pt-4">
+          <FormField
+            control={form.control}
+            name="tools.OpenAPI.config.openapi_uri"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>URL to OpenAPI spec</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="https://example.com/openapi.yaml"
+                    value={field.value as string}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
       )}
     </>
   );

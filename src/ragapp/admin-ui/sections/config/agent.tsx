@@ -7,27 +7,16 @@ import {
   getAgents,
   updateAgent,
 } from "@/client/agent";
-import { Button } from "@/components/ui/button";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
+import { Tabs } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { RemoveAgentDialog } from "./agents/RemoveAgentDialog";
-import { ToolsConfig } from "./agents/ToolsConfig";
+import { AgentTabList } from "./agents/AgentTabList";
+import { AgentTabContent } from "./agents/AgentTabContent";
+import { Loader2 } from "lucide-react";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -172,116 +161,36 @@ export const AgentConfig = () => {
     }
   };
 
-  if (isLoadingAgents) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <ExpandableSection
       name="agent-config"
       title="Agents Config"
       description="Configure tools and agents"
     >
-      <Tabs value={activeAgent || undefined} onValueChange={setActiveAgent}>
-        <div className="mb-2">
-          <TabsList className="inline-flex h-auto items-center justify-center rounded-md bg-muted text-muted-foreground flex-wrap">
-            {agents.map((agent) => (
-              <TabsTrigger
-                key={agent.agent_id}
-                value={agent.agent_id}
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-input hover:bg-accent hover:text-accent-foreground relative group px-3 py-1.5"
-              >
-                {agent.name}
-                {agent.agent_id !== "default" && agents.length > 1 && (
-                  <RemoveAgentDialog
-                    agentName={agent.name}
-                    onRemove={() => removeAgent(agent.agent_id)}
-                  >
-                    <button className="absolute -top-1 -right-1 bg-background border border-input hover:bg-accent hover:text-accent-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                      <X size={12} />
-                    </button>
-                  </RemoveAgentDialog>
-                )}
-              </TabsTrigger>
-            ))}
-            <Button
-              onClick={addNewAgent}
-              variant="outline"
-              size="sm"
-              className="inline-flex ml-2 items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium border border-input hover:bg-accent hover:text-accent-foreground px-3 py-1.5"
-            >
-              <PlusCircle className="h-4 w-4" />
-            </Button>
-          </TabsList>
+      {isLoadingAgents ? (
+        <div className="flex justify-center items-center h-16">
+          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
-        {agents.map((agent) => (
-          <TabsContent key={agent.agent_id} value={agent.agent_id} className="p-4 rounded-md border">
-            <Form {...form}>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSaveChanges();
-                }}
-                className="space-y-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Agent Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Agent Role</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Define the role of this agent. It&apos;s used to help
-                        orchestrator assign right tasks to the agent.
-                      </FormDescription>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="system_prompt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>System Prompt</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} rows={3} />
-                      </FormControl>
-                      <FormDescription>
-                        Define the responsibilities and behaviors of the
-                        assistant.
-                      </FormDescription>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Tools configuration */}
-                <ToolsConfig form={form} isPrimary={agents.length === 1} />
-
-                <Button type="submit">
-                  {agent.agent_id === "temp_id"
-                    ? "Create Agent"
-                    : "Save Changes"}
-                </Button>
-              </form>
-            </Form>
-          </TabsContent>
-        ))}
-      </Tabs>
+      ) : (
+        <Tabs value={activeAgent || undefined} onValueChange={setActiveAgent}>
+          <AgentTabList
+            agents={agents}
+            activeAgent={activeAgent}
+            isNewAgent={isNewAgent}
+            removeAgent={removeAgent}
+            addNewAgent={addNewAgent}
+          />
+          {agents.map((agent) => (
+            <AgentTabContent
+              key={agent.agent_id}
+              agent={agent}
+              form={form}
+              isNewAgent={isNewAgent && agent.agent_id === activeAgent}
+              handleSaveChanges={handleSaveChanges}
+            />
+          ))}
+        </Tabs>
+      )}
     </ExpandableSection>
   );
 };
