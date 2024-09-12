@@ -26,14 +26,33 @@ class BaseVercelStreamResponse(StreamingResponse, ABC):
     DATA_PREFIX = "8:"
 
     def __init__(self, request: Request, chat_data: ChatData, *args, **kwargs):
-        content = self.content_generator(request, chat_data, *args, **kwargs)
+        # content = self.content_generator(request, chat_data, *args, **kwargs)
+        self.request = request
+        stream = self._create_stream(request, chat_data, *args, **kwargs)
+        content = self.content_generator(stream)
         super().__init__(content=content)
 
     @abstractmethod
-    async def content_generator(
-        self, request: Request, chat_data: ChatData, *args, **kwargs
-    ):
-        raise NotImplementedError("Subclasses must implement content_generator")
+    def _create_stream(self, request: Request, chat_data: ChatData, *args, **kwargs):
+        """
+        Create the stream that will be used to generate the response.
+        """
+        raise NotImplementedError("Subclasses must implement _create_stream")
+
+    async def content_generator(self, stream):
+        is_stream_started = False
+
+        async with stream.stream() as streamer:
+            async for output in streamer:
+                if not is_stream_started:
+                    is_stream_started = True
+                    # Stream a blank message to start the stream
+                    yield self.convert_text("")
+
+                yield output
+
+                if await self.request.is_disconnected():
+                    break
 
     @classmethod
     def convert_text(cls, token: str):
@@ -64,7 +83,7 @@ class ContextEngineVercelStreamResponse(BaseVercelStreamResponse):
     Class to convert the response from the chat engine to the streaming format expected by Vercel
     """
 
-    async def content_generator(
+    def _create_stream(
         self,
         request: Request,
         chat_data: ChatData,
@@ -101,18 +120,7 @@ class ContextEngineVercelStreamResponse(BaseVercelStreamResponse):
                     yield self.convert_data(event_response)
 
         combine = stream.merge(_chat_response_generator(), _event_generator())
-        is_stream_started = False
-        async with combine.stream() as streamer:
-            async for output in streamer:
-                if not is_stream_started:
-                    is_stream_started = True
-                    # Stream a blank message to start the stream
-                    yield self.convert_text("")
-
-                yield output
-
-                if await request.is_disconnected():
-                    break
+        return combine
 
     @staticmethod
     def _source_nodes_to_response(source_nodes: List):
@@ -132,7 +140,7 @@ class MultiAgentsVercelStreamResponse(BaseVercelStreamResponse):
     Class to convert the response from the chat engine to the streaming format expected by Vercel
     """
 
-    async def content_generator(
+    def _create_stream(
         self,
         request: Request,
         chat_data: ChatData,
@@ -174,18 +182,7 @@ class MultiAgentsVercelStreamResponse(BaseVercelStreamResponse):
                     yield self.convert_data(event_response)
 
         combine = stream.merge(_chat_response_generator(), _event_generator())
-
-        is_stream_started = False
-        async with combine.stream() as streamer:
-            if not is_stream_started:
-                is_stream_started = True
-                # Stream a blank message to start the stream
-                yield self.convert_text("")
-
-            async for output in streamer:
-                yield output
-                if await request.is_disconnected():
-                    break
+        return combine
 
     @staticmethod
     def _event_to_response(event: AgentRunEvent) -> dict:
