@@ -27,7 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
 
-export const ChatConfig = ({}: {}) => {
+export const ChatConfig = ({ }: {}) => {
   const {
     data,
     isLoading: isFetching,
@@ -83,23 +83,6 @@ export const ChatConfig = ({}: {}) => {
           className="space-y-4 mb-4"
           onBlur={handleSubmit}
         >
-          {/* <FormField
-            disabled={isLoading}
-            control={form.control}
-            name="custom_prompt"
-            render={({ field }) => (
-              <FormItem className="pt-4">
-                <FormLabel>Custom Prompt</FormLabel>
-                <FormControl>
-                  <Textarea rows={3} {...field} />
-                </FormControl>
-                <FormDescription>
-                  Use system prompt to define the responsibilities and behaviors
-                  of the assistant.
-                </FormDescription>
-              </FormItem>
-            )}
-          /> */}
           <FormField
             disabled={isLoading}
             control={form.control}
