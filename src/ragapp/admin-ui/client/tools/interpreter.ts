@@ -3,7 +3,6 @@ import { z } from "zod";
 export const E2BInterpreterToolConfig = z.object({
   name: z.literal("interpreter"),
   label: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
   enabled: z.boolean().nullable().optional(),
   config: z
     .union([
@@ -21,7 +20,7 @@ export type E2BInterpreterToolConfigType = z.infer<
 >;
 export const DEFAULT_E2B_INTERPRETER_TOOL_CONFIG = {
   label: "Code Interpreter",
-  description: "",
+  description: "Execute python code in a sandboxed environment using E2B code interpreter",
   config: {
     api_key: "",
   },

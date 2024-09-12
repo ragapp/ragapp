@@ -73,7 +73,7 @@ def get_agent_tools(
     if agent_id not in agent_manager.config:
         raise HTTPException(status_code=404, detail="Agent not found")
 
-    return agent_manager.get_agent_tools(agent_id)
+    return [tool.dict() for tool_name, tool in agent_manager.get_agent_tools(agent_id)]
 
 
 @r.put("/{agent_id}/tools/{tool_name}")

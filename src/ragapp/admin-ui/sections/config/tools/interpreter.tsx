@@ -34,7 +34,7 @@ export const E2BInterpreterConfig = ({
             </FormControl>
             <div>
               <FormLabel className="font-normal">Code Interpreter</FormLabel>
-              <FormDescription>
+              <FormDescription className="text-xs">
                 {DEFAULT_E2B_INTERPRETER_TOOL_CONFIG.description}
               </FormDescription>
             </div>

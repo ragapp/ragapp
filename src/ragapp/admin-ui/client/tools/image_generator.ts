@@ -3,7 +3,6 @@ import { z } from "zod";
 export const ImageGeneratorToolConfig = z.object({
   name: z.literal("ImageGenerator"),
   label: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
   enabled: z.boolean().nullable().optional(),
   config: z
     .object({
@@ -25,8 +24,7 @@ export type ImageGeneratorToolConfigType = z.infer<
 >;
 export const DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG = {
   label: "Image Generator",
-  description:
-    "Generate images from the provided text using the Stability AI API",
+  description: "Generate images from the provided text using the Stability AI API",
   config: {
     api_key: "",
   },

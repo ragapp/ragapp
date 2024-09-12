@@ -27,7 +27,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { RemoveAgentDialog } from "./agents/RemoveAgentDialog";
-import { ToolConfig } from "./agents/ToolConfig";
 import { ToolsConfig } from "./agents/ToolsConfig";
 
 export const AgentConfig = () => {
@@ -270,9 +269,9 @@ export const AgentConfig = () => {
                 />
 
                 {/* Tools configuration */}
-                <ToolsConfig 
-                  form={form} 
-                  isPrimary={agents.length === 1} 
+                <ToolsConfig
+                  form={form}
+                  isPrimary={agents.length === 1}
                 />
 
                 <Button type="submit">

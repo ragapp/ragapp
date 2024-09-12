@@ -2,6 +2,7 @@ import { AgentConfigType } from "@/client/agent";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -10,6 +11,10 @@ import { UseFormReturn } from "react-hook-form";
 import { ImageGeneratorConfig } from "../tools/image_generator";
 import { E2BInterpreterConfig } from "../tools/interpreter";
 import { OpenAPIConfig } from "../tools/openapi";
+import { DEFAULT_DUCKDUCKGO_TOOL_CONFIG } from "@/client/tools/duckduckgo";
+import { DEFAULT_WIKIPEDIA_TOOL_CONFIG } from "@/client/tools/wikipedia";
+import { DEFAULT_QUERY_ENGINE_TOOL_CONFIG } from "@/client/tools/query_engine";
+import { cn } from "@/lib/utils";
 
 export const TOOL_ORDER = [
     "QueryEngine",
@@ -28,21 +33,27 @@ interface ToolConfigProps {
 const SimpleSelection: React.FC<{
     form: UseFormReturn<AgentConfigType>;
     toolName: string;
+    toolConfig: { description: string };
     disabled?: boolean;
-}> = ({ form, toolName, disabled }) => (
+}> = ({ form, toolName, toolConfig, disabled }) => (
     <FormField
         control={form.control}
         name={`tools.${toolName}.enabled`}
         render={({ field }) => (
-            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                <FormControl>
-                    <Checkbox
-                        checked={field.value as boolean}
-                        onCheckedChange={field.onChange}
-                        disabled={disabled}
-                    />
-                </FormControl>
-                <FormLabel className="font-normal">{toolName}</FormLabel>
+            <FormItem className="space-y-2">
+                <div className="flex items-center space-x-2">
+                    <FormControl>
+                        <Checkbox
+                            checked={field.value as boolean}
+                            onCheckedChange={field.onChange}
+                            disabled={disabled}
+                        />
+                    </FormControl>
+                    <FormLabel className="font-medium">{toolName}</FormLabel>
+                </div>
+                <FormDescription className="text-xs">
+                    {toolConfig.description}
+                </FormDescription>
             </FormItem>
         )}
     />
@@ -60,13 +71,30 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary }) => {
             case "OpenAPI":
                 return <OpenAPIConfig form={form} />;
             case "DuckDuckGo":
+                return (
+                    <SimpleSelection
+                        form={form}
+                        toolName={toolName}
+                        toolConfig={DEFAULT_DUCKDUCKGO_TOOL_CONFIG}
+                        disabled={false}
+                    />
+                );
             case "Wikipedia":
+                return (
+                    <SimpleSelection
+                        form={form}
+                        toolName={toolName}
+                        toolConfig={DEFAULT_WIKIPEDIA_TOOL_CONFIG}
+                        disabled={false}
+                    />
+                );
             case "QueryEngine":
                 return (
                     <SimpleSelection
                         form={form}
                         toolName={toolName}
-                        disabled={isPrimary && toolName === "QueryEngine"}
+                        toolConfig={DEFAULT_QUERY_ENGINE_TOOL_CONFIG}
+                        disabled={isPrimary}
                     />
                 );
             default:
@@ -76,12 +104,16 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary }) => {
 
     return (
         <>
-            <h3 className="text-lg font-medium">Tools</h3>
-            <div className="space-y-6">
-                {/* Display tools in the order specified in TOOL_ORDER */}
+            <h3 className="text-lg font-medium mb-4">Tools</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {TOOL_ORDER.map((toolName) => (
                     tools[toolName] && (
-                        <div key={toolName}>{renderToolConfig(toolName)}</div>
+                        <div key={toolName} className={cn(
+                            "p-4 border rounded-lg",
+                            toolName === "QueryEngine" && isPrimary && "opacity-50"
+                        )}>
+                            {renderToolConfig(toolName)}
+                        </div>
                     )
                 ))}
             </div>

@@ -3,7 +3,6 @@ import { z } from "zod";
 export const DuckDuckGoToolConfig = z.object({
   name: z.literal("duckduckgo"),
   label: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
   enabled: z.boolean().nullable().optional(),
   config: z.object({}).nullable().optional(),
   priority: z.number().default(1),
@@ -11,7 +10,7 @@ export const DuckDuckGoToolConfig = z.object({
 export type DuckDuckGoToolConfigType = z.infer<typeof DuckDuckGoToolConfig>;
 export const DEFAULT_DUCKDUCKGO_TOOL_CONFIG = {
   label: "DuckDuckGo",
-  description: "",
+  description: "Do a search on DuckDuckGo",
   config: {},
   enabled: false,
   priority: 1,

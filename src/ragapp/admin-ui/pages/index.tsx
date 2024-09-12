@@ -67,6 +67,13 @@ export default function Home() {
                 "m-auto": !configured,
               })}
             >
+              {configured && (
+                <>
+                  <AgentConfig />
+                  <Knowledge />
+                  <ChatConfig />
+                </>
+              )}
               <ModelConfig
                 sectionTitle={configured ? "Update model" : "Start"}
                 sectionDescription={
@@ -77,13 +84,6 @@ export default function Home() {
                 configured={configured}
                 onConfigChange={handleModelConfigChange}
               />
-              {configured && (
-                <>
-                  <AgentConfig />
-                  <Knowledge />
-                  <ChatConfig />
-                </>
-              )}
             </div>
             {configured && (
               <div className="flex-1 overflow-y-auto p-4">

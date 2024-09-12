@@ -1,21 +1,29 @@
 from typing import List, Optional
 
+from app.engine.tools import ToolFactory
 from llama_index.core.chat_engine.types import ChatMessage
+from llama_index.core.tools.query_engine import QueryEngineTool, ToolMetadata
 
 from backend.agents.multi import AgentOrchestrator
 from backend.agents.single import FunctionCallingAgent
 from backend.controllers.agents import AgentManager
 
 
-def get_tool(tool_name: str, config: dict):
-    from app.engine.tools import ToolFactory
-
+def get_tool(tool_name: str, config: dict, query_engine=None):
+    """
+    Note: this function does not create query engine tools
+    """
+    if tool_name == "QueryEngine":
+        return QueryEngineTool(
+            query_engine=query_engine,
+            metadata=ToolMetadata(name=config.name, description=config.description),
+        )
     tools = ToolFactory.load_tools(config.tool_type, config.name, config.dict())
     return tools[0]
 
 
 def get_agents(
-    chat_history: Optional[List[ChatMessage]] = None,
+    chat_history: Optional[List[ChatMessage]] = None, query_engine=None
 ) -> List[FunctionCallingAgent]:
     agent_manager = AgentManager()
     agents_config = agent_manager.get_agents()
@@ -23,7 +31,7 @@ def get_agents(
     for agent_config in agents_config:
         agent_tools_config = agent_manager.get_agent_tools(agent_config.agent_id)
         tools = [
-            get_tool(tool_name, tool_config)
+            get_tool(tool_name, tool_config, query_engine)
             for tool_name, tool_config in agent_tools_config
             if tool_config.enabled
         ]
@@ -40,6 +48,8 @@ def get_agents(
     return agents
 
 
-def create_orchestrator(chat_history: Optional[List[ChatMessage]] = None):
-    agents = get_agents(chat_history)
+def create_orchestrator(
+    chat_history: Optional[List[ChatMessage]] = None, query_engine=None
+):
+    agents = get_agents(chat_history, query_engine)
     return AgentOrchestrator(agents=agents, refine_plan=False)

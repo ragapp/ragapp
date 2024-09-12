@@ -1,6 +1,7 @@
-from typing import List, Dict, Tuple
-from backend.models.agent import AgentConfig
+from typing import List, Tuple
+
 from backend.controllers.tools import tools_manager
+from backend.models.agent import AgentConfig
 
 
 class AgentPromptManager:
@@ -34,8 +35,4 @@ class AgentPromptManager:
     @classmethod
     def update_agent_system_prompts(cls, agents: List[AgentConfig]):
         for agent in agents:
-            updated_prompt = cls.generate_agent_system_prompt(agent)
-            print(f"Updating system prompt for agent: {agent.name}")
-            print(f"New system prompt: {updated_prompt}")
-            # Here you would typically update the agent's system prompt in your database or configuration
-            # For now, we'll just print it
+            _ = cls.generate_agent_system_prompt(agent)

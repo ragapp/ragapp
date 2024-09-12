@@ -36,7 +36,7 @@ export const ImageGeneratorConfig = ({
             </FormControl>
             <div>
               <FormLabel className="font-normal">Image Generator</FormLabel>
-              <FormDescription>
+              <FormDescription className="text-xs">
                 {DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG.description}
               </FormDescription>
             </div>

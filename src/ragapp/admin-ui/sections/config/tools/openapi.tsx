@@ -34,7 +34,7 @@ export const OpenAPIConfig = ({
             <div className="leading-none">
               <FormLabel className="text-sm font-medium">OpenAPI</FormLabel>
               <FormDescription className="text-xs">
-                {toolConfig.description}
+                {DEFAULT_OPENAPI_TOOL_CONFIG.description}
               </FormDescription>
             </div>
           </FormItem>
