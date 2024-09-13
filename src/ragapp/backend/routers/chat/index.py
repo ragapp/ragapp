@@ -14,8 +14,6 @@ from llama_index.core.chat_engine.types import BaseChatEngine, NodeWithScore
 from llama_index.core.llms import MessageRole
 
 from backend.engine import get_chat_engine
-
-# from app.engine.query_filter import generate_filters
 from backend.engine.query_filters import generate_filters
 
 chat_router = r = APIRouter()
