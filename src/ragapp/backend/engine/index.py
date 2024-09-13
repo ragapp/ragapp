@@ -49,8 +49,6 @@ def get_default_index_config(**kwargs):
 
 
 def get_index(index_config=None):
-    if isinstance(index_config, IndexConfig):
-        index_config = index_config()
     if index_config is None:
         index_config = get_default_index_config()
     if isinstance(index_config, LlamaCloudIndexConfig):
