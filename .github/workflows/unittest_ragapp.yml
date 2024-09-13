@@ -37,7 +37,7 @@ jobs:
 
       - name: Run tests
         env:
-          PYTHONPATH: ${{ github.workspace }}/src/ragapp
+          PYTHONPATH: ${{ github.workspace }}/src/ragapp:${{ github.workspace }}/src/ragapp/create_llama/backend
         working-directory: ${{ github.workspace }}/src/ragapp
         run: |
           poetry run pytest
