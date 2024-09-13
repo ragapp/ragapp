@@ -6,7 +6,7 @@ from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.settings import Settings
 
 from backend.engine.constants import DEFAULT_MAX_TOP_K, DEFAULT_TOP_K
-from backend.engine.index import get_default_index_config, get_index
+from backend.engine.index import IndexConfig, get_index
 from backend.engine.postprocessors import NodeCitationProcessor, get_reranker
 
 
@@ -15,6 +15,7 @@ def get_chat_engine(filters=None, params=None, event_handlers=None):
     system_prompt = os.getenv("SYSTEM_PROMPT")
     citation_prompt = os.getenv("SYSTEM_CITATION_PROMPT")
     node_postprocessors = []
+    params = params or {}
     callback_manager = CallbackManager(handlers=event_handlers or [])
 
     if citation_prompt is not None:
@@ -27,7 +28,10 @@ def get_chat_engine(filters=None, params=None, event_handlers=None):
     else:
         top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
 
-    index_config = get_default_index_config(callback_manager=callback_manager)
+    index_config = IndexConfig(
+        callback_manager=callback_manager,
+        **params,
+    )
     index = get_index(index_config)
     if index is None:
         raise RuntimeError("Index is not found")
