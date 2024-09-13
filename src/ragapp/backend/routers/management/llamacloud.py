@@ -8,9 +8,10 @@ llamacloud_router = r = APIRouter()
 
 
 @r.get("")
-def get_llamacloud_config():
+def get_llamacloud_config(
+    config: LlamaCloudConfig = Depends(LlamaCloudConfig.get_config),
+):
     # TODO: call llamacloud API to get dashboard url
-    config = LlamaCloudConfig.get_config()
     return config.to_api_response()
 
 
