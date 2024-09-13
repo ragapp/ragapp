@@ -15,7 +15,9 @@ class IndexConfig:
 
     def __new__(cls, *args, **kwargs):
         if os.getenv("USE_LLAMA_CLOUD", "false").lower() == "true":
-            return LlamaCloudIndexConfig(*args, **kwargs)
+            return LlamaCloudIndexConfig(
+                callback_manager=CallbackManager(),
+            )
         else:
             return super().__new__(cls)
 
@@ -47,7 +49,7 @@ def get_index(index_config=None):
         return index
 
 
-# For compatibility with create-llama code (PrivateFileService)
+# For compatibility with LLamaCloudFileService
 def get_client():
     if os.getenv("USE_LLAMA_CLOUD", "false").lower() == "true":
         from app.engine.llamacloud_index import get_client
