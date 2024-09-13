@@ -1,12 +1,12 @@
 import os
 
-from app.engine.index import IndexConfig, get_index
 from app.engine.tools import ToolFactory
 from llama_index.core.callbacks import CallbackManager
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.settings import Settings
 
 from backend.engine.constants import DEFAULT_MAX_TOP_K, DEFAULT_TOP_K
+from backend.engine.index import get_index
 from backend.engine.postprocessors import NodeCitationProcessor, get_reranker
 
 
@@ -27,8 +27,7 @@ def get_chat_engine(filters=None, params=None, event_handlers=None):
     else:
         top_k = int(os.getenv("TOP_K", DEFAULT_TOP_K))
 
-    index_config = IndexConfig(callback_manager=callback_manager, **(params or {}))
-    index = get_index(index_config)
+    index = get_index(callback_manager=callback_manager, **(params or {}))
     if index is None:
         raise RuntimeError("Index is not found")
 
