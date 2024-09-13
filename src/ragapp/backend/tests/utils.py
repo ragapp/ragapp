@@ -1,7 +1,37 @@
+import os
 import tempfile
+from unittest.mock import patch
 
 import jwt
 import pytest
+
+
+@pytest.fixture
+def mock_env():
+    """Fixture to create a mock environment based on the .env file"""
+    with patch.dict(
+        os.environ,
+        {
+            "OPENAI_API_KEY": "test",
+            "MODEL_PROVIDER": "openai",
+            "MODEL": "gpt-4o-mini",
+            "EMBEDDING_MODEL": "text-embedding-3-small",
+            "EMBEDDING_DIM": "1536",
+            "APP_HOST": "0.0.0.0",
+            "APP_PORT": "8000",
+            "FILESERVER_URL_PREFIX": "/api/files",
+            "TOP_K": "3",
+            "VECTOR_STORE_PROVIDER": "chroma",
+            "STORAGE_DIR": "storage/context",
+            "CHROMA_COLLECTION": "default",
+            "CHROMA_PATH": "storage/chromadb",
+        },
+        clear=True,
+    ):
+        # Use a temporary directory for CHROMA_PATH
+        with tempfile.TemporaryDirectory() as temp_dir:
+            os.environ["CHROMA_PATH"] = temp_dir
+            yield
 
 
 @pytest.fixture(scope="function")
