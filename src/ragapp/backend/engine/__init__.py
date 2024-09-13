@@ -1,12 +1,12 @@
 import os
 
+from app.engine.index import get_index
 from app.engine.tools import ToolFactory
 from llama_index.core.callbacks import CallbackManager
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.settings import Settings
 
 from backend.engine.constants import DEFAULT_MAX_TOP_K, DEFAULT_TOP_K
-from backend.engine.index import get_index
 from backend.engine.postprocessors import NodeCitationProcessor, get_reranker
 
 

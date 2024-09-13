@@ -1,5 +1,4 @@
-# Updated the pydantic model to be able ref the env variables
-# TODO: Use the same file as create-llama
+# same as: https://github.com/run-llama/create-llama/blob/7bce7386d576b2503601cf7b439c0d9df0e4ce42/templates/components/vectordbs/python/llamacloud/index.py
 import logging
 import os
 from typing import Optional
@@ -17,25 +16,25 @@ logger = logging.getLogger("uvicorn")
 class LlamaCloudConfig(BaseModel):
     # Private attributes
     api_key: str = Field(
-        default_factory=lambda: os.getenv("LLAMA_CLOUD_API_KEY"),
+        default=os.getenv("LLAMA_CLOUD_API_KEY"),
         exclude=True,  # Exclude from the model representation
     )
     base_url: Optional[str] = Field(
-        default_factory=lambda: os.getenv("LLAMA_CLOUD_BASE_URL"),
+        default=os.getenv("LLAMA_CLOUD_BASE_URL"),
         exclude=True,
     )
     organization_id: Optional[str] = Field(
-        default_factory=lambda: os.getenv("LLAMA_CLOUD_ORGANIZATION_ID"),
+        default=os.getenv("LLAMA_CLOUD_ORGANIZATION_ID"),
         exclude=True,
     )
     # Configuration attributes, can be set by the user
     pipeline: str = Field(
         description="The name of the pipeline to use",
-        default_factory=lambda: os.getenv("LLAMA_CLOUD_INDEX_NAME"),
+        default=os.getenv("LLAMA_CLOUD_INDEX_NAME"),
     )
     project: str = Field(
         description="The name of the LlamaCloud project",
-        default_factory=lambda: os.getenv("LLAMA_CLOUD_PROJECT_NAME"),
+        default=os.getenv("LLAMA_CLOUD_PROJECT_NAME"),
     )
 
     # Validate and throw error if the env variables are not set before starting the app
@@ -58,7 +57,7 @@ class LlamaCloudConfig(BaseModel):
 
 class IndexConfig(BaseModel):
     llama_cloud_pipeline_config: LlamaCloudConfig = Field(
-        default_factory=lambda: LlamaCloudConfig(),
+        default=LlamaCloudConfig(),
         alias="llamaCloudPipeline",
     )
     callback_manager: Optional[CallbackManager] = Field(

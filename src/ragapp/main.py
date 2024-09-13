@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from backend.constants import ENV_FILE_PATH
 
-load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False)
+load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False, override=True)
 
 # flake8: noqa
 import logging
@@ -92,5 +92,9 @@ if __name__ == "__main__":
     reload = environment == "dev"
 
     uvicorn.run(
-        app="main:app", host=app_host, port=app_port, reload=reload, loop="asyncio"
+        app="main:app",
+        host=app_host,
+        port=app_port,
+        reload=reload,
+        loop="asyncio",
     )
