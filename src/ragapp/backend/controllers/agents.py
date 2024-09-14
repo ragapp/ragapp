@@ -156,6 +156,53 @@ class AgentManager:
         # Update system prompts
         AgentPromptManager.update_agent_system_prompts(self.get_agents())
 
+    def is_using_multi_agents_mode(self):
+        return len(self.get_agents()) > 1
+
+    def check_supported_multi_agents_model(self, model_provider: str, model: str):
+        match model_provider:
+            case "openai":
+                from llama_index.llms.openai import OpenAI
+
+                llm = OpenAI(model=model)
+            case "anthropic":
+                from llama_index.llms.anthropic import Anthropic
+
+                llm = Anthropic(model=model)
+            case "groq":
+                from llama_index.llms.groq import Groq
+
+                llm = Groq(model=model)
+            case "ollama":
+                from llama_index.llms.ollama import Ollama
+
+                llm = Ollama(model=model)
+            case "mistral":
+                from llama_index.llms.mistralai import MistralAI
+
+                llm = MistralAI(model=model)
+            case _:
+                return False
+
+        return llm.metadata.is_function_calling_model
+
+    @classmethod
+    def is_model_supported_for_multi_agents(cls, model_provider: str, model: str):
+        if (
+            model_provider == "openai"
+            or model_provider == "groq"
+            or model_provider == "azure-openai"
+            or model_provider == "ollama"
+        ):
+            return True
+        elif model_provider == "mistral":
+            from llama_index.llms.mistralai.utils import (
+                is_mistralai_function_calling_model,
+            )
+
+            return is_mistralai_function_calling_model(model)
+        return False
+
 
 def agent_manager():
     return AgentManager()

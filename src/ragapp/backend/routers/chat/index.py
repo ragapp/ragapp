@@ -11,6 +11,7 @@ from app.api.routers.models import (
 )
 from app.engine.query_filter import generate_filters
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
+from llama_index.core.agent import AgentRunner
 from llama_index.core.chat_engine import CondensePlusContextChatEngine
 from llama_index.core.chat_engine.types import BaseChatEngine, NodeWithScore
 from llama_index.core.llms import MessageRole
@@ -50,7 +51,9 @@ async def chat(
             chat_history=messages,
         )
 
-        if isinstance(chat_engine, CondensePlusContextChatEngine):
+        if isinstance(chat_engine, CondensePlusContextChatEngine) or isinstance(
+            chat_engine, AgentRunner
+        ):
             event_handler = EventCallbackHandler()
             chat_engine.callback_manager.handlers.append(event_handler)  # type: ignore
 

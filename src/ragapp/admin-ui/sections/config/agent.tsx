@@ -9,7 +9,6 @@ import {
 } from "@/client/agent";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Tabs } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -17,13 +16,13 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AgentTabContent } from "./agents/AgentTabContent";
 import { AgentTabList } from "./agents/AgentTabList";
+import { checkSupportedModel } from "@/client/providers";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
   const [activeAgent, setActiveAgent] = useState<string | null>(null);
   const [agents, setAgents] = useState<AgentConfigType[]>([]);
-  const [isNewAgent, setIsNewAgent] = useState(false);
-  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: fetchedAgents = [], isLoading: isLoadingAgents } = useQuery(
     "agents",
@@ -34,28 +33,12 @@ export const AgentConfig = () => {
   );
 
   const { mutate: createAgentMutation } = useMutation(createAgent, {
+    onMutate: () => setIsSubmitting(true),
+    onSettled: () => setIsSubmitting(false),
     onSuccess: (newAgent: AgentConfigType) => {
       queryClient.invalidateQueries("agents");
       setActiveAgent(newAgent.agent_id);
-      setIsNewAgent(false);
-      toast({
-        title: "Agent Created",
-        description: `${newAgent.name} has been successfully created.`,
-        duration: 3000,
-      });
-      // Update the agents list with the new agent
-      setAgents((prevAgents) => [
-        ...prevAgents.filter((a) => a.agent_id !== "temp_id"),
-        newAgent,
-      ]);
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Failed to create agent: ${error}`,
-        variant: "destructive",
-        duration: 3000,
-      });
+      setAgents((prevAgents) => [...prevAgents, newAgent]);
     },
   });
 
@@ -63,27 +46,15 @@ export const AgentConfig = () => {
     ({ agentId, data }: { agentId: string; data: AgentConfigType }) =>
       updateAgent(agentId, data),
     {
+      onMutate: () => setIsSubmitting(true),
+      onSettled: () => setIsSubmitting(false),
       onSuccess: (updatedAgent) => {
         queryClient.invalidateQueries("agents");
-        toast({
-          title: "Agent Updated",
-          description: `${updatedAgent.name} has been successfully updated.`,
-          duration: 3000,
-        });
-        // Update the agents list with the updated agent
         setAgents((prevAgents) =>
           prevAgents.map((a) =>
             a.agent_id === updatedAgent.agent_id ? updatedAgent : a,
           ),
         );
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: `Failed to update agent: ${error}`,
-          variant: "destructive",
-          duration: 3000,
-        });
       },
     },
   );
@@ -108,86 +79,78 @@ export const AgentConfig = () => {
     if (currentAgent) {
       form.reset({
         name: currentAgent.name,
-        role: currentAgent.role, // Add this line
+        role: currentAgent.role,
         system_prompt: currentAgent.system_prompt,
         tools: currentAgent.tools,
       });
     }
   }, [activeAgent, agents, form]);
 
-  const handleSubmit = (data: AgentConfigType) => {
-    if (isNewAgent) {
-      const newAgentId = data.name.toLowerCase().replace(/\s+/g, "_");
-      createAgentMutation({ ...data, agent_id: newAgentId } as AgentConfigType);
-    } else if (activeAgent) {
+  const handleSaveChanges = () => {
+    const data = form.getValues();
+    if (activeAgent) {
       updateAgentMutation({ agentId: activeAgent, data });
     }
-  };
-
-  // Add this new function
-  const handleSaveChanges = () => {
-    handleSubmit(form.getValues());
   };
 
   const addNewAgent = () => {
     const newAgentName = `Unnamed Agent ${agents.length + 1}`;
     const newAgentConfig: AgentConfigType = {
-      agent_id: `unnamed_${agents.length + 1}`,
       ...DEFAULT_AGENT_CONFIG,
+      agent_id: `unnamed_${agents.length + 1}`,
       name: newAgentName,
     };
-    setAgents([
-      ...agents,
-      {
-        ...newAgentConfig,
-        agent_id: `unnamed_${agents.length + 1}`,
-      } as AgentConfigType,
-    ]);
-    setActiveAgent(`unnamed_${agents.length + 1}`);
-    setIsNewAgent(true);
-    form.reset(newAgentConfig);
+    createAgentMutation(newAgentConfig);
   };
 
   const removeAgent = (agentId: string) => {
-    if (isNewAgent && agentId === activeAgent) {
-      setAgents(agents.filter((agent) => agent.agent_id !== agentId));
-      setActiveAgent(agents[0]?.agent_id || null);
-      setIsNewAgent(false);
-    } else {
-      deleteAgentMutation(agentId);
-    }
+    deleteAgentMutation(agentId);
     if (activeAgent === agentId) {
       setActiveAgent(agents[0]?.agent_id || null);
     }
   };
+
+  const { data: isMultiAgentSupported, isLoading: isCheckingSupport } = useQuery(
+    "checkSupportedModel",
+    checkSupportedModel,
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+    }
+  );
+
+  const isLoading = isLoadingAgents || isCheckingSupport || isSubmitting;
 
   return (
     <ExpandableSection
       name="agent-config"
       title="Agents Config"
       description="Configure tools and agents"
+      isLoading={isLoading}
     >
-      {isLoadingAgents ? (
+      {isLoadingAgents || isCheckingSupport ? (
         <div className="flex justify-center items-center h-16">
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : (
         <Tabs value={activeAgent || undefined} onValueChange={setActiveAgent}>
-          <AgentTabList
-            agents={agents}
-            activeAgent={activeAgent}
-            isNewAgent={isNewAgent}
-            removeAgent={removeAgent}
-            addNewAgent={addNewAgent}
-          />
+          {isMultiAgentSupported ? (
+            <AgentTabList
+              agents={agents}
+              activeAgent={activeAgent}
+              removeAgent={removeAgent}
+              addNewAgent={addNewAgent}
+              isPrimary={agents.length === 1}
+            />
+          ) : null}
           {agents.map((agent) => (
             <AgentTabContent
               key={agent.agent_id}
               agent={agent}
               form={form}
-              isNewAgent={isNewAgent && agent.agent_id === activeAgent}
               handleSaveChanges={handleSaveChanges}
-              isPrimary={agents.length === 1} // isPrimary is true when there's only one agent
+              isPrimary={!isMultiAgentSupported || agents.length === 1}
             />
           ))}
         </Tabs>

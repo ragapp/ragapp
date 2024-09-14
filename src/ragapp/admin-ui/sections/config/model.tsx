@@ -26,13 +26,14 @@ import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { AzureOpenAIForm } from "./providers/azureOpenai";
+import { AzureOpenAIForm } from "./providers/azureOpenAI";
 import { GeminiForm } from "./providers/gemini";
 import { GroqForm } from "./providers/groq";
 import { MistralForm } from "./providers/mistral";
 import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
 import { TSystemsForm } from "./providers/t-systems";
+import { useQueryClient } from "react-query";
 
 export const ModelConfig = ({
   sectionTitle,
@@ -45,6 +46,7 @@ export const ModelConfig = ({
   configured?: boolean;
   onConfigChange: () => void;
 }) => {
+  const queryClient = useQueryClient();
   const {
     data,
     isLoading: isFetching,
@@ -81,6 +83,8 @@ export const ModelConfig = ({
         });
         refetch();
         onConfigChange();
+        // Invalidate the checkSupportedModel query
+        queryClient.invalidateQueries("checkSupportedModel");
       },
     },
   );
@@ -169,8 +173,7 @@ export const ModelConfig = ({
                     </Select>
                   </FormControl>
                   <FormDescription>
-                    Select a model provider to chat with. If you are not sure,
-                    leave it as default.
+                    * Note: Only OpenAI, Groq, Azure-OpenAI support multi-agents.
                   </FormDescription>
                 </FormItem>
               )}

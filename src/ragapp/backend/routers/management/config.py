@@ -1,8 +1,9 @@
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 
+from backend.controllers.agents import AgentManager, agent_manager
 from backend.controllers.env_configs import EnvConfigManager
 from backend.controllers.providers import AIProvider
 from backend.models.chat_config import ChatConfig
@@ -53,6 +54,7 @@ def get_model_config(
 @r.post("/models", tags=["Model config"])
 def update_model_config(
     new_config: ModelConfig,
+    agent_manager: Annotated[AgentManager, Depends(agent_manager)],
     config: ModelConfig = Depends(ModelConfig.get_config),
 ):
     # If the new config has a different model provider
@@ -61,6 +63,21 @@ def update_model_config(
     # We need to:
     # 1. Reload the llama_index settings
     # 2. Reset the index
+
+    if new_config.model_provider != config.model_provider:
+        # If multi-agent mode is enabled, and the new model is not a function calling model
+        # raise an error
+        if (
+            agent_manager.is_using_multi_agents_mode()
+            and not agent_manager.check_supported_multi_agents_model(
+                new_config.model_provider, new_config.model
+            )
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="You are using multi-agents mode, please select a model supporting function calling. Or remove the multi-agents mode by deleting agents.",
+            )
+
     EnvConfigManager.update(config, new_config, rollback_on_failure=True)
 
     # We won't rollback the changes if the index reset fails

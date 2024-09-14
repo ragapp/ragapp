@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from app.api.routers.models import ChatMessage
 from app.engine.index import IndexConfig, get_index
+from llama_index.core.agent import AgentRunner
 from llama_index.core.callbacks import CallbackManager
 from llama_index.core.chat_engine import CondensePlusContextChatEngine
 from llama_index.core.memory import ChatMemoryBuffer
@@ -77,6 +78,14 @@ def create_chat_engine(
                 callback_manager=callback_manager,
             )
         else:
-            return agents[0]
+            # Create Agent runner from FunctionCallingAgent
+            agent = agents[0]
+            return AgentRunner.from_llm(
+                llm=Settings.llm,
+                tools=agent.tools,
+                system_prompt=agent.system_prompt,
+                callback_manager=callback_manager,
+                verbose=True,
+            )
     else:
         return AgentOrchestrator(agents=agents, refine_plan=False)

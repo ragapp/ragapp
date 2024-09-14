@@ -201,7 +201,7 @@ class Planner:
         if llm is None:
             llm = Settings.llm
         self.llm = llm
-        assert self.llm.metadata.is_function_calling_model
+        # assert self.llm.metadata.is_function_calling_model
 
         self.tools = tools or []
         self.state = PlannerAgentState()

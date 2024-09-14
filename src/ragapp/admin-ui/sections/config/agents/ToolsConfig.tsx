@@ -27,7 +27,8 @@ export const TOOL_ORDER = [
 
 interface ToolConfigProps {
   form: UseFormReturn<AgentConfigType>;
-  isPrimary: boolean; // Change back to isPrimary
+  isPrimary: boolean;
+  handleSaveChanges: () => void;
 }
 
 const SimpleSelection: React.FC<{
@@ -59,17 +60,17 @@ const SimpleSelection: React.FC<{
   />
 );
 
-export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary }) => {
+export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary, handleSaveChanges }) => {
   const tools = form.watch("tools");
 
   const renderToolConfig = (toolName: string) => {
     switch (toolName) {
       case "ImageGenerator":
-        return <ImageGeneratorConfig form={form} />;
+        return <ImageGeneratorConfig form={form} handleSaveChanges={handleSaveChanges} />;
       case "Interpreter":
-        return <E2BInterpreterConfig form={form} />;
+        return <E2BInterpreterConfig form={form} handleSaveChanges={handleSaveChanges} />;
       case "OpenAPI":
-        return <OpenAPIConfig form={form} />;
+        return <OpenAPIConfig form={form} handleSaveChanges={handleSaveChanges} />;
       case "DuckDuckGo":
         return (
           <SimpleSelection

@@ -1,5 +1,5 @@
 import { AgentConfigType } from "@/client/agent";
-import { DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG } from "@/client/tools/image_generator";
+import { DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG, ImageGeneratorToolConfig } from "@/client/tools/image_generator";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -11,12 +11,54 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/ui/password-input";
 import { UseFormReturn } from "react-hook-form";
+import { Settings } from "lucide-react"; // Import the Settings icon
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 export const ImageGeneratorConfig = ({
   form,
+  handleSaveChanges,
 }: {
   form: UseFormReturn<AgentConfigType>;
+  handleSaveChanges: () => void;
 }) => {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const isEnabled = form.watch("tools.ImageGenerator.enabled");
+  const apiKey = form.watch("tools.ImageGenerator.config.api_key");
+
+  useEffect(() => {
+    if (!isEnabled) {
+      setShowAdvanced(false);
+    } else if (!apiKey) {
+      setShowAdvanced(true);
+    }
+  }, [isEnabled, apiKey]);
+
+  const handleInputBlur = () => {
+    form.trigger("tools.ImageGenerator.config.api_key").then((isValid) => {
+      if (isValid && apiKey) {
+        handleSaveChanges();
+      }
+    });
+  };
+
+  const toggleAdvanced = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowAdvanced(!showAdvanced);
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    form.setValue("tools.ImageGenerator.enabled", checked);
+    if (checked) {
+      setShowAdvanced(true);
+    } else {
+      form.setValue("tools.ImageGenerator.config.api_key", "");
+      setShowAdvanced(false);
+    }
+    handleSaveChanges();
+  };
+
   return (
     <>
       <FormField
@@ -24,16 +66,22 @@ export const ImageGeneratorConfig = ({
         name="tools.ImageGenerator.enabled"
         render={({ field }) => (
           <FormItem className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <FormControl>
-                <Checkbox
-                  checked={field.value as boolean}
-                  onCheckedChange={(checked) => {
-                    field.onChange(checked);
-                  }}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value as boolean}
+                    onCheckedChange={handleCheckboxChange}
+                  />
+                </FormControl>
+                <FormLabel className="font-normal">Image Generator</FormLabel>
+              </div>
+              {isEnabled && apiKey && (
+                <Settings
+                  className="h-4 w-4 cursor-pointer text-gray-500"
+                  onClick={toggleAdvanced}
                 />
-              </FormControl>
-              <FormLabel className="font-normal">Image Generator</FormLabel>
+              )}
             </div>
             <FormDescription className="text-xs">
               {DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG.description}
@@ -41,7 +89,7 @@ export const ImageGeneratorConfig = ({
           </FormItem>
         )}
       />
-      {form.watch("tools.ImageGenerator.enabled") && (
+      {(isEnabled || showAdvanced) && (
         <div className="flex flex-col space-y-4 pt-4">
           <FormField
             control={form.control}
@@ -54,6 +102,10 @@ export const ImageGeneratorConfig = ({
                     {...field}
                     value={field.value ?? ""}
                     placeholder="API Key"
+                    onBlur={handleInputBlur}
+                    className={cn(
+                      form.formState.errors.tools?.ImageGenerator?.config?.api_key && "border-red-500"
+                    )}
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
@@ -66,7 +118,9 @@ export const ImageGeneratorConfig = ({
                     https://platform.stability.ai/account/keys
                   </a>
                 </FormDescription>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.tools?.ImageGenerator?.config?.api_key?.message}
+                </FormMessage>
               </FormItem>
             )}
           />

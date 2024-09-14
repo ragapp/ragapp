@@ -59,11 +59,9 @@ const ExpandableSection = ({
         )}
       </header>
       <div className="border-b mb-2 border-gray-300"></div>
-      {!isOpen && description && (
-        <div className="z-10 pl-2 max-w-5xl w-full items-center justify-between">
-          <p className="text-gray-500 italic">{description}</p>
-        </div>
-      )}
+      <div className="z-10 pl-2 max-w-5xl w-full items-center justify-between">
+        <p className="text-gray-500 italic">{description}</p>
+      </div>
       <div className="z-10 p-2 max-w-5xl w-full items-center justify-between">
         {isOpen && children}
       </div>

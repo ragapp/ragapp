@@ -48,21 +48,6 @@ class AgentCallTool(ContextAwareTool):
         )
 
 
-class AgentCallingAgent(FunctionCallingAgent):
-    def __init__(
-        self,
-        *args: Any,
-        name: str,
-        agents: List[FunctionCallingAgent] | None = None,
-        **kwargs: Any,
-    ) -> None:
-        agents = agents or []
-        tools = [AgentCallTool(agent=agent) for agent in agents]
-        super().__init__(*args, name=name, tools=tools, **kwargs)
-        # call add_workflows so agents will get detected by llama agents automatically
-        self.add_workflows(**{agent.name: agent for agent in agents})
-
-
 class AgentOrchestrator(StructuredPlannerAgent):
     def __init__(
         self,

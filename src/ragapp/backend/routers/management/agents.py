@@ -1,5 +1,6 @@
 import logging
-from typing import Annotated, Dict, List
+import os
+from typing import Annotated, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -9,6 +10,27 @@ from backend.models.agent import AgentConfig, ToolConfig
 agents_router = r = APIRouter()
 
 logger = logging.getLogger("uvicorn")
+
+
+@r.get("/check_supported_model")
+def check_supported_model(
+    agent_manager: Annotated[AgentManager, Depends(agent_manager)],
+    model_provider: Optional[str] = None,
+    model: Optional[str] = None,
+):
+    """
+    Check if the current model is supported for multiple agents mode.
+    """
+    if model_provider is None:
+        model_provider = os.environ.get("MODEL_PROVIDER")
+    if model is None:
+        model = os.environ.get("MODEL")
+    if model_provider is None or model is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Model provider and model are required to check if the model is supported for multiple agents mode.",
+        )
+    return agent_manager.is_model_supported_for_multi_agents(model_provider, model)
 
 
 @r.get("")
@@ -21,6 +43,17 @@ def get_agents(
     return agent_manager.get_agents()
 
 
+@r.get("/multi_agent_supported")
+def multi_agent_supported() -> bool:
+    """
+    Check if the current model is supported multiple agents mode.
+    """
+    from llama_index.core.settings import Settings
+
+    llm = Settings.llm
+    return llm.metadata.is_function_calling_model
+
+
 @r.post("")
 def create_agent(
     agent_manager: Annotated[AgentManager, Depends(agent_manager)], agent_data: Dict
@@ -29,6 +62,11 @@ def create_agent(
     Create a new agent.
     """
     try:
+        if not multi_agent_supported():
+            raise HTTPException(
+                status_code=400,
+                detail="Agent mode requires a model supporting function calling but your current model does not support it. Please change to a different model or update your model config.",
+            )
         return agent_manager.create_agent(agent_data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
