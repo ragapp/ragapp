@@ -8,42 +8,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
-
-interface RemoveAgentDialogProps {
-  agentName: string;
-  onRemove: () => void;
-  children: React.ReactNode;
-}
 
 export const RemoveAgentDialog = ({
   agentName,
   onRemove,
   children,
-}: RemoveAgentDialogProps) => {
-  const [open, setOpen] = useState(false);
-
-  const handleRemove = () => {
-    onRemove();
-    setOpen(false);
-  };
-
+}: {
+  agentName: string;
+  onRemove: () => void;
+  children: React.ReactNode;
+}) => {
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog>
+      <DialogTrigger asChild>
+        {children}
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you sure to delete {agentName}?</DialogTitle>
+          <DialogTitle>Are you sure you want to remove this agent?</DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete the agent
-            configuration.
+            "{agentName}" and remove its data from our servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button variant="destructive" onClick={handleRemove}>
+          <Button variant="outline" onClick={() => onRemove()}>
             Remove
           </Button>
         </DialogFooter>

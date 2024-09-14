@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from typing import Dict
 
 from pydantic import BaseModel, Field, validator
@@ -16,6 +17,7 @@ class AgentConfig(BaseModel):
     role: str
     system_prompt: str
     tools: Dict[str, ToolConfig] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
     @validator("agent_id")
     def validate_agent_id(cls, v):

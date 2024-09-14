@@ -20,7 +20,7 @@ def get_tool(tool_name: str, config: dict, query_engine=None):
             query_engine=query_engine,
             metadata=ToolMetadata(name=config.name, description=description),
         )
-    tools = ToolFactory.load_tools(config.tool_type, config.name, config.dict())
+    tools = ToolFactory.load_tools(config.tool_type, config.config_id, config.config)
     return tools[0]
 
 

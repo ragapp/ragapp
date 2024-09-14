@@ -28,7 +28,15 @@ export const AgentConfig = () => {
     "agents",
     getAgents,
     {
-      onSuccess: (data) => setAgents(data),
+      onSuccess: (data) => {
+        // Sort agents by creation time
+        const sortedAgents = [...data].sort((a, b) => {
+          const dateA = a.created_at instanceof Date ? a.created_at : new Date(a.created_at);
+          const dateB = b.created_at instanceof Date ? b.created_at : new Date(b.created_at);
+          return dateA.getTime() - dateB.getTime();
+        });
+        setAgents(sortedAgents);
+      },
     },
   );
 
@@ -97,17 +105,32 @@ export const AgentConfig = () => {
     const newAgentName = `Unnamed Agent ${agents.length + 1}`;
     const newAgentConfig: AgentConfigType = {
       ...DEFAULT_AGENT_CONFIG,
-      agent_id: `unnamed_${agents.length + 1}`,
+      agent_id: crypto.randomUUID(),
       name: newAgentName,
     };
     createAgentMutation(newAgentConfig);
   };
 
   const removeAgent = (agentId: string) => {
-    deleteAgentMutation(agentId);
-    if (activeAgent === agentId) {
-      setActiveAgent(agents[0]?.agent_id || null);
-    }
+    deleteAgentMutation(agentId, {
+      onSuccess: () => {
+        // Update local state immediately
+        setAgents((prevAgents) => {
+          const updatedAgents = prevAgents.filter((a) => a.agent_id !== agentId);
+
+          // If we're removing the active agent, select a new one
+          if (activeAgent === agentId) {
+            const newActiveAgent = updatedAgents[0]?.agent_id || null;
+            setActiveAgent(newActiveAgent);
+          }
+
+          return updatedAgents;
+        });
+
+        // Refetch agents to ensure sync with server
+        queryClient.invalidateQueries("agents");
+      },
+    });
   };
 
   const { data: isMultiAgentSupported, isLoading: isCheckingSupport } = useQuery(

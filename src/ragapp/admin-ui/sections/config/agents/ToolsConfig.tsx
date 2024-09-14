@@ -36,21 +36,25 @@ const SimpleSelection: React.FC<{
   toolName: string;
   toolConfig: { description: string };
   disabled?: boolean;
-}> = ({ form, toolName, toolConfig, disabled }) => (
+  handleSaveChanges: () => void;
+}> = ({ form, toolName, toolConfig, disabled, handleSaveChanges }) => (
   <FormField
     control={form.control}
-    name={`tools.${toolName}.enabled`}
+    name={`tools.${toolName}` as `tools.${keyof AgentConfigType['tools']}`}
     render={({ field }) => (
       <FormItem className="space-y-2">
         <div className="flex items-center space-x-2">
           <FormControl>
             <Checkbox
-              checked={field.value as boolean}
-              onCheckedChange={field.onChange}
+              checked={field.value?.enabled as boolean}
+              onCheckedChange={(checked) => {
+                field.onChange({ ...field.value, enabled: checked });
+                handleSaveChanges();
+              }}
               disabled={disabled}
             />
           </FormControl>
-          <FormLabel className="font-medium">{toolName}</FormLabel>
+          <FormLabel className="font-normal">{toolName}</FormLabel>
         </div>
         <FormDescription className="text-xs">
           {toolConfig.description}
@@ -78,6 +82,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary, handle
             toolName={toolName}
             toolConfig={DEFAULT_DUCKDUCKGO_TOOL_CONFIG}
             disabled={false}
+            handleSaveChanges={handleSaveChanges}
           />
         );
       case "Wikipedia":
@@ -87,6 +92,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary, handle
             toolName={toolName}
             toolConfig={DEFAULT_WIKIPEDIA_TOOL_CONFIG}
             disabled={false}
+            handleSaveChanges={handleSaveChanges}
           />
         );
       case "QueryEngine":
@@ -96,6 +102,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary, handle
             toolName={toolName}
             toolConfig={DEFAULT_QUERY_ENGINE_TOOL_CONFIG}
             disabled={isPrimary} // Disable for primary agent
+            handleSaveChanges={handleSaveChanges}
           />
         );
       default:
@@ -105,16 +112,16 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary, handle
 
   return (
     <>
-      <h3 className="text-lg font-medium mb-4">Tools</h3>
+      <h3 className="mb-4">Tools</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {TOOL_ORDER.map(
           (toolName) =>
-            tools[toolName] && (
+            tools[toolName as keyof AgentConfigType['tools']] && (
               <div
                 key={toolName}
                 className={cn(
                   "p-4 border rounded-lg",
-                  toolName === "QueryEngine" && isPrimary && "opacity-50",
+                  toolName === "QueryEngine" && isPrimary && "opacity-50", // Disable updating QueryEngine for primary agent
                 )}
               >
                 {renderToolConfig(toolName)}

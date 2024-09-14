@@ -1,4 +1,4 @@
-import { AgentConfigType } from "@/client/agent";
+import { AgentConfigType, ToolConfigType, ToolsSchema } from "@/client/agent";
 import {
   Form,
   FormControl,
@@ -13,6 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { UseFormReturn } from "react-hook-form";
 import { ToolsConfig } from "./ToolsConfig";
 import { useEffect } from "react";
+import { z } from "zod";
+import { ImageGeneratorToolConfig } from "@/client/tools/image_generator";
 
 export const AgentTabContent = ({
   agent,
@@ -38,27 +40,6 @@ export const AgentTabContent = ({
     return () => subscription.unsubscribe();
   }, [form, handleSaveChanges]);
 
-  const handleSaveChangesWithValidation = () => {
-    const tools = form.getValues().tools;
-    let isValid = true;
-
-    Object.entries(tools).forEach(([toolName, tool]) => {
-      if (tool.enabled) {
-        if (toolName === 'ImageGenerator' && !tool.config?.api_key) {
-          form.setError(`tools.${toolName}.config.api_key`, {
-            type: 'manual',
-            message: 'API Key is required when the tool is enabled',
-          });
-          isValid = false;
-        }
-        // Add similar checks for other tools that require configuration
-      }
-    });
-
-    if (isValid) {
-      handleSaveChanges();
-    }
-  };
 
   return (
     <TabsContent
@@ -115,7 +96,7 @@ export const AgentTabContent = ({
             )}
           />
 
-          <ToolsConfig form={form} isPrimary={isPrimary} handleSaveChanges={handleSaveChangesWithValidation} />
+          <ToolsConfig form={form} isPrimary={isPrimary} handleSaveChanges={handleSaveChanges} />
         </form>
       </Form>
     </TabsContent>

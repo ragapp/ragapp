@@ -1,18 +1,11 @@
 import { AgentConfigType } from "@/client/agent";
-import { DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG, ImageGeneratorToolConfig } from "@/client/tools/image_generator";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { PasswordInput } from "@/components/ui/password-input";
+import { DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG } from "@/client/tools/image_generator";
 import { UseFormReturn } from "react-hook-form";
-import { Settings } from "lucide-react"; // Import the Settings icon
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Settings } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
 import { cn } from "@/lib/utils";
 
 export const ImageGeneratorConfig = ({
@@ -27,12 +20,11 @@ export const ImageGeneratorConfig = ({
   const apiKey = form.watch("tools.ImageGenerator.config.api_key");
 
   useEffect(() => {
-    if (!isEnabled) {
-      setShowAdvanced(false);
-    } else if (!apiKey) {
+    // When component mounts, if tool is enabled and API Key is empty, show advanced config
+    if (isEnabled && !apiKey) {
       setShowAdvanced(true);
     }
-  }, [isEnabled, apiKey]);
+  }, []); // Empty dependency array ensures this runs only on mount
 
   const handleInputBlur = () => {
     form.trigger("tools.ImageGenerator.config.api_key").then((isValid) => {
@@ -50,13 +42,18 @@ export const ImageGeneratorConfig = ({
 
   const handleCheckboxChange = (checked: boolean) => {
     form.setValue("tools.ImageGenerator.enabled", checked);
-    if (checked) {
+    if (checked && !apiKey) {
       setShowAdvanced(true);
-    } else {
+      form.setError("tools.ImageGenerator.config.api_key", {
+        type: "manual",
+        message: "API Key is required to enable this tool",
+      });
+    } else if (!checked) {
       form.setValue("tools.ImageGenerator.config.api_key", "");
+      form.clearErrors("tools.ImageGenerator.config.api_key");
       setShowAdvanced(false);
+      handleSaveChanges();
     }
-    handleSaveChanges();
   };
 
   return (
@@ -89,7 +86,7 @@ export const ImageGeneratorConfig = ({
           </FormItem>
         )}
       />
-      {(isEnabled || showAdvanced) && (
+      {(showAdvanced || (isEnabled && !apiKey)) && (
         <div className="flex flex-col space-y-4 pt-4">
           <FormField
             control={form.control}

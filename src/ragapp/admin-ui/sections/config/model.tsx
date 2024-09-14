@@ -26,7 +26,7 @@ import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { AzureOpenAIForm } from "./providers/azureOpenAI";
+import { AzureOpenAIForm } from "./providers/azureOpenai";
 import { GeminiForm } from "./providers/gemini";
 import { GroqForm } from "./providers/groq";
 import { MistralForm } from "./providers/mistral";

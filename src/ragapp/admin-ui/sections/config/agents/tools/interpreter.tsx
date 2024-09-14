@@ -13,7 +13,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { UseFormReturn } from "react-hook-form";
 import { Settings } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const E2BInterpreterConfig = ({
   form,
@@ -27,12 +27,11 @@ export const E2BInterpreterConfig = ({
   const apiKey = form.watch("tools.Interpreter.config.api_key");
 
   useEffect(() => {
-    if (!isEnabled) {
-      setShowAdvanced(false);
-    } else if (!apiKey) {
+    // When component mounts, if tool is enabled and API Key is empty, show advanced config
+    if (isEnabled && !apiKey) {
       setShowAdvanced(true);
     }
-  }, [isEnabled, apiKey]);
+  }, []); // Empty dependency array ensures this runs only on mount
 
   const handleInputBlur = () => {
     form.trigger("tools.Interpreter.config.api_key").then((isValid) => {
@@ -50,20 +49,18 @@ export const E2BInterpreterConfig = ({
 
   const handleCheckboxChange = (checked: boolean) => {
     form.setValue("tools.Interpreter.enabled", checked);
-    if (checked) {
+    if (checked && !apiKey) {
       setShowAdvanced(true);
-      if (!apiKey) {
-        form.setError("tools.Interpreter.config.api_key", {
-          type: "manual",
-          message: "API Key is required to enable this tool",
-        });
-      }
-    } else {
+      form.setError("tools.Interpreter.config.api_key", {
+        type: "manual",
+        message: "API Key is required to enable this tool",
+      });
+    } else if (!checked) {
       form.setValue("tools.Interpreter.config.api_key", "");
       form.clearErrors("tools.Interpreter.config.api_key");
       setShowAdvanced(false);
+      handleSaveChanges();
     }
-    handleSaveChanges();
   };
 
   return (
@@ -96,7 +93,7 @@ export const E2BInterpreterConfig = ({
           </FormItem>
         )}
       />
-      {(isEnabled || showAdvanced) && (
+      {(showAdvanced || (isEnabled && !apiKey)) && (
         <div className="flex flex-col space-y-4 pt-4">
           <FormField
             control={form.control}
@@ -110,6 +107,9 @@ export const E2BInterpreterConfig = ({
                     value={field.value ?? ""}
                     placeholder="API Key"
                     onBlur={handleInputBlur}
+                    className={cn(
+                      form.formState.errors.tools?.Interpreter?.config?.api_key && "border-red-500"
+                    )}
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
@@ -122,7 +122,9 @@ export const E2BInterpreterConfig = ({
                     https://e2b.dev/docs/getting-started/api-key
                   </a>
                 </FormDescription>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.tools?.Interpreter?.config?.api_key?.message}
+                </FormMessage>
               </FormItem>
             )}
           />

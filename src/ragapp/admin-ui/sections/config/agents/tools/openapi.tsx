@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { Settings } from "lucide-react";
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 export const OpenAPIConfig = ({
   form,
@@ -26,12 +27,11 @@ export const OpenAPIConfig = ({
   const openApiUri = form.watch("tools.OpenAPI.config.openapi_uri");
 
   useEffect(() => {
-    if (!isEnabled) {
-      setShowAdvanced(false);
-    } else if (!openApiUri) {
+    // When component mounts, if tool is enabled and URI is empty, show advanced config
+    if (isEnabled && !openApiUri) {
       setShowAdvanced(true);
     }
-  }, [isEnabled, openApiUri]);
+  }, []); // Empty dependency array ensures this runs only on mount
 
   const handleInputBlur = () => {
     form.trigger("tools.OpenAPI.config.openapi_uri").then((isValid) => {
@@ -41,28 +41,26 @@ export const OpenAPIConfig = ({
     });
   };
 
-  const handleCheckboxChange = (checked: boolean) => {
-    form.setValue("tools.OpenAPI.enabled", checked);
-    if (checked) {
-      setShowAdvanced(true);
-      if (!openApiUri) {
-        form.setError("tools.OpenAPI.config.openapi_uri", {
-          type: "manual",
-          message: "OpenAPI URI is required to enable this tool",
-        });
-      }
-    } else {
-      form.setValue("tools.OpenAPI.config.openapi_uri", "");
-      form.clearErrors("tools.OpenAPI.config.openapi_uri");
-      setShowAdvanced(false);
-    }
-    handleSaveChanges();
-  };
-
   const toggleAdvanced = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setShowAdvanced(!showAdvanced);
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    form.setValue("tools.OpenAPI.enabled", checked);
+    if (checked && !openApiUri) {
+      setShowAdvanced(true);
+      form.setError("tools.OpenAPI.config.openapi_uri", {
+        type: "manual",
+        message: "OpenAPI URL is required to enable this tool",
+      });
+    } else if (!checked) {
+      form.setValue("tools.OpenAPI.config.openapi_uri", "");
+      form.clearErrors("tools.OpenAPI.config.openapi_uri");
+      setShowAdvanced(false);
+      handleSaveChanges();
+    }
   };
 
   return (
@@ -92,29 +90,31 @@ export const OpenAPIConfig = ({
             <FormDescription className="text-xs">
               {DEFAULT_OPENAPI_TOOL_CONFIG.description}
             </FormDescription>
-            {isEnabled && !openApiUri && (
-              <FormMessage>OpenAPI URI is required to enable this tool</FormMessage>
-            )}
           </FormItem>
         )}
       />
-      {isEnabled && (!openApiUri || showAdvanced) && (
+      {(showAdvanced || (isEnabled && !openApiUri)) && (
         <div className="flex flex-col space-y-4 pt-4">
           <FormField
             control={form.control}
             name="tools.OpenAPI.config.openapi_uri"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>URL to OpenAPI spec</FormLabel>
+                <FormLabel>URL to OpenAPI spec (*)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     placeholder="https://example.com/openapi.yaml"
                     value={field.value as string}
                     onBlur={handleInputBlur}
+                    className={cn(
+                      form.formState.errors.tools?.OpenAPI?.config?.openapi_uri && "border-red-500"
+                    )}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.tools?.OpenAPI?.config?.openapi_uri?.message}
+                </FormMessage>
               </FormItem>
             )}
           />

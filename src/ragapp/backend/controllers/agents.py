@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List, Tuple
 
 import yaml
@@ -56,10 +57,11 @@ class AgentManager:
             yaml.dump(self.config, file)
 
     def get_agents(self) -> List[AgentConfig]:
-        return [
+        agents = [
             AgentConfig(agent_id=agent_id, **agent_data)
             for agent_id, agent_data in self.config.items()
         ]
+        return sorted(agents, key=lambda x: x.created_at)  # Sort by creation time
 
     def create_agent(self, agent_data: Dict) -> AgentConfig:
         if "agent_id" not in agent_data:
@@ -67,6 +69,8 @@ class AgentManager:
 
         if "role" not in agent_data:
             raise ValueError("Role is required when creating an agent")
+
+        agent_data["created_at"] = datetime.utcnow()
 
         if "tools" not in agent_data:
             agent_data["tools"] = {}

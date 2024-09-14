@@ -26,7 +26,7 @@ import {
 import { getBaseURL } from "./utils";
 
 // Define the tools schema
-const ToolsSchema = z.object({
+export const ToolsSchema = z.object({
   ImageGenerator: ImageGeneratorToolConfig,
   OpenAPI: OpenAPIToolConfig,
   Interpreter: E2BInterpreterToolConfig,
@@ -42,6 +42,7 @@ export const AgentConfigSchema = z.object({
   role: z.string(),
   system_prompt: z.string(),
   tools: ToolsSchema,
+  created_at: z.string().or(z.date()).transform((val) => new Date(val)),
 });
 
 export type ToolConfigType = z.infer<typeof ToolsSchema>[keyof z.infer<typeof ToolsSchema>];
@@ -49,7 +50,7 @@ export type ToolConfigType = z.infer<typeof ToolsSchema>[keyof z.infer<typeof To
 export type AgentConfigType = z.infer<typeof AgentConfigSchema>;
 
 // Define default configurations
-export const DEFAULT_TOOL_CONFIG: Record<keyof z.infer<typeof ToolsSchema>, ToolConfigType> = {
+export const DEFAULT_TOOL_CONFIG: z.infer<typeof ToolsSchema> = {
   ImageGenerator: DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG,
   OpenAPI: DEFAULT_OPENAPI_TOOL_CONFIG,
   Interpreter: DEFAULT_E2B_INTERPRETER_TOOL_CONFIG,
@@ -63,6 +64,7 @@ export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   role: "",
   system_prompt: "You are a helpful assistant.",
   tools: DEFAULT_TOOL_CONFIG,
+  created_at: new Date(),
 };
 
 // API functions
