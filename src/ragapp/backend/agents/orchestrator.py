@@ -3,6 +3,7 @@ from typing import List, Optional
 from app.engine.tools import ToolFactory
 from llama_index.core.chat_engine.types import ChatMessage
 from llama_index.core.tools.query_engine import QueryEngineTool, ToolMetadata
+from pydantic import BaseModel
 
 from backend.agents.multi import AgentOrchestrator
 from backend.agents.single import FunctionCallingAgent
@@ -20,7 +21,11 @@ def get_tool(tool_name: str, config: dict, query_engine=None):
             query_engine=query_engine,
             metadata=ToolMetadata(name=config.name, description=description),
         )
-    tools = ToolFactory.load_tools(config.tool_type, config.config_id, config.config)
+    tool_config = config.config
+    if isinstance(tool_config, BaseModel):
+        tool_config = tool_config.dict()
+    print("tool_config", tool_config)
+    tools = ToolFactory.load_tools(config.tool_type, config.config_id, tool_config)
     return tools[0]
 
 
@@ -32,6 +37,7 @@ def get_agents(
     agents = []
     for agent_config in agents_config:
         agent_tools_config = agent_manager.get_agent_tools(agent_config.agent_id)
+        print("agent_tools_config", agent_tools_config)
         tools = [
             get_tool(tool_name, tool_config, query_engine)
             for tool_name, tool_config in agent_tools_config

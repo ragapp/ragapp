@@ -126,3 +126,13 @@ export async function deleteAgent(agentId: string): Promise<void> {
     throw new Error(error);
   }
 }
+
+export const checkSupportedModel = async (): Promise<boolean> => {
+  const res = await fetch(
+    `${getBaseURL()}/api/management/agents/check_supported_model`,
+  );
+  if (!res.ok) {
+    throw new Error("Failed to check model support");
+  }
+  return res.json();
+};

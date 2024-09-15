@@ -133,7 +133,8 @@ class AgentManager:
         tools = []
         for tool_name, tool_config in agent.get("tools", {}).items():
             if tool_config["enabled"]:
-                kwargs = tool_config["config"]
+                kwargs = {}
+                kwargs["config"] = tool_config["config"]
                 kwargs["enabled"] = tool_config["enabled"]
                 tool = self._get_tool(tool_name, **kwargs)
                 if tool:

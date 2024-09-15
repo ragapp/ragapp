@@ -2,12 +2,12 @@ import {
   AgentConfigSchema,
   AgentConfigType,
   DEFAULT_AGENT_CONFIG,
+  checkSupportedModel,
   createAgent,
   deleteAgent,
   getAgents,
   updateAgent,
 } from "@/client/agent";
-import { checkSupportedModel } from "@/client/providers";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Tabs } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
