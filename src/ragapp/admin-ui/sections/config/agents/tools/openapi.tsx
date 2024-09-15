@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Settings } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 export const OpenAPIConfig = ({
@@ -25,13 +25,17 @@ export const OpenAPIConfig = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const isEnabled = form.watch("tools.OpenAPI.enabled");
   const openApiUri = form.watch("tools.OpenAPI.config.openapi_uri");
+  const mountedRef = useRef(false);
 
   useEffect(() => {
-    // When component mounts, if tool is enabled and URI is empty, show advanced config
-    if (isEnabled && !openApiUri) {
-      setShowAdvanced(true);
+    if (!mountedRef.current) {
+      // When component mounts, if tool is enabled and URI is empty, show advanced config
+      if (isEnabled && !openApiUri) {
+        setShowAdvanced(true);
+      }
+      mountedRef.current = true;
     }
-  }, []); // Empty dependency array ensures this runs only on mount
+  }, [isEnabled, openApiUri]); // Include isEnabled and openApiUri to satisfy the linter
 
   const handleInputBlur = () => {
     form.trigger("tools.OpenAPI.config.openapi_uri").then((isValid) => {

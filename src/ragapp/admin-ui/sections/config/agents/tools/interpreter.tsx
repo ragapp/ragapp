@@ -12,7 +12,7 @@ import {
 import { PasswordInput } from "@/components/ui/password-input";
 import { cn } from "@/lib/utils";
 import { Settings } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 export const E2BInterpreterConfig = ({
@@ -25,13 +25,17 @@ export const E2BInterpreterConfig = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const isEnabled = form.watch("tools.Interpreter.enabled");
   const apiKey = form.watch("tools.Interpreter.config.api_key");
+  const mountedRef = useRef(false);
 
   useEffect(() => {
-    // When component mounts, if tool is enabled and API Key is empty, show advanced config
-    if (isEnabled && !apiKey) {
-      setShowAdvanced(true);
+    if (!mountedRef.current) {
+      // When component mounts, if tool is enabled and API Key is empty, show advanced config
+      if (isEnabled && !apiKey) {
+        setShowAdvanced(true);
+      }
+      mountedRef.current = true;
     }
-  }, []); // Empty dependency array ensures this runs only on mount
+  }, [isEnabled, apiKey]); // Include isEnabled and apiKey to satisfy the linter
 
   const handleInputBlur = () => {
     form.trigger("tools.Interpreter.config.api_key").then((isValid) => {
