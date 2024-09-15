@@ -1,5 +1,5 @@
 import { AgentConfigType } from "@/client/agent";
-import { DEFAULT_E2B_INTERPRETER_TOOL_CONFIG, E2BInterpreterToolConfig } from "@/client/tools/interpreter";
+import { DEFAULT_E2B_INTERPRETER_TOOL_CONFIG } from "@/client/tools/interpreter";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -10,10 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/ui/password-input";
-import { UseFormReturn } from "react-hook-form";
-import { Settings } from "lucide-react";
-import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Settings } from "lucide-react";
+import { useEffect, useState } from "react";
+import { UseFormReturn } from "react-hook-form";
 
 export const E2BInterpreterConfig = ({
   form,
@@ -108,7 +108,8 @@ export const E2BInterpreterConfig = ({
                     placeholder="API Key"
                     onBlur={handleInputBlur}
                     className={cn(
-                      form.formState.errors.tools?.Interpreter?.config?.api_key && "border-red-500"
+                      form.formState.errors.tools?.Interpreter?.config
+                        ?.api_key && "border-red-500",
                     )}
                   />
                 </FormControl>
@@ -123,7 +124,10 @@ export const E2BInterpreterConfig = ({
                   </a>
                 </FormDescription>
                 <FormMessage>
-                  {form.formState.errors.tools?.Interpreter?.config?.api_key?.message}
+                  {
+                    form.formState.errors.tools?.Interpreter?.config?.api_key
+                      ?.message
+                  }
                 </FormMessage>
               </FormItem>
             )}

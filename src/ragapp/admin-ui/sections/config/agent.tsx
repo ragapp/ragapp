@@ -7,6 +7,7 @@ import {
   getAgents,
   updateAgent,
 } from "@/client/agent";
+import { checkSupportedModel } from "@/client/providers";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Tabs } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +17,6 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AgentTabContent } from "./agents/AgentTabContent";
 import { AgentTabList } from "./agents/AgentTabList";
-import { checkSupportedModel } from "@/client/providers";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -31,8 +31,14 @@ export const AgentConfig = () => {
       onSuccess: (data) => {
         // Sort agents by creation time
         const sortedAgents = [...data].sort((a, b) => {
-          const dateA = a.created_at instanceof Date ? a.created_at : new Date(a.created_at);
-          const dateB = b.created_at instanceof Date ? b.created_at : new Date(b.created_at);
+          const dateA =
+            a.created_at instanceof Date
+              ? a.created_at
+              : new Date(a.created_at);
+          const dateB =
+            b.created_at instanceof Date
+              ? b.created_at
+              : new Date(b.created_at);
           return dateA.getTime() - dateB.getTime();
         });
         setAgents(sortedAgents);
@@ -116,7 +122,9 @@ export const AgentConfig = () => {
       onSuccess: () => {
         // Update local state immediately
         setAgents((prevAgents) => {
-          const updatedAgents = prevAgents.filter((a) => a.agent_id !== agentId);
+          const updatedAgents = prevAgents.filter(
+            (a) => a.agent_id !== agentId,
+          );
 
           // If we're removing the active agent, select a new one
           if (activeAgent === agentId) {
@@ -133,15 +141,12 @@ export const AgentConfig = () => {
     });
   };
 
-  const { data: isMultiAgentSupported, isLoading: isCheckingSupport } = useQuery(
-    "checkSupportedModel",
-    checkSupportedModel,
-    {
+  const { data: isMultiAgentSupported, isLoading: isCheckingSupport } =
+    useQuery("checkSupportedModel", checkSupportedModel, {
       refetchOnWindowFocus: false,
       refetchOnMount: true,
       refetchOnReconnect: true,
-    }
-  );
+    });
 
   const isLoading = isLoadingAgents || isCheckingSupport || isSubmitting;
 

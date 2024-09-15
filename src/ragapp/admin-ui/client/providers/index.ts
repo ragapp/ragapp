@@ -137,7 +137,9 @@ export async function fetchModels(
 }
 
 export const checkSupportedModel = async (): Promise<boolean> => {
-  const res = await fetch(`${getBaseURL()}/api/management/agents/check_supported_model`);
+  const res = await fetch(
+    `${getBaseURL()}/api/management/agents/check_supported_model`,
+  );
   if (!res.ok) {
     throw new Error("Failed to check model support");
   }

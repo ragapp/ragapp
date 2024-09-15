@@ -42,10 +42,15 @@ export const AgentConfigSchema = z.object({
   role: z.string(),
   system_prompt: z.string(),
   tools: ToolsSchema,
-  created_at: z.string().or(z.date()).transform((val) => new Date(val)),
+  created_at: z
+    .string()
+    .or(z.date())
+    .transform((val) => new Date(val)),
 });
 
-export type ToolConfigType = z.infer<typeof ToolsSchema>[keyof z.infer<typeof ToolsSchema>];
+export type ToolConfigType = z.infer<typeof ToolsSchema>[keyof z.infer<
+  typeof ToolsSchema
+>];
 
 export type AgentConfigType = z.infer<typeof AgentConfigSchema>;
 

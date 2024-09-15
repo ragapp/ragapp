@@ -1,5 +1,5 @@
 import { AgentConfigType } from "@/client/agent";
-import { DEFAULT_OPENAPI_TOOL_CONFIG, OpenAPIToolConfig } from "@/client/tools/openapi";
+import { DEFAULT_OPENAPI_TOOL_CONFIG } from "@/client/tools/openapi";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -10,10 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
-import { Settings } from "lucide-react";
-import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Settings } from "lucide-react";
+import { useEffect, useState } from "react";
+import { UseFormReturn } from "react-hook-form";
 
 export const OpenAPIConfig = ({
   form,
@@ -108,12 +108,16 @@ export const OpenAPIConfig = ({
                     value={field.value as string}
                     onBlur={handleInputBlur}
                     className={cn(
-                      form.formState.errors.tools?.OpenAPI?.config?.openapi_uri && "border-red-500"
+                      form.formState.errors.tools?.OpenAPI?.config
+                        ?.openapi_uri && "border-red-500",
                     )}
                   />
                 </FormControl>
                 <FormMessage>
-                  {form.formState.errors.tools?.OpenAPI?.config?.openapi_uri?.message}
+                  {
+                    form.formState.errors.tools?.OpenAPI?.config?.openapi_uri
+                      ?.message
+                  }
                 </FormMessage>
               </FormItem>
             )}

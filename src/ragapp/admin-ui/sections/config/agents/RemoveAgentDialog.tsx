@@ -20,15 +20,13 @@ export const RemoveAgentDialog = ({
 }) => {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Are you sure you want to remove this agent?</DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete the agent
-            "{agentName}" and remove its data from our servers.
+            &ldquo;{agentName}&rdquo; and remove its data from our servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

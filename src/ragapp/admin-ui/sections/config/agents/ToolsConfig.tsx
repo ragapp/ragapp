@@ -40,7 +40,7 @@ const SimpleSelection: React.FC<{
 }> = ({ form, toolName, toolConfig, disabled, handleSaveChanges }) => (
   <FormField
     control={form.control}
-    name={`tools.${toolName}` as `tools.${keyof AgentConfigType['tools']}`}
+    name={`tools.${toolName}` as `tools.${keyof AgentConfigType["tools"]}`}
     render={({ field }) => (
       <FormItem className="space-y-2">
         <div className="flex items-center space-x-2">
@@ -64,17 +64,33 @@ const SimpleSelection: React.FC<{
   />
 );
 
-export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary, handleSaveChanges }) => {
+export const ToolsConfig: React.FC<ToolConfigProps> = ({
+  form,
+  isPrimary,
+  handleSaveChanges,
+}) => {
   const tools = form.watch("tools");
 
   const renderToolConfig = (toolName: string) => {
     switch (toolName) {
       case "ImageGenerator":
-        return <ImageGeneratorConfig form={form} handleSaveChanges={handleSaveChanges} />;
+        return (
+          <ImageGeneratorConfig
+            form={form}
+            handleSaveChanges={handleSaveChanges}
+          />
+        );
       case "Interpreter":
-        return <E2BInterpreterConfig form={form} handleSaveChanges={handleSaveChanges} />;
+        return (
+          <E2BInterpreterConfig
+            form={form}
+            handleSaveChanges={handleSaveChanges}
+          />
+        );
       case "OpenAPI":
-        return <OpenAPIConfig form={form} handleSaveChanges={handleSaveChanges} />;
+        return (
+          <OpenAPIConfig form={form} handleSaveChanges={handleSaveChanges} />
+        );
       case "DuckDuckGo":
         return (
           <SimpleSelection
@@ -116,7 +132,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({ form, isPrimary, handle
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {TOOL_ORDER.map(
           (toolName) =>
-            tools[toolName as keyof AgentConfigType['tools']] && (
+            tools[toolName as keyof AgentConfigType["tools"]] && (
               <div
                 key={toolName}
                 className={cn(

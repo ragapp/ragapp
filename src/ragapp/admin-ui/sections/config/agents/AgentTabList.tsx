@@ -19,8 +19,10 @@ export const AgentTabList = ({
 }) => {
   // Sort agents by creation time
   const sortedAgents = [...agents].sort((a, b) => {
-    const dateA = a.created_at instanceof Date ? a.created_at : new Date(a.created_at);
-    const dateB = b.created_at instanceof Date ? b.created_at : new Date(b.created_at);
+    const dateA =
+      a.created_at instanceof Date ? a.created_at : new Date(a.created_at);
+    const dateB =
+      b.created_at instanceof Date ? b.created_at : new Date(b.created_at);
     return dateA.getTime() - dateB.getTime();
   });
 

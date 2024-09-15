@@ -26,14 +26,15 @@ export type ImageGeneratorToolConfigType = z.infer<
   typeof ImageGeneratorToolConfig
 >;
 
-export const DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG: ImageGeneratorToolConfigType = {
-  name: "image_generator",
-  label: "Image Generator",
-  description:
-    "Generate images from the provided text using the Stability AI API",
-  priority: 0,
-  config: {
-    api_key: "",
-  },
-  enabled: false,
-};
+export const DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG: ImageGeneratorToolConfigType =
+  {
+    name: "image_generator",
+    label: "Image Generator",
+    description:
+      "Generate images from the provided text using the Stability AI API",
+    priority: 0,
+    config: {
+      api_key: "",
+    },
+    enabled: false,
+  };

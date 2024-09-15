@@ -1,12 +1,19 @@
 import { AgentConfigType } from "@/client/agent";
 import { DEFAULT_IMAGE_GENERATOR_TOOL_CONFIG } from "@/client/tools/image_generator";
-import { UseFormReturn } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Settings } from "lucide-react";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { PasswordInput } from "@/components/ui/password-input";
 import { cn } from "@/lib/utils";
+import { Settings } from "lucide-react";
+import { useEffect, useState } from "react";
+import { UseFormReturn } from "react-hook-form";
 
 export const ImageGeneratorConfig = ({
   form,
@@ -101,7 +108,8 @@ export const ImageGeneratorConfig = ({
                     placeholder="API Key"
                     onBlur={handleInputBlur}
                     className={cn(
-                      form.formState.errors.tools?.ImageGenerator?.config?.api_key && "border-red-500"
+                      form.formState.errors.tools?.ImageGenerator?.config
+                        ?.api_key && "border-red-500",
                     )}
                   />
                 </FormControl>
@@ -116,7 +124,10 @@ export const ImageGeneratorConfig = ({
                   </a>
                 </FormDescription>
                 <FormMessage>
-                  {form.formState.errors.tools?.ImageGenerator?.config?.api_key?.message}
+                  {
+                    form.formState.errors.tools?.ImageGenerator?.config?.api_key
+                      ?.message
+                  }
                 </FormMessage>
               </FormItem>
             )}

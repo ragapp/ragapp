@@ -1,4 +1,4 @@
-import { AgentConfigType, ToolConfigType, ToolsSchema } from "@/client/agent";
+import { AgentConfigType } from "@/client/agent";
 import {
   Form,
   FormControl,
@@ -10,11 +10,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ToolsConfig } from "./ToolsConfig";
-import { useEffect } from "react";
-import { z } from "zod";
-import { ImageGeneratorToolConfig } from "@/client/tools/image_generator";
 
 export const AgentTabContent = ({
   agent,
@@ -33,13 +31,16 @@ export const AgentTabContent = ({
 
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
-      if (type === 'change' && name?.includes('tools') && name?.includes('enabled')) {
+      if (
+        type === "change" &&
+        name?.includes("tools") &&
+        name?.includes("enabled")
+      ) {
         handleSaveChanges();
       }
     });
     return () => subscription.unsubscribe();
   }, [form, handleSaveChanges]);
-
 
   return (
     <TabsContent
@@ -58,7 +59,11 @@ export const AgentTabContent = ({
                   <FormItem>
                     <FormLabel>Agent Name</FormLabel>
                     <FormControl>
-                      <Input {...field} onBlur={handleInputBlur} placeholder="Enter agent name" />
+                      <Input
+                        {...field}
+                        onBlur={handleInputBlur}
+                        placeholder="Enter agent name"
+                      />
                     </FormControl>
                     <FormDescription>
                       This is shown in the UI to help identify the agent.
@@ -76,7 +81,8 @@ export const AgentTabContent = ({
                       <Input {...field} onBlur={handleInputBlur} />
                     </FormControl>
                     <FormDescription>
-                      Agent role is used to help orchestrator assign right tasks to the agent.
+                      Agent role is used to help orchestrator assign right tasks
+                      to the agent.
                     </FormDescription>
                   </FormItem>
                 )}
@@ -90,13 +96,22 @@ export const AgentTabContent = ({
               <FormItem>
                 <FormLabel>System Prompt</FormLabel>
                 <FormControl>
-                  <Textarea {...field} onBlur={handleInputBlur} rows={3} placeholder="Define the responsibilities and behaviors of the assistant." />
+                  <Textarea
+                    {...field}
+                    onBlur={handleInputBlur}
+                    rows={3}
+                    placeholder="Define the responsibilities and behaviors of the assistant."
+                  />
                 </FormControl>
               </FormItem>
             )}
           />
 
-          <ToolsConfig form={form} isPrimary={isPrimary} handleSaveChanges={handleSaveChanges} />
+          <ToolsConfig
+            form={form}
+            isPrimary={isPrimary}
+            handleSaveChanges={handleSaveChanges}
+          />
         </form>
       </Form>
     </TabsContent>
