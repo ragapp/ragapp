@@ -30,7 +30,7 @@ def check_supported_model(
             status_code=400,
             detail="Model provider and model are required to check if the model is supported for multiple agents mode.",
         )
-    return agent_manager.is_model_supported_for_multi_agents(model_provider, model)
+    return agent_manager.check_supported_multi_agents_model(model_provider, model)
 
 
 @r.get("")
