@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Optional
 
 from pydantic import BaseModel, Field
 
@@ -12,7 +12,7 @@ class ToolConfig(BaseModel):
 
 
 class AgentConfig(BaseModel):
-    agent_id: str
+    agent_id: Optional[str] = None  # Passed from the client, set as optional
     name: str
     role: str
     system_prompt: str

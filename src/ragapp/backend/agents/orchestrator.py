@@ -37,7 +37,6 @@ def get_agents(
     agents = []
     for agent_config in agents_config:
         agent_tools_config = agent_manager.get_agent_tools(agent_config.agent_id)
-        print("agent_tools_config", agent_tools_config)
         tools = [
             get_tool(tool_name, tool_config, query_engine)
             for tool_name, tool_config in agent_tools_config

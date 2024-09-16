@@ -32,14 +32,12 @@ def get_chat_engine(
     """
 
     top_k = int(os.getenv("TOP_K", "3"))
-    system_prompt = os.getenv("SYSTEM_PROMPT")
     citation_prompt = os.getenv("SYSTEM_CITATION_PROMPT")
     node_postprocessors = []
     callback_manager = CallbackManager(handlers=event_handlers or [])
 
     if citation_prompt is not None:
         node_postprocessors.append(NodeCitationProcessor())
-        system_prompt = f"{system_prompt}\n{citation_prompt}"
 
     if os.getenv("USE_RERANKER", "False").lower() == "true":
         top_k = max(top_k, DEFAULT_MAX_TOP_K)
@@ -62,7 +60,12 @@ def get_chat_engine(
     )
     agents = get_agents(chat_history, query_engine)
     if len(agents) == 1:
-        tools = agents[0].tools
+        agent = agents[0]
+        tools = agent.tools
+        # Update agent system prompt with citation prompt
+        system_prompt = agent.system_prompt
+        if citation_prompt is not None:
+            system_prompt = f"{system_prompt}\n{citation_prompt}"
         if len(tools) == 1:
             return CondensePlusContextChatEngine(
                 llm=Settings.llm,
@@ -78,12 +81,10 @@ def get_chat_engine(
                 callback_manager=callback_manager,
             )
         else:
-            # Create Agent runner from FunctionCallingAgent
-            agent = agents[0]
             return AgentRunner.from_llm(
                 llm=Settings.llm,
-                tools=agent.tools,
-                system_prompt=agent.system_prompt,
+                tools=tools,
+                system_prompt=system_prompt,
                 callback_manager=callback_manager,
                 verbose=True,
             )

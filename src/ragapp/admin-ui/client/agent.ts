@@ -83,7 +83,7 @@ export async function getAgents(): Promise<AgentConfigType[]> {
 }
 
 export async function createAgent(
-  data: Omit<AgentConfigType, "agent_id">,
+  data: AgentConfigType,
 ): Promise<AgentConfigType> {
   const res = await fetch(`${getBaseURL()}/api/management/agents`, {
     method: "POST",
@@ -101,7 +101,7 @@ export async function createAgent(
 
 export async function updateAgent(
   agentId: string,
-  data: Omit<AgentConfigType, "agent_id">,
+  data: AgentConfigType,
 ): Promise<AgentConfigType> {
   const res = await fetch(`${getBaseURL()}/api/management/agents/${agentId}`, {
     method: "PUT",

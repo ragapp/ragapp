@@ -80,8 +80,8 @@ class AgentManager:
 
         new_agent = AgentConfig(**agent_data)
         self.config[new_agent.agent_id] = new_agent.dict(exclude={"agent_id"})
+        self._update_agent_config_system_prompt(new_agent.agent_id)
         self._update_config_file()
-        AgentPromptManager.update_agent_system_prompts(self.get_agents())
         return new_agent
 
     def update_agent(self, agent_id: str, data: Dict):
@@ -107,9 +107,9 @@ class AgentManager:
 
         updated_agent = AgentConfig(**updated_data)
         self.config[agent_id] = updated_agent.dict(exclude={"agent_id"})
+        self._update_agent_config_system_prompt(agent_id)
         self._update_config_file()
         self._ensure_query_engine_enabled()
-        AgentPromptManager.update_agent_system_prompts(self.get_agents())
         return updated_agent
 
     def delete_agent(self, agent_id: str):
@@ -156,10 +156,14 @@ class AgentManager:
             self.config[agent_id]["tools"] = {}
 
         self.config[agent_id]["tools"][tool_name] = data
+        # Update system prompts
+        self._update_agent_config_system_prompt(agent_id)
         self._update_config_file()
 
-        # Update system prompts
-        AgentPromptManager.update_agent_system_prompts(self.get_agents())
+    def _update_agent_config_system_prompt(self, agent_id: str):
+        agent_config = self.config[agent_id]
+        system_prompt = AgentPromptManager.generate_agent_system_prompt(agent_config)
+        self.config[agent_id]["system_prompt"] = system_prompt
 
     def is_using_multi_agents_mode(self):
         return len(self.get_agents()) > 1
