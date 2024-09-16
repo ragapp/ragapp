@@ -125,6 +125,7 @@ def test_update_nonexistent_agent(agent_manager):
 
 def test_create_agent(agent_manager):
     new_agent_data = {
+        "agent_id": "new_agent",
         "name": "New Agent",
         "system_prompt": "You are a new agent",
         "role": "Assistant",  # Add role
