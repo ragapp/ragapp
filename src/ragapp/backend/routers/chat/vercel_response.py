@@ -79,7 +79,7 @@ class BaseVercelStreamResponse(StreamingResponse, ABC):
         return None
 
 
-class ContextEngineVercelStreamResponse(BaseVercelStreamResponse):
+class ChatEngineVercelStreamResponse(BaseVercelStreamResponse):
     """
     Class to convert the response from the chat engine to the streaming format expected by Vercel
     """
@@ -136,7 +136,7 @@ class ContextEngineVercelStreamResponse(BaseVercelStreamResponse):
         }
 
 
-class AgentsVercelStreamResponse(BaseVercelStreamResponse):
+class WorkflowVercelStreamResponse(BaseVercelStreamResponse):
     """
     Class to convert the response from the chat engine to the streaming format expected by Vercel
     """

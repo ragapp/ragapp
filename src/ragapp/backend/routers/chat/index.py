@@ -14,8 +14,8 @@ from llama_index.core.chat_engine.types import NodeWithScore
 from backend.engine import get_chat_engine
 from backend.engine.query_filters import generate_filters
 from backend.routers.chat.vercel_response import (
-    AgentsVercelStreamResponse,
-    ContextEngineVercelStreamResponse,
+    ChatEngineVercelStreamResponse,
+    WorkflowVercelStreamResponse,
 )
 
 chat_router = r = APIRouter()
@@ -56,7 +56,7 @@ async def chat(
             response = await chat_engine.astream_chat(last_message_content, messages)
             process_response_nodes(response.source_nodes, background_tasks)
 
-            return ContextEngineVercelStreamResponse(
+            return ChatEngineVercelStreamResponse(
                 request=request,
                 chat_data=data,
                 event_handler=event_handler,
@@ -66,7 +66,7 @@ async def chat(
             task = asyncio.create_task(
                 chat_engine.run(input=last_message_content, streaming=True)
             )
-            return AgentsVercelStreamResponse(
+            return WorkflowVercelStreamResponse(
                 request=request,
                 chat_data=data,
                 task=task,

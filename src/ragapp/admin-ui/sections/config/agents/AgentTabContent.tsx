@@ -66,7 +66,7 @@ export const AgentTabContent = ({
                       />
                     </FormControl>
                     <FormDescription>
-                      This is shown in the UI to help identify the agent.
+                      Unique name to identify the agent.
                     </FormDescription>
                   </FormItem>
                 )}
@@ -81,8 +81,7 @@ export const AgentTabContent = ({
                       <Input {...field} onBlur={handleInputBlur} />
                     </FormControl>
                     <FormDescription>
-                      Agent role is used to help orchestrator assign right tasks
-                      to the agent.
+                      Helps RAGapp to assign the right agent for a task.
                     </FormDescription>
                   </FormItem>
                 )}
@@ -100,7 +99,7 @@ export const AgentTabContent = ({
                     {...field}
                     onBlur={handleInputBlur}
                     rows={3}
-                    placeholder="Define the responsibilities and behaviors of the assistant."
+                    placeholder="Define the responsibilities and behaviors of the agent."
                   />
                 </FormControl>
               </FormItem>

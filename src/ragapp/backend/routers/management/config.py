@@ -75,7 +75,7 @@ def update_model_config(
         ):
             raise HTTPException(
                 status_code=400,
-                detail="You are using multi-agents mode, please select a model supporting function calling. Or remove the multi-agents mode by deleting agents.",
+                detail="You are using multi-agent mode, please select a model supporting function calling. Or remove the multi-agent mode by deleting agents.",
             )
 
     EnvConfigManager.update(config, new_config, rollback_on_failure=True)

@@ -13,8 +13,8 @@ export type QueryEngineToolConfigType = z.infer<typeof QueryEngineToolConfig>;
 
 export const DEFAULT_QUERY_ENGINE_TOOL_CONFIG: QueryEngineToolConfigType = {
   name: "query_engine",
-  label: "Query Engine",
-  description: "Query information from your uploaded files",
+  label: "Use Knowledge",
+  description: "Query information from your knowledge base",
   config: {},
   enabled: false,
   priority: 1, // Assign a priority value

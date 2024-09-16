@@ -26,7 +26,7 @@ export const RemoveAgentDialog = ({
           <DialogTitle>Are you sure you want to remove this agent?</DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete the agent
-            &ldquo;{agentName}&rdquo; and remove its data from our servers.
+            &ldquo;{agentName}&rdquo; and remove its data.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

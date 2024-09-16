@@ -1,7 +1,7 @@
 8d53880d-906d-404c-b5f4-91fb07567b85:
   created_at: 2024-09-16 02:53:57.746566
   name: Default
-  role: Use the provided knowledge to answer user question
+  role: Expert in answering questions using the provided knowledge
   system_prompt: You are a helpful assistant.
   tools:
     DuckDuckGo:
