@@ -2,4 +2,4 @@
 "ragbox": patch
 ---
 
-Fix wong LlamaCloudIndex config
+Fix issues using LlamaCloud
