@@ -108,7 +108,6 @@ export const AgentTabContent = ({
 
           <ToolsConfig
             form={form}
-            isPrimary={isPrimary}
             handleSaveChanges={handleSaveChanges}
           />
         </form>

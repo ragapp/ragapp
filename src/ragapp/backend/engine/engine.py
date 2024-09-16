@@ -59,6 +59,14 @@ def get_chat_engine(
         filters=filters,
     )
     agents = get_agents(chat_history, query_engine)
+    if len(agents) == 0:
+        raise ValueError("Required at least one agent to run chat engine.")
+
+    # Construct chat mode:
+    # If there is only one agent:
+    # 1. If there is only one query engine tool, use the context chat engine
+    # 2. Otherwise, use the agent workflow
+    # If there are multiple agents, use the agent orchestrator
     if len(agents) == 1:
         agent = agents[0]
         tools = agent.tools
@@ -66,7 +74,9 @@ def get_chat_engine(
         system_prompt = agent.system_prompt
         if citation_prompt is not None:
             system_prompt = f"{system_prompt}\n{citation_prompt}"
-        if len(tools) == 1:
+        if len(tools) == 0:
+            raise ValueError("Required at least one tool to run chat engine.")
+        elif tools[0].metadata.name == "QueryEngine":
             return CondensePlusContextChatEngine(
                 llm=Settings.llm,
                 memory=ChatMemoryBuffer.from_defaults(

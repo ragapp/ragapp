@@ -27,7 +27,6 @@ export const TOOL_ORDER = [
 
 interface ToolConfigProps {
   form: UseFormReturn<AgentConfigType>;
-  isPrimary: boolean;
   handleSaveChanges: () => void;
 }
 
@@ -35,9 +34,8 @@ const SimpleSelection: React.FC<{
   form: UseFormReturn<AgentConfigType>;
   toolName: string;
   toolConfig: { description: string; name: string; label: string };
-  disabled?: boolean;
   handleSaveChanges: () => void;
-}> = ({ form, toolName, toolConfig, disabled, handleSaveChanges }) => (
+}> = ({ form, toolName, toolConfig, handleSaveChanges }) => (
   <FormField
     control={form.control}
     name={`tools.${toolName}` as `tools.${keyof AgentConfigType["tools"]}`}
@@ -51,7 +49,6 @@ const SimpleSelection: React.FC<{
                 field.onChange({ ...field.value, enabled: checked });
                 handleSaveChanges();
               }}
-              disabled={disabled}
             />
           </FormControl>
           <FormLabel className="font-normal">{toolConfig.label}</FormLabel>
@@ -66,7 +63,6 @@ const SimpleSelection: React.FC<{
 
 export const ToolsConfig: React.FC<ToolConfigProps> = ({
   form,
-  isPrimary,
   handleSaveChanges,
 }) => {
   const tools = form.watch("tools");
@@ -97,7 +93,6 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
             form={form}
             toolName={toolId}
             toolConfig={DEFAULT_DUCKDUCKGO_TOOL_CONFIG}
-            disabled={false}
             handleSaveChanges={handleSaveChanges}
           />
         );
@@ -107,7 +102,6 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
             form={form}
             toolName={toolId}
             toolConfig={DEFAULT_WIKIPEDIA_TOOL_CONFIG}
-            disabled={false}
             handleSaveChanges={handleSaveChanges}
           />
         );
@@ -117,7 +111,6 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
             form={form}
             toolName={toolId}
             toolConfig={DEFAULT_QUERY_ENGINE_TOOL_CONFIG}
-            disabled={isPrimary} // Disable for primary agent
             handleSaveChanges={handleSaveChanges}
           />
         );
@@ -136,10 +129,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
             toolConfig && (
               <div
                 key={toolId}
-                className={cn(
-                  "p-4 border rounded-lg",
-                  toolId === "QueryEngine" && isPrimary && "opacity-50", // Disable updating QueryEngine for primary agent
-                )}
+                className="p-4 border rounded-lg"
               >
                 {renderToolConfig(toolId)}
               </div>
