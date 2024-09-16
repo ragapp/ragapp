@@ -34,7 +34,7 @@ interface ToolConfigProps {
 const SimpleSelection: React.FC<{
   form: UseFormReturn<AgentConfigType>;
   toolName: string;
-  toolConfig: { description: string };
+  toolConfig: { description: string; name: string; label: string };
   disabled?: boolean;
   handleSaveChanges: () => void;
 }> = ({ form, toolName, toolConfig, disabled, handleSaveChanges }) => (
@@ -54,7 +54,7 @@ const SimpleSelection: React.FC<{
               disabled={disabled}
             />
           </FormControl>
-          <FormLabel className="font-normal">{toolName}</FormLabel>
+          <FormLabel className="font-normal">{toolConfig.label}</FormLabel>
         </div>
         <FormDescription className="text-xs">
           {toolConfig.description}
@@ -71,8 +71,8 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
 }) => {
   const tools = form.watch("tools");
 
-  const renderToolConfig = (toolName: string) => {
-    switch (toolName) {
+  const renderToolConfig = (toolId: string) => {
+    switch (toolId) {
       case "ImageGenerator":
         return (
           <ImageGeneratorConfig
@@ -95,7 +95,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
         return (
           <SimpleSelection
             form={form}
-            toolName={toolName}
+            toolName={toolId}
             toolConfig={DEFAULT_DUCKDUCKGO_TOOL_CONFIG}
             disabled={false}
             handleSaveChanges={handleSaveChanges}
@@ -105,7 +105,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
         return (
           <SimpleSelection
             form={form}
-            toolName={toolName}
+            toolName={toolId}
             toolConfig={DEFAULT_WIKIPEDIA_TOOL_CONFIG}
             disabled={false}
             handleSaveChanges={handleSaveChanges}
@@ -115,7 +115,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
         return (
           <SimpleSelection
             form={form}
-            toolName={toolName}
+            toolName={toolId}
             toolConfig={DEFAULT_QUERY_ENGINE_TOOL_CONFIG}
             disabled={isPrimary} // Disable for primary agent
             handleSaveChanges={handleSaveChanges}
@@ -130,9 +130,10 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
     <>
       <h3 className="mb-4">Tools</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {TOOL_ORDER.map(
-          (toolName) =>
-            tools[toolName as keyof AgentConfigType["tools"]] && (
+        {TOOL_ORDER.map((toolName) => {
+          const toolConfig = tools[toolName as keyof AgentConfigType["tools"]];
+          return (
+            toolConfig && (
               <div
                 key={toolName}
                 className={cn(
@@ -142,8 +143,9 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
               >
                 {renderToolConfig(toolName)}
               </div>
-            ),
-        )}
+            )
+          );
+        })}
       </div>
     </>
   );

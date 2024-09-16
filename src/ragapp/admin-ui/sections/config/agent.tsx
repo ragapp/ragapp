@@ -153,7 +153,7 @@ export const AgentConfig = () => {
   return (
     <ExpandableSection
       name="agent-config"
-      title="Agents Config"
+      title="Agents"
       description="Configure tools and agents"
       isLoading={isLoading}
     >

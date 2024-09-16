@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const QueryEngineToolConfig = z.object({
   name: z.literal("query_engine"),
-  label: z.string().nullable().optional(),
+  label: z.string(),
   description: z.string(),
   enabled: z.boolean().nullable().optional(),
   config: z.object({}).nullable().optional(),
