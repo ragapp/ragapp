@@ -65,11 +65,12 @@ export const ModelConfig = ({
   const { mutate: updateConfig, isLoading: isSubmitting } = useMutation(
     updateModelConfig,
     {
-      onError: (error: unknown) => {
+      onError: (error: Error) => {
         console.error(error);
         toast({
-          title: "Failed to update model config",
+          title: error.message,
           variant: "destructive",
+          duration: 5000,
         });
         // Fetch the model config again to reset the form
         refetch().then(() => {

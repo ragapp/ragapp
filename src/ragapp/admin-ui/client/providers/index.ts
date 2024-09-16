@@ -112,6 +112,10 @@ export const updateModelConfig = async (
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 400) {
+    const error_message = await res.text();
+      throw new Error(`Failed to update model config. ${error_message}`);
+    }
     throw new Error("Failed to update model config");
   }
   return res.json();
