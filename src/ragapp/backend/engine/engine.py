@@ -19,7 +19,7 @@ from backend.engine.postprocessors import NodeCitationProcessor, get_reranker
 logger = logging.getLogger("uvicorn")
 
 
-def create_chat_engine(
+def get_chat_engine(
     filters=None,
     params=None,
     event_handlers=None,

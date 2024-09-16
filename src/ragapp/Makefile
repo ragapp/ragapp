@@ -1,7 +1,7 @@
 .PHONY: create-llama-app patch-chat build-chat build-admin build-frontends run dev
 
 export PYTHONPATH := ${PYTHONPATH}:./create_llama/backend
-export CREATE_LLAMA_VERSION=0.2.4
+export CREATE_LLAMA_VERSION=0.2.6
 export NEXT_PUBLIC_API_URL=/api/chat
 
 create-llama-app:

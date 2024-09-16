@@ -5,18 +5,14 @@ from typing import List
 from app.api.routers.events import EventCallbackHandler
 from app.api.routers.models import (
     ChatData,
-    Message,
-    Result,
-    SourceNodes,
 )
-from app.engine.query_filter import generate_filters
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 from llama_index.core.agent import AgentRunner
 from llama_index.core.chat_engine import CondensePlusContextChatEngine
-from llama_index.core.chat_engine.types import BaseChatEngine, NodeWithScore
-from llama_index.core.llms import MessageRole
+from llama_index.core.chat_engine.types import NodeWithScore
 
-from backend.engine import create_chat_engine
+from backend.engine import get_chat_engine
+from backend.engine.query_filters import generate_filters
 from backend.routers.chat.vercel_response import (
     AgentsVercelStreamResponse,
     ContextEngineVercelStreamResponse,
@@ -44,7 +40,7 @@ async def chat(
             f"Creating chat engine with filters: {str(filters)}",
         )
         event_handler = EventCallbackHandler()
-        chat_engine = create_chat_engine(
+        chat_engine = get_chat_engine(
             filters=filters,
             params=params,
             event_handlers=[event_handler],
@@ -82,22 +78,6 @@ async def chat(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error in chat engine: {e}",
         ) from e
-
-
-# non-streaming endpoint - delete if not needed
-@r.post("/request")
-async def chat_request(
-    data: ChatData,
-    chat_engine: BaseChatEngine = Depends(create_chat_engine),
-) -> Result:
-    last_message_content = data.get_last_message_content()
-    messages = data.get_history_messages()
-
-    response = await chat_engine.achat(last_message_content, messages)
-    return Result(
-        result=Message(role=MessageRole.ASSISTANT, content=response.response),
-        nodes=SourceNodes.from_source_nodes(response.source_nodes),
-    )
 
 
 def process_response_nodes(
