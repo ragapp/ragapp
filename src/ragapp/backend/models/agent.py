@@ -1,8 +1,8 @@
-import re
+import uuid
 from datetime import datetime
 from typing import Dict
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 
 class ToolConfig(BaseModel):
@@ -19,14 +19,6 @@ class AgentConfig(BaseModel):
     tools: Dict[str, ToolConfig] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    @validator("agent_id")
-    def validate_agent_id(cls, v):
-        if not re.match(r"^[a-zA-Z0-9_-]+$", v):
-            raise ValueError(
-                "agent_id must contain only alphanumeric characters, underscores, and hyphens"
-            )
-        return v
-
     @classmethod
     def create_agent_id(cls, name: str) -> str:
-        return re.sub(r"[^a-z0-9_-]", "", name.lower().replace(" ", "_"))
+        return str(uuid.uuid4())
