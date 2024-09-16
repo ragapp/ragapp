@@ -1,4 +1,5 @@
 from typing import ClassVar, Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -11,7 +12,7 @@ class E2BInterpreterToolConfig(BaseModel):
 
 class E2BInterpreterTool(BaseModel):
     config_id: ClassVar[str] = "interpreter"
-    name: Literal["interpreter"] = "interpreter"
+    name: Literal["Interpreter"] = "Interpreter"
     tool_type: Literal["local"] = "local"
     label: Literal["Code Interpreter"] = "Code Interpreter"
     custom_prompt: ClassVar[

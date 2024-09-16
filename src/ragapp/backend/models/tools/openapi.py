@@ -1,4 +1,5 @@
-from typing import Dict, ClassVar, Literal
+from typing import ClassVar, Dict, Literal
+
 from pydantic import BaseModel, Field
 
 

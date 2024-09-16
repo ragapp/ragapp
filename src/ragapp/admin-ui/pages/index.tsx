@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import { AgentConfig } from "@/sections/config/agent";
 import { ChatConfig } from "@/sections/config/chat";
 import { ModelConfig } from "@/sections/config/model";
-import { ToolConfig } from "@/sections/config/tool";
 import { DemoChat } from "@/sections/demoChat";
 import { Footer } from "@/sections/footer";
 import { Knowledge } from "@/sections/knowledge";
@@ -67,6 +67,13 @@ export default function Home() {
                 "m-auto": !configured,
               })}
             >
+              {configured && (
+                <>
+                  <AgentConfig />
+                  <Knowledge />
+                  <ChatConfig />
+                </>
+              )}
               <ModelConfig
                 sectionTitle={configured ? "Update model" : "Start"}
                 sectionDescription={
@@ -77,13 +84,6 @@ export default function Home() {
                 configured={configured}
                 onConfigChange={handleModelConfigChange}
               />
-              {configured && (
-                <>
-                  <ChatConfig />
-                  <ToolConfig />
-                  <Knowledge />
-                </>
-              )}
             </div>
             {configured && (
               <div className="flex-1 overflow-y-auto p-4">

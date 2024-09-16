@@ -2,9 +2,10 @@ import { z } from "zod";
 
 export const OpenAPIToolConfig = z.object({
   name: z.literal("openapi"),
-  label: z.string(),
+  label: z.string().nullable().optional(),
+  enabled: z.boolean().nullable().optional(),
   description: z.string(),
-  enabled: z.boolean(),
+  priority: z.number(),
   config: z
     .object({
       openapi_uri: z
@@ -20,6 +21,7 @@ export const OpenAPIToolConfig = z.object({
                 return false;
               }
             }
+            return false;
           },
           {
             message: "OpenAPI URL is not valid",
@@ -29,13 +31,17 @@ export const OpenAPIToolConfig = z.object({
     .nullable()
     .optional(),
 });
+
 export type OpenAPIToolConfigType = z.infer<typeof OpenAPIToolConfig>;
+
 export const DEFAULT_OPENAPI_TOOL_CONFIG: OpenAPIToolConfigType = {
   name: "openapi",
   label: "OpenAPI",
-  description: "OpenAPI tool description",
+  description:
+    "Make requests to external APIs using the information from the OpenAPI spec",
   enabled: false,
   config: {
-    openapi_uri: "",
+    openapi_uri: null,
   },
+  priority: 10,
 };
