@@ -130,18 +130,18 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
     <>
       <h3 className="mb-4">Tools</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {TOOL_ORDER.map((toolName) => {
-          const toolConfig = tools[toolName as keyof AgentConfigType["tools"]];
+        {TOOL_ORDER.map((toolId) => {
+          const toolConfig = tools[toolId as keyof AgentConfigType["tools"]];
           return (
             toolConfig && (
               <div
-                key={toolName}
+                key={toolId}
                 className={cn(
                   "p-4 border rounded-lg",
-                  toolName === "QueryEngine" && isPrimary && "opacity-50", // Disable updating QueryEngine for primary agent
+                  toolId === "QueryEngine" && isPrimary && "opacity-50", // Disable updating QueryEngine for primary agent
                 )}
               >
-                {renderToolConfig(toolName)}
+                {renderToolConfig(toolId)}
               </div>
             )
           );
