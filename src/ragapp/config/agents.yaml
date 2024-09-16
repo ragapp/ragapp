@@ -1,7 +1,8 @@
-agent1:
-  name: Researcher
-  role: Information Gatherer
-  system_prompt: I'm helpful on using tool to get helpful information
+8d53880d-906d-404c-b5f4-91fb07567b85:
+  created_at: 2024-09-16 02:53:57.746566
+  name: Default
+  role: Use the provided knowledge to answer user question
+  system_prompt: You are a helpful assistant.
   tools:
     DuckDuckGo:
       config: {}
@@ -12,10 +13,11 @@ agent1:
       enabled: false
     Interpreter:
       config:
-        api_key: ''
+        api_key: null
       enabled: false
     OpenAPI:
-      config: {}
+      config:
+        openapi_uri: null
       enabled: false
     QueryEngine:
       config: {}
