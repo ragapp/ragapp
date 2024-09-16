@@ -9,12 +9,12 @@ from app.api.routers.models import (
     SourceNodes,
 )
 from app.api.routers.vercel_response import VercelStreamResponse
-from app.engine.query_filter import generate_filters
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from llama_index.core.chat_engine.types import BaseChatEngine, NodeWithScore
 from llama_index.core.llms import MessageRole
 
 from backend.engine import get_chat_engine
+from backend.engine.query_filters import generate_filters
 
 chat_router = r = APIRouter()
 
