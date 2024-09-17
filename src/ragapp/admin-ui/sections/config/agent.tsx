@@ -177,6 +177,8 @@ export const AgentConfig = () => {
       refetchOnWindowFocus: false,
       refetchOnMount: true,
       refetchOnReconnect: true,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      cacheTime: 1000 * 60 * 10, // 10 minutes
     });
 
   const isLoading = isLoadingAgents || isCheckingSupport || isSubmitting;
