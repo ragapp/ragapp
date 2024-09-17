@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 class ImageGeneratorToolConfig(BaseModel):
     api_key: str | None = Field(
         default=None,
-        description="The API key to use for the Image Generator.",
+        description="The Stability AI API key to use for the image generator.",
     )
 
 
