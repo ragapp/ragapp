@@ -1,6 +1,6 @@
 {
   "name": "ragbox",
-  "version": "0.0.24",
+  "version": "0.1.0",
   "private": true,
   "scripts": {},
   "devDependencies": {
