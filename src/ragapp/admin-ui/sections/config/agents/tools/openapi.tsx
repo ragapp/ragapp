@@ -38,11 +38,16 @@ export const OpenAPIConfig = ({
   }, [isEnabled, openApiUri]); // Include isEnabled and openApiUri to satisfy the linter
 
   const handleInputBlur = () => {
-    form.trigger("tools.OpenAPI.config.openapi_uri").then((isValid) => {
-      if (isValid && openApiUri) {
-        handleSaveChanges();
-      }
-    });
+    const checked = form.getValues("tools.OpenAPI.enabled");
+    if (checked) {
+      form.trigger("tools.OpenAPI.config.openapi_uri").then((isValid) => {
+        if (isValid && openApiUri) {
+          handleSaveChanges();
+        }
+      });
+    } else {
+      handleSaveChanges();
+    }
   };
 
   const toggleAdvanced = (e: React.MouseEvent) => {
@@ -60,9 +65,10 @@ export const OpenAPIConfig = ({
         message: "OpenAPI URL is required to enable this tool",
       });
     } else if (!checked) {
-      form.setValue("tools.OpenAPI.config.openapi_uri", "");
       form.clearErrors("tools.OpenAPI.config.openapi_uri");
       setShowAdvanced(false);
+      handleSaveChanges();
+    } else {
       handleSaveChanges();
     }
   };

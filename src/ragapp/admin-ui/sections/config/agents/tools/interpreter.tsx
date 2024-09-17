@@ -38,11 +38,16 @@ export const E2BInterpreterConfig = ({
   }, [isEnabled, apiKey]); // Include isEnabled and apiKey to satisfy the linter
 
   const handleInputBlur = () => {
-    form.trigger("tools.Interpreter.config.api_key").then((isValid) => {
-      if (isValid && apiKey) {
-        handleSaveChanges();
-      }
-    });
+    const checked = form.getValues("tools.Interpreter.enabled");
+    if (checked) {
+      form.trigger("tools.Interpreter.config.api_key").then((isValid) => {
+        if (isValid && apiKey) {
+          handleSaveChanges();
+        }
+      });
+    } else {
+      handleSaveChanges();
+    }
   };
 
   const toggleAdvanced = (e: React.MouseEvent) => {
@@ -60,9 +65,10 @@ export const E2BInterpreterConfig = ({
         message: "API Key is required to enable this tool",
       });
     } else if (!checked) {
-      form.setValue("tools.Interpreter.config.api_key", "");
       form.clearErrors("tools.Interpreter.config.api_key");
       setShowAdvanced(false);
+      handleSaveChanges();
+    } else {
       handleSaveChanges();
     }
   };
@@ -123,6 +129,7 @@ export const E2BInterpreterConfig = ({
                     href="https://e2b.dev/docs/getting-started/api-key"
                     target="_blank"
                     rel="noreferrer"
+                    className="break-words overflow-wrap-anywhere"
                   >
                     https://e2b.dev/docs/getting-started/api-key
                   </a>
