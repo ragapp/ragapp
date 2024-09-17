@@ -30,16 +30,9 @@ export const AgentConfig = () => {
     getAgents,
     {
       onSuccess: (data) => {
-        // Sort agents by creation time
         const sortedAgents = [...data].sort((a, b) => {
-          const dateA =
-            a.created_at instanceof Date
-              ? a.created_at
-              : new Date(a.created_at);
-          const dateB =
-            b.created_at instanceof Date
-              ? b.created_at
-              : new Date(b.created_at);
+          const dateA = new Date(a.created_at);
+          const dateB = new Date(b.created_at);
           return dateA.getTime() - dateB.getTime();
         });
         setAgents(sortedAgents);
@@ -65,10 +58,12 @@ export const AgentConfig = () => {
       updateAgent(agentId, data),
     {
       onMutate: () => setIsSubmitting(true),
-      onSettled: () => setIsSubmitting(false),
+      onSettled: () => {
+        setIsSubmitting(false);
+        queryClient.invalidateQueries("agents"); // Invalidate the agents query to refetch
+      },
       onError: (error: Error) => {
         console.error("Mutation error:", error);
-        // Don't handle the error here, let it propagate
       },
     },
   );
@@ -98,40 +93,11 @@ export const AgentConfig = () => {
   const handleSaveChanges = async (): Promise<boolean> => {
     const data = form.getValues();
     if (activeAgent) {
-      const previousAgentData = agents.find(agent => agent.agent_id === activeAgent);
       try {
         await updateAgentMutation({ agentId: activeAgent, data });
         return true;
       } catch (error) {
-        // Rollback to previous values
-        if (previousAgentData) {
-          form.reset(previousAgentData);
-          setAgents(prevAgents => prevAgents.map(agent =>
-            agent.agent_id === activeAgent ? previousAgentData : agent
-          ));
-        } else {
-          console.warn("No previous agent data found for rollback");
-        }
-
-        // Handle the specific error from the server
-        if (error instanceof Error && 'response' in error) {
-          const responseError = error as { response?: { data?: { detail?: string } } };
-          const errorMessage = responseError.response?.data?.detail || 'Unknown error occurred';
-          toast({
-            title: "Error",
-            description: `Failed to save changes. ${errorMessage}`,
-            variant: "destructive",
-            duration: 5000,
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: "Failed to save changes. An unexpected error occurred.",
-            variant: "destructive",
-            duration: 5000,
-          });
-        }
-
+        // Handle error
         return false;
       }
     }
@@ -151,13 +117,11 @@ export const AgentConfig = () => {
   const removeAgent = (agentId: string) => {
     deleteAgentMutation(agentId, {
       onSuccess: () => {
-        // Update local state immediately
         setAgents((prevAgents) => {
           const updatedAgents = prevAgents.filter(
             (a) => a.agent_id !== agentId,
           );
 
-          // If we're removing the active agent, select a new one
           if (activeAgent === agentId) {
             const newActiveAgent = updatedAgents[0]?.agent_id || null;
             setActiveAgent(newActiveAgent);
@@ -166,7 +130,6 @@ export const AgentConfig = () => {
           return updatedAgents;
         });
 
-        // Refetch agents to ensure sync with server
         queryClient.invalidateQueries("agents");
       },
     });
@@ -185,13 +148,16 @@ export const AgentConfig = () => {
 
   const handleTabChange = async (newTabValue: string) => {
     if (activeAgent && activeAgent !== newTabValue) {
-      setIsSubmitting(true);
+      if (isSubmitting) return; // Prevent multiple submissions
+      setIsSubmitting(true); // Set loading state
       const saveSuccess = await handleSaveChanges();
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Reset loading state
       if (saveSuccess) {
         setActiveAgent(newTabValue);
+        // Fetch the latest data for the new active agent
+        const newAgentData = await getAgents(); // Fetch latest agents
+        setAgents(newAgentData); // Update agents state
       } else {
-        // If save fails, don't change the tab
         toast({
           title: "Error",
           description: "Failed to save changes. Please correct any errors before switching tabs.",
