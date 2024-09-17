@@ -1,5 +1,15 @@
 # ragbox
 
+## 0.1.0
+
+### Minor Changes
+
+- 8e73b74: Add support for multi-agents
+
+### Patch Changes
+
+- b96763e: Fix issues using LlamaCloud
+
 ## 0.0.24
 
 ### Patch Changes
