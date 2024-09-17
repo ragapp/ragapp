@@ -10,6 +10,7 @@ import {
 } from "@/client/agent";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Tabs } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -29,24 +30,20 @@ export const AgentConfig = () => {
     getAgents,
     {
       onSuccess: (data) => {
-        // Sort agents by creation time
         const sortedAgents = [...data].sort((a, b) => {
-          const dateA =
-            a.created_at instanceof Date
-              ? a.created_at
-              : new Date(a.created_at);
-          const dateB =
-            b.created_at instanceof Date
-              ? b.created_at
-              : new Date(b.created_at);
+          const dateA = new Date(a.created_at);
+          const dateB = new Date(b.created_at);
           return dateA.getTime() - dateB.getTime();
         });
         setAgents(sortedAgents);
+        if (!activeAgent && sortedAgents.length > 0) {
+          setActiveAgent(sortedAgents[0].agent_id);
+        }
       },
     },
   );
 
-  const { mutate: createAgentMutation } = useMutation(createAgent, {
+  const { mutateAsync: createAgentMutation } = useMutation(createAgent, {
     onMutate: () => setIsSubmitting(true),
     onSettled: () => setIsSubmitting(false),
     onSuccess: (newAgent: AgentConfigType) => {
@@ -56,19 +53,17 @@ export const AgentConfig = () => {
     },
   });
 
-  const { mutate: updateAgentMutation } = useMutation(
+  const { mutateAsync: updateAgentMutation } = useMutation(
     ({ agentId, data }: { agentId: string; data: AgentConfigType }) =>
       updateAgent(agentId, data),
     {
       onMutate: () => setIsSubmitting(true),
-      onSettled: () => setIsSubmitting(false),
-      onSuccess: (updatedAgent) => {
-        queryClient.invalidateQueries("agents");
-        setAgents((prevAgents) =>
-          prevAgents.map((a) =>
-            a.agent_id === updatedAgent.agent_id ? updatedAgent : a,
-          ),
-        );
+      onSettled: () => {
+        setIsSubmitting(false);
+        queryClient.invalidateQueries("agents"); // Invalidate the agents query to refetch
+      },
+      onError: (error: Error) => {
+        console.error("Mutation error:", error);
       },
     },
   );
@@ -91,20 +86,22 @@ export const AgentConfig = () => {
   useEffect(() => {
     const currentAgent = agents.find((agent) => agent.agent_id === activeAgent);
     if (currentAgent) {
-      form.reset({
-        name: currentAgent.name,
-        role: currentAgent.role,
-        system_prompt: currentAgent.system_prompt,
-        tools: currentAgent.tools,
-      });
+      form.reset(currentAgent);
     }
   }, [activeAgent, agents, form]);
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async (): Promise<boolean> => {
     const data = form.getValues();
     if (activeAgent) {
-      updateAgentMutation({ agentId: activeAgent, data });
+      try {
+        await updateAgentMutation({ agentId: activeAgent, data });
+        return true;
+      } catch (error) {
+        // Handle error
+        return false;
+      }
     }
+    return false;
   };
 
   const addNewAgent = () => {
@@ -120,13 +117,11 @@ export const AgentConfig = () => {
   const removeAgent = (agentId: string) => {
     deleteAgentMutation(agentId, {
       onSuccess: () => {
-        // Update local state immediately
         setAgents((prevAgents) => {
           const updatedAgents = prevAgents.filter(
             (a) => a.agent_id !== agentId,
           );
 
-          // If we're removing the active agent, select a new one
           if (activeAgent === agentId) {
             const newActiveAgent = updatedAgents[0]?.agent_id || null;
             setActiveAgent(newActiveAgent);
@@ -135,7 +130,6 @@ export const AgentConfig = () => {
           return updatedAgents;
         });
 
-        // Refetch agents to ensure sync with server
         queryClient.invalidateQueries("agents");
       },
     });
@@ -146,9 +140,35 @@ export const AgentConfig = () => {
       refetchOnWindowFocus: false,
       refetchOnMount: true,
       refetchOnReconnect: true,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      cacheTime: 1000 * 60 * 10, // 10 minutes
     });
 
   const isLoading = isLoadingAgents || isCheckingSupport || isSubmitting;
+
+  const handleTabChange = async (newTabValue: string) => {
+    if (activeAgent && activeAgent !== newTabValue) {
+      if (isSubmitting) return; // Prevent multiple submissions
+      setIsSubmitting(true); // Set loading state
+      const saveSuccess = await handleSaveChanges();
+      setIsSubmitting(false); // Reset loading state
+      if (saveSuccess) {
+        setActiveAgent(newTabValue);
+        // Fetch the latest data for the new active agent
+        const newAgentData = await getAgents(); // Fetch latest agents
+        setAgents(newAgentData); // Update agents state
+      } else {
+        toast({
+          title: "Error",
+          description:
+            "Failed to save changes. Please correct any errors before switching tabs.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      setActiveAgent(newTabValue);
+    }
+  };
 
   return (
     <ExpandableSection
@@ -163,7 +183,7 @@ export const AgentConfig = () => {
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : (
-        <Tabs value={activeAgent || undefined} onValueChange={setActiveAgent}>
+        <Tabs value={activeAgent || undefined} onValueChange={handleTabChange}>
           {isMultiAgentSupported ? (
             <AgentTabList
               agents={agents}

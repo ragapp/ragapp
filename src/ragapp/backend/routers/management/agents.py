@@ -84,7 +84,7 @@ def update_agent(
     try:
         return agent_manager.update_agent(agent_id, agent_data)
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @r.delete("/{agent_id}")

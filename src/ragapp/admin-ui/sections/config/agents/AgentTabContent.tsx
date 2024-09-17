@@ -22,10 +22,11 @@ export const AgentTabContent = ({
 }: {
   agent: AgentConfigType;
   form: UseFormReturn<AgentConfigType>;
-  handleSaveChanges: () => void;
+  handleSaveChanges: () => Promise<boolean>;
   isPrimary: boolean;
 }) => {
   const handleInputBlur = () => {
+    // Call handleSaveChanges on blur
     handleSaveChanges();
   };
 
@@ -49,7 +50,10 @@ export const AgentTabContent = ({
       className="p-4 pt-8 rounded-md border"
     >
       <Form {...form}>
-        <form className="space-y-6">
+        <form
+          className="space-y-6"
+          onSubmit={form.handleSubmit(handleSaveChanges)}
+        >
           {!isPrimary && (
             <div className="grid grid-cols-2 gap-4">
               <FormField

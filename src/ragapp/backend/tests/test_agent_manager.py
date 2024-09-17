@@ -1,3 +1,4 @@
+import threading
 from unittest.mock import mock_open, patch
 
 import pytest
@@ -45,6 +46,8 @@ def sample_config():
 
 @pytest.fixture
 def agent_manager(sample_config):
+    # Reset the Singleton instance before each test
+    AgentManager._instance = None
     with patch("builtins.open", mock_open(read_data=yaml.dump(sample_config))):
         with patch(
             "backend.controllers.agent_prompt_manager.AgentPromptManager.update_agent_system_prompts"
@@ -162,3 +165,33 @@ def test_create_agent_with_custom_id(agent_manager):
     assert new_agent.role == "Assistant"
     assert "custom_id" in agent_manager.config
     assert "agent_id" not in agent_manager.config["custom_id"]
+
+
+def test_concurrent_access(agent_manager):
+    def create_agent():
+        agent_data = {
+            "agent_id": f"agent_{threading.current_thread().name}",
+            "name": f"Agent {threading.current_thread().name}",
+            "system_prompt": f"You are {threading.current_thread().name}",
+            "role": "Assistant",
+        }
+        with patch.object(agent_manager, "_update_config_file"):
+            with patch(
+                "backend.controllers.agent_prompt_manager.AgentPromptManager.update_agent_system_prompts"
+            ):
+                agent_manager.create_agent(agent_data)
+
+    threads = []
+    for i in range(5):
+        thread = threading.Thread(target=create_agent, name=f"Thread-{i}")
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    agents = agent_manager.get_agents()
+    assert len(agents) == 2 + 5  # existing 2 plus 5 new
+    names = [agent.name for agent in agents]
+    for i in range(5):
+        assert f"Agent Thread-{i}" in names

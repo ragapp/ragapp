@@ -29,3 +29,8 @@ class E2BInterpreterTool(BaseModel):
         default=E2BInterpreterToolConfig(),
     )
     enabled: bool = False
+
+    def validate_config(self) -> bool:
+        if self.enabled and not self.config.api_key:
+            raise ValueError("API key is required for enabled Interpreter tool")
+        return self.config
