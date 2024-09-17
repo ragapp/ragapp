@@ -59,6 +59,9 @@ def get_chat_engine(
         filters=filters,
     )
     agents = get_agents(chat_history, query_engine)
+    if len(agents) == 0:
+        raise ValueError("Required at least one agent to run chat engine.")
+
     if len(agents) == 1:
         agent = agents[0]
         tools = agent.tools
@@ -66,7 +69,7 @@ def get_chat_engine(
         system_prompt = agent.system_prompt
         if citation_prompt is not None:
             system_prompt = f"{system_prompt}\n{citation_prompt}"
-        if len(tools) == 1:
+        if len(tools) == 1 and tools[0].metadata.name == "QueryEngine":
             return CondensePlusContextChatEngine(
                 llm=Settings.llm,
                 memory=ChatMemoryBuffer.from_defaults(

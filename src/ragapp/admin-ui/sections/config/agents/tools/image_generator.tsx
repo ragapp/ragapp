@@ -38,11 +38,16 @@ export const ImageGeneratorConfig = ({
   }, [isEnabled, apiKey]); // Include isEnabled and apiKey to satisfy the linter
 
   const handleInputBlur = () => {
-    form.trigger("tools.ImageGenerator.config.api_key").then((isValid) => {
-      if (isValid && apiKey) {
-        handleSaveChanges();
-      }
-    });
+    const checked = form.getValues("tools.ImageGenerator.enabled");
+    if (checked) {
+      form.trigger("tools.ImageGenerator.config.api_key").then((isValid) => {
+        if (isValid && apiKey) {
+          handleSaveChanges();
+        }
+      });
+    } else {
+      handleSaveChanges();
+    }
   };
 
   const toggleAdvanced = (e: React.MouseEvent) => {
@@ -60,9 +65,10 @@ export const ImageGeneratorConfig = ({
         message: "API Key is required to enable this tool",
       });
     } else if (!checked) {
-      form.setValue("tools.ImageGenerator.config.api_key", "");
       form.clearErrors("tools.ImageGenerator.config.api_key");
       setShowAdvanced(false);
+      handleSaveChanges();
+    } else {
       handleSaveChanges();
     }
   };
@@ -123,6 +129,7 @@ export const ImageGeneratorConfig = ({
                     href="https://platform.stability.ai/account/keys"
                     target="_blank"
                     rel="noreferrer"
+                    className="break-words overflow-wrap-anywhere"
                   >
                     https://platform.stability.ai/account/keys
                   </a>

@@ -6,6 +6,7 @@ const ExpandableSection = ({
   title,
   description,
   open,
+  openByDefault,
   children,
   isLoading,
 }: {
@@ -13,10 +14,13 @@ const ExpandableSection = ({
   title: string;
   description?: string;
   open?: boolean;
+  openByDefault?: boolean;
   children: React.ReactNode;
   isLoading?: boolean;
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean | null>(null);
+  const [isOpen, setIsOpen] = useState<boolean | null>(
+    openByDefault ? true : null,
+  );
 
   // Load the state from local storage when the component mounts
   useEffect(() => {

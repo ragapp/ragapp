@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import lru_cache
 from typing import Dict, List, Tuple
 
 import yaml
@@ -101,29 +102,16 @@ class AgentManager:
             if tool_name not in updated_data["tools"]:
                 updated_data["tools"][tool_name] = ToolConfig().dict()
 
-        # Ensure QueryEngine is enabled if this is the only agent
-        if len(self.config) == 1:
-            updated_data["tools"]["QueryEngine"]["enabled"] = True
-
         updated_agent = AgentConfig(**updated_data)
         self.config[agent_id] = updated_agent.dict(exclude={"agent_id"})
         self._update_agent_config_system_prompt(agent_id)
         self._update_config_file()
-        self._ensure_query_engine_enabled()
         return updated_agent
 
     def delete_agent(self, agent_id: str):
         if agent_id in self.config:
             del self.config[agent_id]
             self._update_config_file()
-            self._ensure_query_engine_enabled()
-
-    def _ensure_query_engine_enabled(self):
-        if len(self.config) == 1:
-            remaining_agent_id = next(iter(self.config))
-            self.config[remaining_agent_id]["tools"]["QueryEngine"]["enabled"] = True
-            self._update_config_file()
-            AgentPromptManager.update_agent_system_prompts(self.get_agents())
 
     def get_agent_tools(self, agent_id: str) -> List[Tuple[str, object]]:
         agent = self.config.get(agent_id)
@@ -168,7 +156,9 @@ class AgentManager:
     def is_using_multi_agents_mode(self):
         return len(self.get_agents()) > 1
 
-    def check_supported_multi_agents_model(self, model_provider: str, model: str):
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def check_supported_multi_agents_model(model_provider: str, model: str):
         match model_provider:
             case "openai":
                 from llama_index.llms.openai import OpenAI
@@ -194,23 +184,6 @@ class AgentManager:
                 return False
 
         return llm.metadata.is_function_calling_model
-
-    @classmethod
-    def is_model_supported_for_multi_agents(cls, model_provider: str, model: str):
-        if (
-            model_provider == "openai"
-            or model_provider == "groq"
-            or model_provider == "azure-openai"
-            or model_provider == "ollama"
-        ):
-            return True
-        elif model_provider == "mistral":
-            from llama_index.llms.mistralai.utils import (
-                is_mistralai_function_calling_model,
-            )
-
-            return is_mistralai_function_calling_model(model)
-        return False
 
 
 def agent_manager():

@@ -24,7 +24,6 @@ def get_tool(tool_name: str, config: dict, query_engine=None):
     tool_config = config.config
     if isinstance(tool_config, BaseModel):
         tool_config = tool_config.dict()
-    print("tool_config", tool_config)
     tools = ToolFactory.load_tools(config.tool_type, config.config_id, tool_config)
     return tools[0]
 
