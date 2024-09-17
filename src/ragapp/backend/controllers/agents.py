@@ -89,8 +89,13 @@ class AgentManager:
 
     def create_agent(self, agent_data: Dict) -> AgentConfig:
         with self._config_lock:
-            if "agent_id" not in agent_data:
+            agent_id = agent_data.get("agent_id")
+            if not agent_id:
                 agent_data["agent_id"] = AgentConfig.create_agent_id(agent_data["name"])
+                agent_id = agent_data["agent_id"]
+
+            if agent_id in self.config:
+                raise ValueError(f"Agent with id {agent_id} already exists")
 
             if "role" not in agent_data:
                 raise ValueError("Role is required when creating an agent")

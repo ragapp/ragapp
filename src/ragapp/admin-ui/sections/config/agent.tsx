@@ -185,7 +185,9 @@ export const AgentConfig = () => {
 
   const handleTabChange = async (newTabValue: string) => {
     if (activeAgent && activeAgent !== newTabValue) {
+      setIsSubmitting(true);
       const saveSuccess = await handleSaveChanges();
+      setIsSubmitting(false);
       if (saveSuccess) {
         setActiveAgent(newTabValue);
       } else {
