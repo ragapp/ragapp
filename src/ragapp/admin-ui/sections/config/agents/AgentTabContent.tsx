@@ -50,7 +50,10 @@ export const AgentTabContent = ({
       className="p-4 pt-8 rounded-md border"
     >
       <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(handleSaveChanges)}>
+        <form
+          className="space-y-6"
+          onSubmit={form.handleSubmit(handleSaveChanges)}
+        >
           {!isPrimary && (
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -79,10 +82,7 @@ export const AgentTabContent = ({
                   <FormItem>
                     <FormLabel>Agent Role</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        onBlur={handleInputBlur}
-                      />
+                      <Input {...field} onBlur={handleInputBlur} />
                     </FormControl>
                     <FormDescription>
                       Helps RAGapp to assign the right agent for a task.

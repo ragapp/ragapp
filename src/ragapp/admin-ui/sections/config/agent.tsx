@@ -10,6 +10,7 @@ import {
 } from "@/client/agent";
 import { ExpandableSection } from "@/components/ui/custom/expandableSection";
 import { Tabs } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -17,7 +18,6 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AgentTabContent } from "./agents/AgentTabContent";
 import { AgentTabList } from "./agents/AgentTabList";
-import { toast } from "@/components/ui/use-toast";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -160,7 +160,8 @@ export const AgentConfig = () => {
       } else {
         toast({
           title: "Error",
-          description: "Failed to save changes. Please correct any errors before switching tabs.",
+          description:
+            "Failed to save changes. Please correct any errors before switching tabs.",
           variant: "destructive",
         });
       }
