@@ -156,6 +156,7 @@ export const AgentConfig = () => {
       title="Agents"
       description="Configure tools and agents"
       isLoading={isLoading}
+      openByDefault={true}
     >
       {isLoadingAgents || isCheckingSupport ? (
         <div className="flex justify-center items-center h-16">
