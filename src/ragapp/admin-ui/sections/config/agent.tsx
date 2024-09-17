@@ -42,6 +42,9 @@ export const AgentConfig = () => {
           return dateA.getTime() - dateB.getTime();
         });
         setAgents(sortedAgents);
+        if (!activeAgent && sortedAgents.length > 0) {
+          setActiveAgent(sortedAgents[0].agent_id);
+        }
       },
     },
   );
@@ -91,16 +94,11 @@ export const AgentConfig = () => {
   useEffect(() => {
     const currentAgent = agents.find((agent) => agent.agent_id === activeAgent);
     if (currentAgent) {
-      form.reset({
-        name: currentAgent.name,
-        role: currentAgent.role,
-        system_prompt: currentAgent.system_prompt,
-        tools: currentAgent.tools,
-      });
+      form.reset(currentAgent);
     }
   }, [activeAgent, agents, form]);
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     const data = form.getValues();
     if (activeAgent) {
       updateAgentMutation({ agentId: activeAgent, data });
@@ -150,6 +148,13 @@ export const AgentConfig = () => {
 
   const isLoading = isLoadingAgents || isCheckingSupport || isSubmitting;
 
+  const handleTabChange = async (newTabValue: string) => {
+    if (activeAgent && activeAgent !== newTabValue) {
+      await handleSaveChanges();
+    }
+    setActiveAgent(newTabValue);
+  };
+
   return (
     <ExpandableSection
       name="agent-config"
@@ -163,7 +168,7 @@ export const AgentConfig = () => {
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : (
-        <Tabs value={activeAgent || undefined} onValueChange={setActiveAgent}>
+        <Tabs value={activeAgent || undefined} onValueChange={handleTabChange}>
           {isMultiAgentSupported ? (
             <AgentTabList
               agents={agents}
