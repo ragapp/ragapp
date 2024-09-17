@@ -98,11 +98,27 @@ class AgentManager:
 
         if "tools" not in updated_data:
             updated_data["tools"] = {}
-        for tool_name in self.available_tools:
-            if tool_name not in updated_data["tools"]:
-                updated_data["tools"][tool_name] = ToolConfig().dict()
 
-        updated_agent = AgentConfig(**updated_data)
+        for tool_name, tool_class in self.available_tools.items():
+            if tool_name not in updated_data["tools"]:
+                updated_data["tools"][tool_name] = tool_class().dict()
+            else:
+                try:
+                    # This will trigger the validation
+                    tool_instance = tool_class(**updated_data["tools"][tool_name])
+                    # if data model has validate_config method, call it
+                    if hasattr(tool_instance, "validate_config"):
+                        if not tool_instance.validate_config():
+                            raise ValueError(f"Invalid configuration for {tool_name}")
+                    updated_data["tools"][tool_name] = tool_instance.dict()
+                except ValueError as e:
+                    raise ValueError(f"Invalid configuration for {tool_name}: {str(e)}")
+
+        try:
+            updated_agent = AgentConfig(**updated_data)
+        except ValueError as e:
+            raise ValueError(f"Invalid agent configuration: {str(e)}")
+
         self.config[agent_id] = updated_agent.dict(exclude={"agent_id"})
         self._update_agent_config_system_prompt(agent_id)
         self._update_config_file()

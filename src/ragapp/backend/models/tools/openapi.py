@@ -24,3 +24,8 @@ class OpenAPITool(BaseModel):
         default=OpenAPIToolConfig(),
     )
     enabled: bool = False
+
+    def validate_config(self) -> bool:
+        if self.enabled and not self.config.openapi_uri:
+            raise ValueError("OpenAPI URI is required for enabled OpenAPI tool")
+        return True

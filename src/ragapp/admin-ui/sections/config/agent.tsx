@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AgentTabContent } from "./agents/AgentTabContent";
 import { AgentTabList } from "./agents/AgentTabList";
+import { toast } from "@/components/ui/use-toast";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -49,7 +50,7 @@ export const AgentConfig = () => {
     },
   );
 
-  const { mutate: createAgentMutation } = useMutation(createAgent, {
+  const { mutateAsync: createAgentMutation } = useMutation(createAgent, {
     onMutate: () => setIsSubmitting(true),
     onSettled: () => setIsSubmitting(false),
     onSuccess: (newAgent: AgentConfigType) => {
@@ -59,19 +60,15 @@ export const AgentConfig = () => {
     },
   });
 
-  const { mutate: updateAgentMutation } = useMutation(
+  const { mutateAsync: updateAgentMutation } = useMutation(
     ({ agentId, data }: { agentId: string; data: AgentConfigType }) =>
       updateAgent(agentId, data),
     {
       onMutate: () => setIsSubmitting(true),
       onSettled: () => setIsSubmitting(false),
-      onSuccess: (updatedAgent) => {
-        queryClient.invalidateQueries("agents");
-        setAgents((prevAgents) =>
-          prevAgents.map((a) =>
-            a.agent_id === updatedAgent.agent_id ? updatedAgent : a,
-          ),
-        );
+      onError: (error: Error) => {
+        console.error("Mutation error:", error);
+        // Don't handle the error here, let it propagate
       },
     },
   );
@@ -98,11 +95,47 @@ export const AgentConfig = () => {
     }
   }, [activeAgent, agents, form]);
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (): Promise<boolean> => {
     const data = form.getValues();
     if (activeAgent) {
-      updateAgentMutation({ agentId: activeAgent, data });
+      const previousAgentData = agents.find(agent => agent.agent_id === activeAgent);
+      try {
+        await updateAgentMutation({ agentId: activeAgent, data });
+        return true;
+      } catch (error) {
+        // Rollback to previous values
+        if (previousAgentData) {
+          form.reset(previousAgentData);
+          setAgents(prevAgents => prevAgents.map(agent =>
+            agent.agent_id === activeAgent ? previousAgentData : agent
+          ));
+        } else {
+          console.warn("No previous agent data found for rollback");
+        }
+
+        // Handle the specific error from the server
+        if (error instanceof Error && 'response' in error) {
+          const responseError = error as { response?: { data?: { detail?: string } } };
+          const errorMessage = responseError.response?.data?.detail || 'Unknown error occurred';
+          toast({
+            title: "Error",
+            description: `Failed to save changes. ${errorMessage}`,
+            variant: "destructive",
+            duration: 5000,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to save changes. An unexpected error occurred.",
+            variant: "destructive",
+            duration: 5000,
+          });
+        }
+
+        return false;
+      }
     }
+    return false;
   };
 
   const addNewAgent = () => {
@@ -150,9 +183,20 @@ export const AgentConfig = () => {
 
   const handleTabChange = async (newTabValue: string) => {
     if (activeAgent && activeAgent !== newTabValue) {
-      await handleSaveChanges();
+      const saveSuccess = await handleSaveChanges();
+      if (saveSuccess) {
+        setActiveAgent(newTabValue);
+      } else {
+        // If save fails, don't change the tab
+        toast({
+          title: "Error",
+          description: "Failed to save changes. Please correct any errors before switching tabs.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      setActiveAgent(newTabValue);
     }
-    setActiveAgent(newTabValue);
   };
 
   return (
