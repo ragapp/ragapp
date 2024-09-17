@@ -10,7 +10,6 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
 import { ImageGeneratorConfig } from "./tools/image_generator";
 import { E2BInterpreterConfig } from "./tools/interpreter";
@@ -127,10 +126,7 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
           const toolConfig = tools[toolId as keyof AgentConfigType["tools"]];
           return (
             toolConfig && (
-              <div
-                key={toolId}
-                className="p-4 border rounded-lg"
-              >
+              <div key={toolId} className="p-4 border rounded-lg">
                 {renderToolConfig(toolId)}
               </div>
             )

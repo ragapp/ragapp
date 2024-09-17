@@ -34,7 +34,7 @@ export const GroqForm = ({
     "gemma2-9b-it",
     "gemma-7b-it",
     // Llava
-    "llava-v1.5-7b-4096-preview"
+    "llava-v1.5-7b-4096-preview",
   ];
 
   return (

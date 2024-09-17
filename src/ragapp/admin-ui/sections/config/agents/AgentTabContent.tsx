@@ -106,10 +106,7 @@ export const AgentTabContent = ({
             )}
           />
 
-          <ToolsConfig
-            form={form}
-            handleSaveChanges={handleSaveChanges}
-          />
+          <ToolsConfig form={form} handleSaveChanges={handleSaveChanges} />
         </form>
       </Form>
     </TabsContent>
