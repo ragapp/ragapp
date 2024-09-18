@@ -97,10 +97,10 @@ class AgentManager:
             if agent_id in self.config:
                 raise ValueError(f"Agent with id {agent_id} already exists")
 
-            if "role" not in agent_data:
-                raise ValueError("Role is required when creating an agent")
-
-            agent_data["created_at"] = datetime.utcnow()
+            required_fields = ["role", "backstory", "goal"]
+            for field in required_fields:
+                if field not in agent_data or not agent_data[field]:
+                    raise ValueError(f"{field.capitalize()} is required when creating an agent")
 
             if "tools" not in agent_data:
                 agent_data["tools"] = {}
@@ -109,8 +109,7 @@ class AgentManager:
                     agent_data["tools"][tool_name] = ToolConfig().dict()
 
             new_agent = AgentConfig(**agent_data)
-            self.config[new_agent.agent_id] = new_agent.dict(exclude={"agent_id"})
-            self._update_agent_config_system_prompt(new_agent.agent_id)
+            self.config[new_agent.agent_id] = new_agent.to_config()
             self._update_config_file()
             return new_agent
 
@@ -123,8 +122,10 @@ class AgentManager:
             updated_data.update(data)
             updated_data["agent_id"] = agent_id
 
-            if "role" not in updated_data:
-                raise ValueError("Role is required when updating an agent")
+            required_fields = ["role", "backstory", "goal"]
+            for field in required_fields:
+                if field not in updated_data or not updated_data[field]:
+                    raise ValueError(f"{field.capitalize()} is required when updating an agent")
 
             if "tools" not in updated_data:
                 updated_data["tools"] = {}
@@ -153,8 +154,7 @@ class AgentManager:
             except ValueError as e:
                 raise ValueError(f"Invalid agent configuration: {str(e)}")
 
-            self.config[agent_id] = updated_agent.dict(exclude={"agent_id"})
-            self._update_agent_config_system_prompt(agent_id)
+            self.config[agent_id] = updated_agent.to_config()
             self._update_config_file()
             return updated_agent
 
@@ -197,14 +197,7 @@ class AgentManager:
                 self.config[agent_id]["tools"] = {}
 
             self.config[agent_id]["tools"][tool_name] = data
-            # Update system prompts
-            self._update_agent_config_system_prompt(agent_id)
             self._update_config_file()
-
-    def _update_agent_config_system_prompt(self, agent_id: str):
-        agent_config = self.config[agent_id]
-        system_prompt = AgentPromptManager.generate_agent_system_prompt(agent_config)
-        self.config[agent_id]["system_prompt"] = system_prompt
 
     def is_using_multi_agents_mode(self):
         # Removed the explicit lock acquisition to prevent double-locking

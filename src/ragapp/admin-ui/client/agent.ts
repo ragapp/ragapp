@@ -40,12 +40,11 @@ export const AgentConfigSchema = z.object({
   agent_id: z.string(),
   name: z.string(),
   role: z.string(),
+  backstory: z.string(),
+  goal: z.string(),
   system_prompt: z.string(),
   tools: ToolsSchema,
-  created_at: z
-    .string()
-    .or(z.date())
-    .transform((val) => new Date(val)),
+  created_at: z.number(),  // Change to number
 });
 
 export type ToolConfigType = z.infer<typeof ToolsSchema>[keyof z.infer<
@@ -66,10 +65,12 @@ export const DEFAULT_TOOL_CONFIG: z.infer<typeof ToolsSchema> = {
 
 export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   name: "New Agent",
-  role: "",
+  role: "General Assistant",
+  backstory: "You are a versatile AI assistant designed to help with various tasks.",
+  goal: "Assist users with their queries and provide helpful information.",
   system_prompt: "You are a helpful assistant.",
   tools: DEFAULT_TOOL_CONFIG,
-  created_at: new Date(),
+  created_at: Math.floor(Date.now() / 1000),
 };
 
 // API functions

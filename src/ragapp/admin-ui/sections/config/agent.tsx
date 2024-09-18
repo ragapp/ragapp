@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AgentTabContent } from "./agents/AgentTabContent";
 import { AgentTabList } from "./agents/AgentTabList";
+import { SingleAgentContent } from "./agents/SingleAgentContent";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
@@ -60,7 +61,7 @@ export const AgentConfig = () => {
       onMutate: () => setIsSubmitting(true),
       onSettled: () => {
         setIsSubmitting(false);
-        queryClient.invalidateQueries("agents"); // Invalidate the agents query to refetch
+        queryClient.invalidateQueries("agents");
       },
       onError: (error: Error) => {
         console.error("Mutation error:", error);
@@ -97,7 +98,6 @@ export const AgentConfig = () => {
         await updateAgentMutation({ agentId: activeAgent, data });
         return true;
       } catch (error) {
-        // Handle error
         return false;
       }
     }
@@ -148,15 +148,14 @@ export const AgentConfig = () => {
 
   const handleTabChange = async (newTabValue: string) => {
     if (activeAgent && activeAgent !== newTabValue) {
-      if (isSubmitting) return; // Prevent multiple submissions
-      setIsSubmitting(true); // Set loading state
+      if (isSubmitting) return;
+      setIsSubmitting(true);
       const saveSuccess = await handleSaveChanges();
-      setIsSubmitting(false); // Reset loading state
+      setIsSubmitting(false);
       if (saveSuccess) {
         setActiveAgent(newTabValue);
-        // Fetch the latest data for the new active agent
-        const newAgentData = await getAgents(); // Fetch latest agents
-        setAgents(newAgentData); // Update agents state
+        const newAgentData = await getAgents();
+        setAgents(newAgentData);
       } else {
         toast({
           title: "Error",
@@ -182,26 +181,40 @@ export const AgentConfig = () => {
         <div className="flex justify-center items-center h-16">
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
-      ) : (
+      ) : isMultiAgentSupported && agents.length > 1 ? (
         <Tabs value={activeAgent || undefined} onValueChange={handleTabChange}>
-          {isMultiAgentSupported ? (
-            <AgentTabList
-              agents={agents}
-              activeAgent={activeAgent}
-              removeAgent={removeAgent}
-              addNewAgent={addNewAgent}
-              isPrimary={agents.length === 1}
-            />
-          ) : null}
+          <AgentTabList
+            agents={agents}
+            activeAgent={activeAgent}
+            removeAgent={removeAgent}
+            addNewAgent={addNewAgent}
+            isPrimary={agents.length === 1}
+          />
           {agents.map((agent) => (
             <AgentTabContent
               key={agent.agent_id}
               agent={agent}
               form={form}
               handleSaveChanges={handleSaveChanges}
-              isPrimary={!isMultiAgentSupported || agents.length === 1}
+              isPrimary={agents.length === 1}
             />
           ))}
+        </Tabs>
+      ) : (
+        <Tabs>
+          <AgentTabList
+            agents={agents}
+            activeAgent={activeAgent}
+            removeAgent={removeAgent}
+            addNewAgent={addNewAgent}
+            isPrimary={agents.length === 1}
+          />
+          <SingleAgentContent
+            agent={agents[0]}
+            form={form}
+            handleSaveChanges={handleSaveChanges}
+            addNewAgent={isMultiAgentSupported ? addNewAgent : undefined}
+          />
         </Tabs>
       )}
     </ExpandableSection>

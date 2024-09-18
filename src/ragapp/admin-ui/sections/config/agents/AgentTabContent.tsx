@@ -10,7 +10,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ToolsConfig } from "./ToolsConfig";
 
@@ -25,8 +26,9 @@ export const AgentTabContent = ({
   handleSaveChanges: () => Promise<boolean>;
   isPrimary: boolean;
 }) => {
+  const [showSystemPrompt, setShowSystemPrompt] = useState(false);
+
   const handleInputBlur = () => {
-    // Call handleSaveChanges on blur
     handleSaveChanges();
   };
 
@@ -54,14 +56,14 @@ export const AgentTabContent = ({
           className="space-y-6"
           onSubmit={form.handleSubmit(handleSaveChanges)}
         >
-          {!isPrimary && (
-            <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            {!isPrimary && (
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Agent Name</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -69,46 +71,79 @@ export const AgentTabContent = ({
                         placeholder="Enter agent name"
                       />
                     </FormControl>
-                    <FormDescription>
-                      Unique name to identify the agent.
-                    </FormDescription>
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Agent Role</FormLabel>
-                    <FormControl>
-                      <Input {...field} onBlur={handleInputBlur} />
-                    </FormControl>
-                    <FormDescription>
-                      Helps RAGapp to assign the right agent for a task.
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
-            </div>
-          )}
-          <FormField
-            control={form.control}
-            name="system_prompt"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>System Prompt</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    onBlur={handleInputBlur}
-                    rows={3}
-                    placeholder="Define the responsibilities and behaviors of the agent."
-                  />
-                </FormControl>
-              </FormItem>
             )}
-          />
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <FormControl>
+                    <Input {...field} onBlur={handleInputBlur} placeholder="Enter agent role" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="backstory"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Backstory</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      onBlur={handleInputBlur}
+                      rows={3}
+                      placeholder="Define the agent's background and characteristics."
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="goal"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Goal</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      onBlur={handleInputBlur}
+                      rows={3}
+                      placeholder="Define the agent's primary objective."
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          {showSystemPrompt && (
+            <FormField
+              control={form.control}
+              name="system_prompt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>System Prompt</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      onBlur={handleInputBlur}
+                      rows={5}
+                      placeholder="Define the responsibilities and behaviors of the agent."
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          )}
 
           <ToolsConfig form={form} handleSaveChanges={handleSaveChanges} />
         </form>
