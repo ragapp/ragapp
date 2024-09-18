@@ -18,7 +18,7 @@ class AgentConfig(BaseModel):
     backstory: str = Field(..., min_length=1)
     goal: str = Field(..., min_length=1)
     system_prompt: str
-    system_prompt_template: str = Field(default="You are a {role}, your backstory is {backstory}, your goal is {goal}")
+    system_prompt_template: Optional[str] = None
     tools: Dict[str, ToolConfig] = Field(default_factory=dict)
     created_at: int = Field(default_factory=lambda: int(datetime.now().timestamp()))
 
@@ -30,7 +30,7 @@ class AgentConfig(BaseModel):
         if use_templated:
             return PromptTemplate(self.system_prompt_template).format(
                 role=self.role,
-            backstory=self.backstory,
+                backstory=self.backstory,
                 goal=self.goal
             )
         return self.system_prompt

@@ -181,40 +181,24 @@ export const AgentConfig = () => {
         <div className="flex justify-center items-center h-16">
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
-      ) : isMultiAgentSupported && agents.length > 1 ? (
+      ) : (
         <Tabs value={activeAgent || undefined} onValueChange={handleTabChange}>
-          <AgentTabList
-            agents={agents}
-            activeAgent={activeAgent}
-            removeAgent={removeAgent}
-            addNewAgent={addNewAgent}
-            isPrimary={agents.length === 1}
-          />
+          {isMultiAgentSupported ? (
+            <AgentTabList
+              agents={agents}
+              activeAgent={activeAgent}
+              removeAgent={removeAgent}
+              addNewAgent={addNewAgent}
+            />
+          ) : null}
           {agents.map((agent) => (
             <AgentTabContent
               key={agent.agent_id}
               agent={agent}
               form={form}
               handleSaveChanges={handleSaveChanges}
-              isPrimary={agents.length === 1}
             />
           ))}
-        </Tabs>
-      ) : (
-        <Tabs>
-          <AgentTabList
-            agents={agents}
-            activeAgent={activeAgent}
-            removeAgent={removeAgent}
-            addNewAgent={addNewAgent}
-            isPrimary={agents.length === 1}
-          />
-          <SingleAgentContent
-            agent={agents[0]}
-            form={form}
-            handleSaveChanges={handleSaveChanges}
-            addNewAgent={isMultiAgentSupported ? addNewAgent : undefined}
-          />
         </Tabs>
       )}
     </ExpandableSection>

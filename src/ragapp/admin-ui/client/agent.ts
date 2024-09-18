@@ -43,6 +43,7 @@ export const AgentConfigSchema = z.object({
   backstory: z.string(),
   goal: z.string(),
   system_prompt: z.string(),
+  system_prompt_template: z.string().nullable(),
   tools: ToolsSchema,
   created_at: z.number(),  // Change to number
 });
@@ -63,6 +64,8 @@ export const DEFAULT_TOOL_CONFIG: z.infer<typeof ToolsSchema> = {
   QueryEngine: DEFAULT_QUERY_ENGINE_TOOL_CONFIG,
 };
 
+export const DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE = "You are a {role}, your backstory is {backstory}, your goal is {goal}";
+
 export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   name: "New Agent",
   role: "General Assistant",
@@ -70,6 +73,7 @@ export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   goal: "Assist users with their queries and provide helpful information.",
   system_prompt: "You are a helpful assistant.",
   tools: DEFAULT_TOOL_CONFIG,
+  system_prompt_template: null,
   created_at: Math.floor(Date.now() / 1000),
 };
 
