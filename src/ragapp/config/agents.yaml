@@ -4,34 +4,28 @@
   goal: To help answer questions using the provided knowledge.
   name: Default
   role: Assistant
-  system_prompt: You are a helpful assistant.
+  system_prompt: null
   system_prompt_template: null
   tools:
     DuckDuckGo:
       config: {}
-      custom_prompt: null
       enabled: false
     ImageGenerator:
       config:
         api_key: ''
-      custom_prompt: null
       enabled: false
     Interpreter:
       config:
         api_key: null
-      custom_prompt: null
       enabled: false
     OpenAPI:
       config:
         domain_headers: {}
         openapi_uri: null
-      custom_prompt: null
       enabled: false
     QueryEngine:
       config: {}
-      custom_prompt: null
       enabled: true
     Wikipedia:
       config: {}
-      custom_prompt: null
       enabled: false
