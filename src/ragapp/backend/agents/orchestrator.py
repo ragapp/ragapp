@@ -41,11 +41,12 @@ def get_agents(
             for tool_name, tool_config in agent_tools_config
             if tool_config.enabled
         ]
+        system_prompt = agent_config.get_system_prompt()
         agents.append(
             FunctionCallingAgent(
                 name=agent_config.name,
                 role=agent_config.role,
-                system_prompt=agent_config.get_system_prompt(),
+                system_prompt=system_prompt,
                 tools=tools,
                 chat_history=chat_history,
                 verbose=True,

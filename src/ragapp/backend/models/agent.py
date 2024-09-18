@@ -5,6 +5,8 @@ from typing import Dict, Optional
 from pydantic import BaseModel, Field, computed_field
 from llama_index.core.prompts.base import PromptTemplate
 
+DEFAULT_SYSTEM_PROMPT_TEMPLATE = """You are a {role}. Your backstory is: {backstory}. Your goal is: {goal}"""
+
 class ToolConfig(BaseModel):
     enabled: bool = False
     custom_prompt: Optional[str] = None
@@ -17,7 +19,7 @@ class AgentConfig(BaseModel):
     role: str = Field(..., min_length=1)
     backstory: str = Field(..., min_length=1)
     goal: str = Field(..., min_length=1)
-    system_prompt: str
+    system_prompt: Optional[str] = None
     system_prompt_template: Optional[str] = None
     tools: Dict[str, ToolConfig] = Field(default_factory=dict)
     created_at: int = Field(default_factory=lambda: int(datetime.now().timestamp()))
@@ -33,7 +35,13 @@ class AgentConfig(BaseModel):
                 backstory=self.backstory,
                 goal=self.goal
             )
-        return self.system_prompt
+        if self.system_prompt is not None:
+            return self.system_prompt
+        return DEFAULT_SYSTEM_PROMPT_TEMPLATE.format(
+            role=self.role,
+            backstory=self.backstory,
+            goal=self.goal
+        )
 
     def to_config(self) -> Dict:
         return self.model_dump(

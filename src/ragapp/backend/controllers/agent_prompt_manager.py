@@ -16,15 +16,10 @@ class AgentPromptManager:
     def generate_agent_system_prompt(cls, agent: AgentConfig | Dict) -> str:
         if isinstance(agent, Dict):
             agent = AgentConfig(**agent)
-        base_prompt = agent.system_prompt
+        base_prompt = agent.get_system_prompt()
         tool_custom_prompts = cls._get_tool_custom_prompts(agent)
 
         if tool_custom_prompts:
             return f"{base_prompt}\n\nYou have access to the following tools:\n{tool_custom_prompts}"
         else:
             return base_prompt
-
-    @classmethod
-    def update_agent_system_prompts(cls, agents: List[AgentConfig]):
-        for agent in agents:
-            agent.system_prompt = cls.generate_agent_system_prompt(agent)
