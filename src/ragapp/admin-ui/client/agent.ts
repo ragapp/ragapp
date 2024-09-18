@@ -45,7 +45,7 @@ export const AgentConfigSchema = z.object({
   system_prompt: z.string(),
   system_prompt_template: z.string().nullable(),
   tools: ToolsSchema,
-  created_at: z.number(),  // Change to number
+  created_at: z.number(), // Change to number
 });
 
 export type ToolConfigType = z.infer<typeof ToolsSchema>[keyof z.infer<
@@ -64,12 +64,14 @@ export const DEFAULT_TOOL_CONFIG: z.infer<typeof ToolsSchema> = {
   QueryEngine: DEFAULT_QUERY_ENGINE_TOOL_CONFIG,
 };
 
-export const DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE = "You are {role}. {backstory}\nYour personal goal is: {goal}";
+export const DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE =
+  "You are {role}. {backstory}\nYour personal goal is: {goal}";
 
 export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   name: "New Agent",
   role: "General Assistant",
-  backstory: "You are a versatile AI assistant designed to help with various tasks.",
+  backstory:
+    "You are a versatile AI assistant designed to help with various tasks.",
   goal: "Assist users with their queries and provide helpful information.",
   system_prompt: "You are a helpful assistant.",
   tools: DEFAULT_TOOL_CONFIG,

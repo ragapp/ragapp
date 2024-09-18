@@ -18,7 +18,6 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AgentTabContent } from "./agents/AgentTabContent";
 import { AgentTabList } from "./agents/AgentTabList";
-import { SingleAgentContent } from "./agents/SingleAgentContent";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();

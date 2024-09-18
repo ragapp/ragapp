@@ -1,4 +1,8 @@
-import { AgentConfigType, DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE } from "@/client/agent";
+import {
+  AgentConfigType,
+  DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE,
+} from "@/client/agent";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -10,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ToolsConfig } from "./ToolsConfig";
@@ -24,7 +27,8 @@ export const AgentTabContent = ({
   form: UseFormReturn<AgentConfigType>;
   handleSaveChanges: () => Promise<boolean>;
 }) => {
-  const [useCustomSystemPromptTemplate, setUseCustomSystemPromptTemplate] = useState(false);
+  const [useCustomSystemPromptTemplate, setUseCustomSystemPromptTemplate] =
+    useState(false);
 
   const handleInputBlur = async () => {
     await handleSaveChanges();
@@ -44,12 +48,17 @@ export const AgentTabContent = ({
   }, [form, handleSaveChanges]);
 
   useEffect(() => {
-    setUseCustomSystemPromptTemplate(form.getValues("system_prompt_template") !== null);
-  }, [form.getValues("system_prompt_template")]);
+    setUseCustomSystemPromptTemplate(
+      form.getValues("system_prompt_template") !== null,
+    );
+  }, [form]);
 
   const handleUseCustomSystemPromptTemplate = async (checked: boolean) => {
     if (checked) {
-      form.setValue("system_prompt_template", DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE);
+      form.setValue(
+        "system_prompt_template",
+        DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE,
+      );
       await handleSaveChanges();
       setUseCustomSystemPromptTemplate(true);
     } else {
@@ -94,7 +103,11 @@ export const AgentTabContent = ({
                 <FormItem>
                   <FormLabel>Role</FormLabel>
                   <FormControl>
-                    <Input {...field} onBlur={handleInputBlur} placeholder="Enter agent role" />
+                    <Input
+                      {...field}
+                      onBlur={handleInputBlur}
+                      placeholder="Enter agent role"
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -141,7 +154,9 @@ export const AgentTabContent = ({
             <div className="flex items-center gap-2 mb-2">
               <Checkbox
                 checked={useCustomSystemPromptTemplate}
-                onCheckedChange={(checked) => handleUseCustomSystemPromptTemplate(checked === true)}
+                onCheckedChange={(checked) =>
+                  handleUseCustomSystemPromptTemplate(checked === true)
+                }
               />
               <span>Use custom system prompt</span>
             </div>
@@ -157,7 +172,7 @@ export const AgentTabContent = ({
                         onBlur={handleInputBlur}
                         rows={3}
                         placeholder="Define the responsibilities and behaviors of the agent."
-                        value={field.value || ''}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormDescription>

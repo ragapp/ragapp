@@ -1,12 +1,10 @@
 import threading  # Import threading
-from datetime import datetime
 from functools import lru_cache
 from typing import Dict, List, Tuple
 
 import yaml
 
 from backend.constants import AGENT_CONFIG_FILE
-from backend.controllers.agent_prompt_manager import AgentPromptManager
 from backend.models.agent import AgentConfig, ToolConfig
 from backend.models.tools import (
     DuckDuckGoTool,

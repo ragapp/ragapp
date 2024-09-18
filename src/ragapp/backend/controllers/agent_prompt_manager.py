@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 from backend.models.agent import AgentConfig
 

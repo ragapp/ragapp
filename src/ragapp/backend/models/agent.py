@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Dict, Optional
 
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field
 from llama_index.core.prompts.base import PromptTemplate
 
 DEFAULT_SYSTEM_PROMPT_TEMPLATE = """You are a {role}. Your backstory is: {backstory}. Your goal is: {goal}"""
