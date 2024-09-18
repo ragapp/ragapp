@@ -6,7 +6,7 @@ export const StatusBar = ({ configured }: { configured: boolean }) => {
       <p className="font-mono text-sm">
         {configured ? (
           <>
-            <b>Add knowledge</b>&nbsp;or&nbsp;
+            <b>Configure agents, add knowledge</b>&nbsp;or&nbsp;
             <b>test the chat</b>&nbsp;below. Once you&apos;re satisfied,&nbsp;
             <a
               className="text-blue-500 hover:underline decoration-blue-500"
