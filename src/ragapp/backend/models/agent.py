@@ -26,8 +26,8 @@ class AgentConfig(BaseModel):
     def create_agent_id(cls, name: str) -> str:
         return str(uuid.uuid4())
 
-    def get_system_prompt(self, use_templated: bool = True) -> str:
-        if use_templated:
+    def get_system_prompt(self) -> str:
+        if self.system_prompt_template:
             return PromptTemplate(self.system_prompt_template).format(
                 role=self.role,
                 backstory=self.backstory,

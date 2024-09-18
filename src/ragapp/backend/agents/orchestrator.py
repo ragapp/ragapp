@@ -34,7 +34,6 @@ def get_agents(
     agent_manager = AgentManager()
     agents_config = agent_manager.get_agents()
     agents = []
-    is_multi_agent = len(agents_config) > 1
     for agent_config in agents_config:
         agent_tools_config = agent_manager.get_agent_tools(agent_config.agent_id)
         tools = [
@@ -46,7 +45,7 @@ def get_agents(
             FunctionCallingAgent(
                 name=agent_config.name,
                 role=agent_config.role,
-                system_prompt=agent_config.get_system_prompt(use_templated=is_multi_agent),
+                system_prompt=agent_config.get_system_prompt(),
                 tools=tools,
                 chat_history=chat_history,
                 verbose=True,
