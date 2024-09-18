@@ -64,7 +64,7 @@ export const DEFAULT_TOOL_CONFIG: z.infer<typeof ToolsSchema> = {
   QueryEngine: DEFAULT_QUERY_ENGINE_TOOL_CONFIG,
 };
 
-export const DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE = "You are a {role}, your backstory is {backstory}, your goal is {goal}";
+export const DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE = "You are {role}. {backstory}\nYour personal goal is: {goal}";
 
 export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   name: "New Agent",
