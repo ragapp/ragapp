@@ -20,9 +20,11 @@ class ToolConfig(BaseModel):
 class AgentConfig(BaseModel):
     agent_id: Optional[str] = None  # Passed from the client, set as optional
     name: str
-    role: str = ""
+    # Role and goal are required to create an agent
+    # because orchestrator needs to know the role and goal to select the right task.
+    role: str = Field(..., min_length=1)
+    goal: str = Field(..., min_length=1)
     backstory: str = ""
-    goal: str = ""
     system_prompt: Optional[str] = None
     tools: Dict[str, ToolConfig] = Field(default_factory=dict)
     created_at: int | str = Field(

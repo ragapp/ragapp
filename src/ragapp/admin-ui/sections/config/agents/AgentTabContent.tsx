@@ -10,6 +10,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
@@ -24,6 +25,7 @@ import { InfoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ToolsConfig } from "./ToolsConfig";
+import { toast } from "@/components/ui/use-toast";
 
 export const AgentTabContent = ({
   agent,
@@ -38,7 +40,24 @@ export const AgentTabContent = ({
     useState(false);
 
   const handleInputBlur = async () => {
-    await handleSaveChanges();
+    await handleFormSubmit();
+  };
+
+  const handleFormSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    // Only trigger validation for role and goal fields
+    const isValid = await form.trigger(["role", "goal"]);
+    if (isValid) {
+      await handleSaveChanges();
+    } else {
+      // Show error toast
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
   };
 
   useEffect(() => {
@@ -108,7 +127,7 @@ export const AgentTabContent = ({
               render={({ field }) => (
                 <FormItem className="flex flex-col h-full">
                   <FormLabel className="flex items-center gap-2">
-                    Role
+                    Role *
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -131,8 +150,10 @@ export const AgentTabContent = ({
                       onBlur={handleInputBlur}
                       placeholder="Enter agent role"
                       className="h-full"
+                      required
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -165,6 +186,7 @@ export const AgentTabContent = ({
                   <FormControl className="flex-grow">
                     <Textarea
                       {...field}
+                      value={field.value || ""}
                       onBlur={handleInputBlur}
                       rows={3}
                       className="h-full"
@@ -179,7 +201,7 @@ export const AgentTabContent = ({
               render={({ field }) => (
                 <FormItem className="flex flex-col h-full">
                   <FormLabel className="flex items-center gap-2">
-                    Goal
+                    Goal *
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -202,8 +224,10 @@ export const AgentTabContent = ({
                       onBlur={handleInputBlur}
                       rows={3}
                       className="h-full"
+                      required
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

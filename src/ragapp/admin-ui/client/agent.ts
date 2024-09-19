@@ -39,12 +39,16 @@ export const ToolsSchema = z.object({
 export const AgentConfigSchema = z.object({
   agent_id: z.string(),
   name: z.string(),
-  role: z.string(),
-  backstory: z.string(),
-  goal: z.string(),
+  role: z.string().trim().min(1, {
+    message: "Role is required. It's used to identify the agent.",
+  }),
+  goal: z.string().min(1, {
+    message: "Goal is required. It's used to define the agent's purpose.",
+  }),
+  backstory: z.string().nullable(),
   system_prompt: z.string().nullable(),
   tools: ToolsSchema,
-  created_at: z.number(), // Change to number
+  created_at: z.number(),
 });
 
 export type ToolConfigType = z.infer<typeof ToolsSchema>[keyof z.infer<
