@@ -14,6 +14,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { InfoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ToolsConfig } from "./ToolsConfig";
@@ -101,7 +108,24 @@ export const AgentTabContent = ({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel className="flex items-center gap-2">
+                    Role
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span tabIndex={-1}>
+                            <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            A short role name for the agent. Useful for deliver
+                            right tasks to the agent.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -120,14 +144,26 @@ export const AgentTabContent = ({
               name="backstory"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Backstory</FormLabel>
+                  <FormLabel className="flex items-center gap-2">
+                    Backstory
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span tabIndex={-1}>
+                            <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            Define the agent&apos;s background and
+                            characteristics.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      onBlur={handleInputBlur}
-                      rows={3}
-                      placeholder="Define the agent's background and characteristics."
-                    />
+                    <Textarea {...field} onBlur={handleInputBlur} rows={3} />
                   </FormControl>
                 </FormItem>
               )}
@@ -137,14 +173,26 @@ export const AgentTabContent = ({
               name="goal"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Goal</FormLabel>
+                  <FormLabel className="flex items-center gap-2">
+                    Goal
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span tabIndex={-1}>
+                            <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            Define the agent&apos;s primary objective. Useful
+                            for deliver right tasks to the agent.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      onBlur={handleInputBlur}
-                      rows={3}
-                      placeholder="Define the agent's primary objective."
-                    />
+                    <Textarea {...field} onBlur={handleInputBlur} rows={3} />
                   </FormControl>
                 </FormItem>
               )}
@@ -166,12 +214,14 @@ export const AgentTabContent = ({
                 name="system_prompt_template"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      System Prompt Template
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
                         onBlur={handleInputBlur}
                         rows={3}
-                        placeholder="Define the responsibilities and behaviors of the agent."
                         value={field.value || ""}
                       />
                     </FormControl>
