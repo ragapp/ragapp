@@ -5,7 +5,7 @@ from typing import Dict, List, Tuple
 import yaml
 
 from backend.constants import AGENT_CONFIG_FILE
-from backend.models.agent import AgentConfig, ToolConfig
+from backend.models.agent import AgentConfig
 from backend.models.tools import (
     DuckDuckGoTool,
     E2BInterpreterTool,
@@ -63,7 +63,8 @@ class AgentManager:
                 # Add missing tools
                 for tool_name in self.available_tools:
                     if tool_name not in agent_data["tools"]:
-                        agent_data["tools"][tool_name] = ToolConfig().dict()
+                        tool_cls = self.available_tools[tool_name]
+                        agent_data["tools"][tool_name] = tool_cls().dict()
                         updated = True
 
             if updated:
@@ -98,13 +99,21 @@ class AgentManager:
             required_fields = ["role", "backstory", "goal"]
             for field in required_fields:
                 if field not in agent_data or not agent_data[field]:
-                    raise ValueError(f"{field.capitalize()} is required when creating an agent")
+                    raise ValueError(
+                        f"{field.capitalize()} is required when creating an agent"
+                    )
 
             if "tools" not in agent_data:
                 agent_data["tools"] = {}
             for tool_name in self.available_tools:
-                if tool_name not in agent_data["tools"]:
-                    agent_data["tools"][tool_name] = ToolConfig().dict()
+                # Merge provided tool config with default tool config
+                tool_cls = self.available_tools.get(tool_name, None)
+                if tool_cls is None:
+                    raise ValueError(f"Tool {tool_name} not found")
+                default_tool_config = tool_cls().dict()
+                provided_tool_config = agent_data["tools"].get(tool_name, {})
+                merged_tool_config = {**default_tool_config, **provided_tool_config}
+                agent_data["tools"][tool_name] = merged_tool_config
 
             new_agent = AgentConfig(**agent_data)
             self.config[new_agent.agent_id] = new_agent.to_config()
@@ -123,7 +132,9 @@ class AgentManager:
             required_fields = ["role", "backstory", "goal"]
             for field in required_fields:
                 if field not in updated_data or not updated_data[field]:
-                    raise ValueError(f"{field.capitalize()} is required when updating an agent")
+                    raise ValueError(
+                        f"{field.capitalize()} is required when updating an agent"
+                    )
 
             if "tools" not in updated_data:
                 updated_data["tools"] = {}
@@ -133,15 +144,21 @@ class AgentManager:
                     updated_data["tools"][tool_name] = tool_class().dict()
                 else:
                     try:
-                        # This will trigger the validation
+                        # if data model has validate_config method and is enabled, call it
                         tool_instance = tool_class(**updated_data["tools"][tool_name])
-                        # if data model has validate_config method, call it
-                        if hasattr(tool_instance, "validate_config"):
+                        if (
+                            hasattr(tool_instance, "validate_config")
+                            and updated_data["tools"][tool_name]["enabled"]
+                        ):
                             if not tool_instance.validate_config():
                                 raise ValueError(
                                     f"Invalid configuration for {tool_name}"
                                 )
-                        updated_data["tools"][tool_name] = tool_instance.dict()
+                        tool_config = {
+                            "config": updated_data["tools"][tool_name]["config"],
+                            "enabled": updated_data["tools"][tool_name]["enabled"],
+                        }
+                        updated_data["tools"][tool_name] = tool_config
                     except ValueError as e:
                         raise ValueError(
                             f"Invalid configuration for {tool_name}: {str(e)}"
@@ -170,10 +187,11 @@ class AgentManager:
 
             tools = []
             for tool_name, tool_config in agent.get("tools", {}).items():
-                if tool_config.get("enabled", False):
+                is_enabled = tool_config.get("enabled", False)
+                if is_enabled:
                     kwargs = {}
                     kwargs["config"] = tool_config.get("config", {})
-                    kwargs["enabled"] = tool_config.get("enabled", False)
+                    kwargs["enabled"] = is_enabled
                     tool = self._get_tool(tool_name, **kwargs)
                     if tool:
                         tools.append((tool_name, tool))

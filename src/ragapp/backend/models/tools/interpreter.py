@@ -1,4 +1,4 @@
-from typing import ClassVar, Literal
+from typing import ClassVar, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -15,7 +15,7 @@ class E2BInterpreterTool(BaseModel):
     name: Literal["Interpreter"] = "Interpreter"
     tool_type: Literal["local"] = "local"
     label: Literal["Code Interpreter"] = "Code Interpreter"
-    custom_prompt: ClassVar[
+    custom_prompt: Optional[
         str
     ] = """- You are a Python interpreter that can run any python code in a secure environment.
 - The python code runs in a Jupyter notebook. Every time you call the 'interpreter' tool, the python code is executed in a separate cell. 

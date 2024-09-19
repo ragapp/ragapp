@@ -44,7 +44,9 @@ def get_agents(
         system_prompt = agent_config.get_system_prompt()
         # Role is an information to introduce the agent to the orchestrator
         # construct a custom "role" from the original role and goal for better orchestration
-        refined_agent_role = f"{agent_config.role}\n and its goals are {agent_config.goal}"
+        refined_agent_role = (
+            f"{agent_config.role}\n and its goals are {agent_config.goal}"
+        )
         agents.append(
             FunctionCallingAgent(
                 name=agent_config.name,

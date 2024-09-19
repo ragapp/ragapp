@@ -1,4 +1,5 @@
-from typing import ClassVar, Dict, Literal
+from typing import ClassVar, Dict, Literal, Optional
+
 from pydantic import BaseModel
 
 
@@ -10,5 +11,6 @@ class DuckDuckGoTool(BaseModel):
     description: str = (
         "Search more information about a topic from the query using DuckDuckGo."
     )
+    custom_prompt: Optional[str] = None
     config: Dict = {}
     enabled: bool = False
