@@ -129,7 +129,7 @@ class AgentManager:
             updated_data.update(data)
             updated_data["agent_id"] = agent_id
 
-            required_fields = ["role", "backstory", "goal"]
+            required_fields = ["role"]
             for field in required_fields:
                 if field not in updated_data or not updated_data[field]:
                     raise ValueError(

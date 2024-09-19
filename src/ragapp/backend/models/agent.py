@@ -20,13 +20,22 @@ class ToolConfig(BaseModel):
 class AgentConfig(BaseModel):
     agent_id: Optional[str] = None  # Passed from the client, set as optional
     name: str
-    role: str = Field(..., min_length=1)
-    backstory: str = Field(..., min_length=1)
-    goal: str = Field(..., min_length=1)
+    role: str = ""
+    backstory: str = ""
+    goal: str = ""
     system_prompt: Optional[str] = None
     system_prompt_template: Optional[str] = None
     tools: Dict[str, ToolConfig] = Field(default_factory=dict)
-    created_at: int = Field(default_factory=lambda: int(datetime.now().timestamp()))
+    created_at: int | str = Field(
+        default_factory=lambda: int(datetime.now().timestamp())
+    )
+
+    def __init__(self, **kwargs):
+        # backwards compatibility for created_at field
+        # preprocess created_at if it's a date time string
+        if isinstance(kwargs.get("created_at"), datetime):
+            kwargs["created_at"] = int(kwargs["created_at"].timestamp())
+        super().__init__(**kwargs)
 
     @classmethod
     def create_agent_id(cls, name: str) -> str:
