@@ -42,7 +42,7 @@ class AgentConfig(BaseModel):
         return str(uuid.uuid4())
 
     def get_system_prompt(self) -> str:
-        if self.system_prompt is not None:
+        if self.system_prompt is not None and self.role != "":
             system_prompt = self.system_prompt
         elif self.system_prompt_template:
             system_prompt = PromptTemplate(self.system_prompt_template).format(
