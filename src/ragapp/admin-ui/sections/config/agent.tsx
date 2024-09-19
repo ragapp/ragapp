@@ -47,7 +47,7 @@ export const AgentConfig = () => {
     onMutate: () => setIsSubmitting(true),
     onSettled: () => setIsSubmitting(false),
     onSuccess: (newAgent: AgentConfigType) => {
-      queryClient.invalidateQueries("agents");
+      queryClient.invalidateQueries("agents"); // Invalidate the agents query to refetch
       setActiveAgent(newAgent.agent_id);
       setAgents((prevAgents) => [...prevAgents, newAgent]);
     },
@@ -147,12 +147,13 @@ export const AgentConfig = () => {
 
   const handleTabChange = async (newTabValue: string) => {
     if (activeAgent && activeAgent !== newTabValue) {
-      if (isSubmitting) return;
+      if (isSubmitting) return; // Prevent multiple submissions
       setIsSubmitting(true);
-      const saveSuccess = await handleSaveChanges();
+      const saveSuccess = await handleSaveChanges(); // Reset loading state
       setIsSubmitting(false);
       if (saveSuccess) {
         setActiveAgent(newTabValue);
+        // Fetch the latest data for the new active agent
         const newAgentData = await getAgents();
         setAgents(newAgentData);
       } else {

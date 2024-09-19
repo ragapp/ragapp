@@ -21,11 +21,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "@/components/ui/use-toast";
 import { InfoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ToolsConfig } from "./ToolsConfig";
-import { toast } from "@/components/ui/use-toast";
 
 export const AgentTabContent = ({
   agent,
@@ -240,7 +240,7 @@ export const AgentTabContent = ({
                   handleUseCustomSystemPromptTemplate(checked === true)
                 }
               />
-              <span>Use custom system prompt</span>
+              <span className="text-sm">Use custom system prompt</span>
             </div>
             {useCustomSystemPromptTemplate && (
               <FormField
@@ -248,9 +248,6 @@ export const AgentTabContent = ({
                 name="system_prompt"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      System Prompt Template
-                    </FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
@@ -260,7 +257,7 @@ export const AgentTabContent = ({
                       />
                     </FormControl>
                     <FormDescription>
-                      {`This prompt will be used to generate the system prompt for the agent. Use the {role}, {backstory}, and {goal} variables to use the values from the agent config.`}
+                      {`This prompt will be used to generate the system prompt for the agent. You can use the {role}, {backstory}, and {goal} variables from the agent's configuration.`}
                     </FormDescription>
                   </FormItem>
                 )}
