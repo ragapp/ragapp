@@ -43,7 +43,6 @@ export const AgentConfigSchema = z.object({
   backstory: z.string(),
   goal: z.string(),
   system_prompt: z.string().nullable(),
-  system_prompt_template: z.string().nullable(),
   tools: ToolsSchema,
   created_at: z.number(), // Change to number
 });
@@ -75,7 +74,6 @@ export const DEFAULT_AGENT_CONFIG: Omit<AgentConfigType, "agent_id"> = {
   goal: "Assist users with their queries and provide helpful information.",
   tools: DEFAULT_TOOL_CONFIG,
   system_prompt: null,
-  system_prompt_template: null,
   created_at: Math.floor(Date.now() / 1000),
 };
 

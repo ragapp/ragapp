@@ -96,13 +96,6 @@ class AgentManager:
             if agent_id in self.config:
                 raise ValueError(f"Agent with id {agent_id} already exists")
 
-            required_fields = ["role", "backstory", "goal"]
-            for field in required_fields:
-                if field not in agent_data or not agent_data[field]:
-                    raise ValueError(
-                        f"{field.capitalize()} is required when creating an agent"
-                    )
-
             if "tools" not in agent_data:
                 agent_data["tools"] = {}
             for tool_name in self.available_tools:
@@ -128,13 +121,6 @@ class AgentManager:
             updated_data = self.config[agent_id].copy()
             updated_data.update(data)
             updated_data["agent_id"] = agent_id
-
-            required_fields = ["role"]
-            for field in required_fields:
-                if field not in updated_data or not updated_data[field]:
-                    raise ValueError(
-                        f"{field.capitalize()} is required when updating an agent"
-                    )
 
             if "tools" not in updated_data:
                 updated_data["tools"] = {}

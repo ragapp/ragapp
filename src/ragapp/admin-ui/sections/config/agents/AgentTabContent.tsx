@@ -55,21 +55,19 @@ export const AgentTabContent = ({
   }, [form, handleSaveChanges]);
 
   useEffect(() => {
-    setUseCustomSystemPromptTemplate(
-      form.getValues("system_prompt_template") !== null,
-    );
+    setUseCustomSystemPromptTemplate(form.getValues("system_prompt") !== null);
   }, [form]);
 
   const handleUseCustomSystemPromptTemplate = async (checked: boolean) => {
     if (checked) {
       form.setValue(
-        "system_prompt_template",
+        "system_prompt",
         DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE,
       );
       await handleSaveChanges();
       setUseCustomSystemPromptTemplate(true);
     } else {
-      form.setValue("system_prompt_template", null);
+      form.setValue("system_prompt", null);
       await handleSaveChanges();
       setUseCustomSystemPromptTemplate(false);
     }
@@ -79,7 +77,7 @@ export const AgentTabContent = ({
     <TabsContent
       key={agent.agent_id}
       value={agent.agent_id}
-      className="p-4 pt-2 rounded-md border"
+      className="p-4 pt-4 rounded-md border"
     >
       <Form {...form}>
         <form
@@ -91,13 +89,14 @@ export const AgentTabContent = ({
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col h-full">
                   <FormLabel>Name</FormLabel>
-                  <FormControl>
+                  <FormControl className="flex-grow">
                     <Input
                       {...field}
                       onBlur={handleInputBlur}
                       placeholder="Enter agent name"
+                      className="h-full"
                     />
                   </FormControl>
                 </FormItem>
@@ -107,7 +106,7 @@ export const AgentTabContent = ({
               control={form.control}
               name="role"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col h-full">
                   <FormLabel className="flex items-center gap-2">
                     Role
                     <TooltipProvider>
@@ -126,11 +125,12 @@ export const AgentTabContent = ({
                       </Tooltip>
                     </TooltipProvider>
                   </FormLabel>
-                  <FormControl>
+                  <FormControl className="flex-grow">
                     <Input
                       {...field}
                       onBlur={handleInputBlur}
                       placeholder="Enter agent role"
+                      className="h-full"
                     />
                   </FormControl>
                 </FormItem>
@@ -143,7 +143,7 @@ export const AgentTabContent = ({
               control={form.control}
               name="backstory"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col h-full">
                   <FormLabel className="flex items-center gap-2">
                     Backstory
                     <TooltipProvider>
@@ -162,8 +162,13 @@ export const AgentTabContent = ({
                       </Tooltip>
                     </TooltipProvider>
                   </FormLabel>
-                  <FormControl>
-                    <Textarea {...field} onBlur={handleInputBlur} rows={3} />
+                  <FormControl className="flex-grow">
+                    <Textarea
+                      {...field}
+                      onBlur={handleInputBlur}
+                      rows={3}
+                      className="h-full"
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -172,7 +177,7 @@ export const AgentTabContent = ({
               control={form.control}
               name="goal"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col h-full">
                   <FormLabel className="flex items-center gap-2">
                     Goal
                     <TooltipProvider>
@@ -191,8 +196,13 @@ export const AgentTabContent = ({
                       </Tooltip>
                     </TooltipProvider>
                   </FormLabel>
-                  <FormControl>
-                    <Textarea {...field} onBlur={handleInputBlur} rows={3} />
+                  <FormControl className="flex-grow">
+                    <Textarea
+                      {...field}
+                      onBlur={handleInputBlur}
+                      rows={3}
+                      className="h-full"
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -211,7 +221,7 @@ export const AgentTabContent = ({
             {useCustomSystemPromptTemplate && (
               <FormField
                 control={form.control}
-                name="system_prompt_template"
+                name="system_prompt"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">

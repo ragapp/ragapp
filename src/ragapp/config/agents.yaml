@@ -5,7 +5,6 @@
   name: Default
   role: Assistant
   system_prompt: null
-  system_prompt_template: null
   tools:
     DuckDuckGo:
       config: {}
