@@ -1,5 +1,12 @@
 # ragbox
 
+## 0.1.1
+
+### Patch Changes
+
+- 982e22a: Use system prompt template with role, backstory and goal
+- 8c9fac2: Fix image generator does not work with multi-agent
+
 ## 0.1.0
 
 ### Minor Changes
