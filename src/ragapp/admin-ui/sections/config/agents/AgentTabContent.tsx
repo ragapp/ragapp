@@ -211,8 +211,8 @@ export const AgentTabContent = ({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            Define the agent&apos;s primary objective. Useful
-                            for deliver right tasks to the agent.
+                            Define the agent&apos;s primary objective. Required to
+                            select the right agent for a task.
                           </p>
                         </TooltipContent>
                       </Tooltip>
