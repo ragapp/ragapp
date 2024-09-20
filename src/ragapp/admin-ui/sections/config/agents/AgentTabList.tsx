@@ -7,20 +7,18 @@ import { PlusCircle, X } from "lucide-react";
 import { useState } from "react";
 import { RemoveAgentDialog } from "./RemoveAgentDialog";
 
-export const AgentTabList = (
-  {
-    agents,
-    removeAgent,
-    addNewAgent,
-    updateAgentName,
-  }: {
-    agents: AgentConfigType[];
-    activeAgent: string | null;
-    removeAgent: (agentId: string) => void;
-    addNewAgent: () => void;
-    updateAgentName: (agentId: string, newName: string) => void;
-  }
-) => {
+export const AgentTabList = ({
+  agents,
+  removeAgent,
+  addNewAgent,
+  updateAgentName,
+}: {
+  agents: AgentConfigType[];
+  activeAgent: string | null;
+  removeAgent: (agentId: string) => void;
+  addNewAgent: () => void;
+  updateAgentName: (agentId: string, newName: string) => void;
+}) => {
   const sortedAgents = [...agents].sort((a, b) => a.created_at - b.created_at);
 
   const [editingAgentId, setEditingAgentId] = useState<string | null>(null);
@@ -82,7 +80,10 @@ export const AgentTabList = (
                       autoFocus
                     />
                   ) : (
-                    <span onClick={() => handleEditName(agent)} className="truncate">
+                    <span
+                      onClick={() => handleEditName(agent)}
+                      className="truncate"
+                    >
                       {agent.name}
                     </span>
                   )}

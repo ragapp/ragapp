@@ -120,8 +120,8 @@ export const AgentTabContent = ({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            A short role name for the agent. Required to
-                            select the right agent for a task.
+                            A short role name for the agent. Required to select
+                            the right agent for a task.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -159,7 +159,8 @@ export const AgentTabContent = ({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            The agent&apos;s background story and characteristics.
+                            The agent&apos;s background story and
+                            characteristics.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -193,7 +194,8 @@ export const AgentTabContent = ({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            The agent&apos;s primary objective. Required to select the right agent for a task.
+                            The agent&apos;s primary objective. Required to
+                            select the right agent for a task.
                           </p>
                         </TooltipContent>
                       </Tooltip>
