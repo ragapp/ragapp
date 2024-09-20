@@ -103,24 +103,7 @@ export const AgentTabContent = ({
           className="space-y-6"
           onSubmit={form.handleSubmit(handleSaveChanges)}
         >
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="flex flex-col h-full">
-                  <FormLabel>Name</FormLabel>
-                  <FormControl className="flex-grow">
-                    <Input
-                      {...field}
-                      onBlur={handleInputBlur}
-                      placeholder="The agent's name in the UI"
-                      className="h-full"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+          <div className="grid grid-cols-1 gap-4">
             <FormField
               control={form.control}
               name="role"

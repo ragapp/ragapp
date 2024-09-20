@@ -134,6 +134,23 @@ export const AgentConfig = () => {
     });
   };
 
+  const updateAgentName = async (agentId: string, newName: string) => {
+    const agentToUpdate = agents.find((agent) => agent.agent_id === agentId);
+    if (agentToUpdate) {
+      const updatedAgent = { ...agentToUpdate, name: newName };
+      try {
+        await updateAgentMutation({ agentId, data: updatedAgent });
+      } catch (error) {
+        console.error("Failed to update agent name:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update agent name. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const { data: isMultiAgentSupported, isLoading: isCheckingSupport } =
     useQuery("checkSupportedModel", checkSupportedModel, {
       refetchOnWindowFocus: false,
@@ -189,6 +206,7 @@ export const AgentConfig = () => {
               activeAgent={activeAgent}
               removeAgent={removeAgent}
               addNewAgent={addNewAgent}
+              updateAgentName={updateAgentName}
             />
           ) : null}
           {agents.map((agent) => (
