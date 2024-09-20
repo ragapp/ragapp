@@ -43,7 +43,7 @@ export const AgentConfigSchema = z.object({
     message: "Role is required. It's used to identify the agent.",
   }),
   goal: z.string().min(1, {
-    message: "Goal is required. It's used to define the agent's purpose.",
+    message: "Goal is required to select the right agent for a task.",
   }),
   backstory: z.string().nullable(),
   system_prompt: z.string().nullable(),
