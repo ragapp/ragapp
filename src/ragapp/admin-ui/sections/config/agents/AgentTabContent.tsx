@@ -114,7 +114,7 @@ export const AgentTabContent = ({
                     <Input
                       {...field}
                       onBlur={handleInputBlur}
-                      placeholder="Enter agent name"
+                      placeholder="The agent's name in the UI"
                       className="h-full"
                     />
                   </FormControl>
@@ -137,8 +137,8 @@ export const AgentTabContent = ({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            A short role name for the agent. Useful for deliver
-                            right tasks to the agent.
+                            A short role name for the agent. Required to
+                            select the right agent for a task.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -176,8 +176,7 @@ export const AgentTabContent = ({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            Define the agent&apos;s background and
-                            characteristics.
+                            The agent&apos;s background story and characteristics.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -211,8 +210,7 @@ export const AgentTabContent = ({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            Define the agent&apos;s primary objective. Required to
-                            select the right agent for a task.
+                            The agent&apos;s primary objective. Required to select the right agent for a task.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -257,7 +255,7 @@ export const AgentTabContent = ({
                       />
                     </FormControl>
                     <FormDescription>
-                      {`This prompt will be used to generate the system prompt for the agent. You can use the {role}, {backstory}, and {goal} variables from the agent's configuration.`}
+                      {`This prompt will be used to generate the system prompt for the agent. You can use {role}, {backstory}, and {goal} to reference the values defined above.`}
                     </FormDescription>
                   </FormItem>
                 )}
