@@ -94,10 +94,13 @@ export const KnowledgeFileSection = () => {
     }
     console.log("Uploading files:", toUploadFiles);
 
-    // Change to for loop to upload files one by one
-    for (const file of toUploadFiles) {
+     // Change to for loop to upload files one by one
+    for (let i = 0; i < toUploadFiles.length; i++) {
+      const file = toUploadFiles[i];
       const formData = new FormData();
       formData.append("file", file.blob as Blob);
+      formData.append("fileIndex", (i + 1).toString());
+      formData.append("totalFiles", toUploadFiles.length.toString());
       try {
         await uploadFile(formData);
         setFiles((prevFiles) => {

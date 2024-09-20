@@ -29,7 +29,7 @@ class FileHandler:
 
     @classmethod
     async def upload_file(
-        cls, file, file_name: str
+        cls, file, file_name: str, fileIndex: str, totalFiles: str
     ) -> File | UnsupportedFileExtensionError:
         """
         Upload a file to the data folder.
@@ -46,7 +46,9 @@ class FileHandler:
         with open(f"data/{file_name}", "wb") as f:
             f.write(await file.read())
         # Index the data
-        index_all()
+        # Index the data only when it is the last file to upload
+        if fileIndex == totalFiles:
+            index_all()
         return File(name=file_name, status=FileStatus.UPLOADED)
 
     @classmethod
