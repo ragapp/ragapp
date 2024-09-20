@@ -9,6 +9,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { ImageGeneratorConfig } from "./tools/image_generator";
@@ -55,6 +56,7 @@ const SimpleSelection: React.FC<{
         <FormDescription className="text-xs">
           {toolConfig.description}
         </FormDescription>
+        <FormMessage />
       </FormItem>
     )}
   />
@@ -64,8 +66,6 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
   form,
   handleSaveChanges,
 }) => {
-  const tools = form.watch("tools");
-
   const renderToolConfig = (toolId: string) => {
     switch (toolId) {
       case "ImageGenerator":
@@ -123,13 +123,10 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
       <h3 className="mb-4">Tools</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {TOOL_ORDER.map((toolId) => {
-          const toolConfig = tools[toolId as keyof AgentConfigType["tools"]];
           return (
-            toolConfig && (
-              <div key={toolId} className="p-4 border rounded-lg">
-                {renderToolConfig(toolId)}
-              </div>
-            )
+            <div key={toolId} className="p-4 border rounded-lg">
+              {renderToolConfig(toolId)}
+            </div>
           );
         })}
       </div>

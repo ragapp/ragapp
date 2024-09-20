@@ -1,4 +1,4 @@
-from typing import ClassVar, Literal
+from typing import ClassVar, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -18,6 +18,9 @@ class ImageGeneratorTool(BaseModel):
     description: str = "Generate images from text descriptions."
     config: ImageGeneratorToolConfig | None = Field(
         default=ImageGeneratorToolConfig(),
+    )
+    custom_prompt: Optional[str] = (
+        """The output link of the generated image must start with '/api/files/output/tool/<image>'"""
     )
     enabled: bool = False
 

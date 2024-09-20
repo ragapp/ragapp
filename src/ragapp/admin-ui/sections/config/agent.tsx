@@ -47,7 +47,7 @@ export const AgentConfig = () => {
     onMutate: () => setIsSubmitting(true),
     onSettled: () => setIsSubmitting(false),
     onSuccess: (newAgent: AgentConfigType) => {
-      queryClient.invalidateQueries("agents");
+      queryClient.invalidateQueries("agents"); // Invalidate the agents query to refetch
       setActiveAgent(newAgent.agent_id);
       setAgents((prevAgents) => [...prevAgents, newAgent]);
     },
@@ -60,7 +60,7 @@ export const AgentConfig = () => {
       onMutate: () => setIsSubmitting(true),
       onSettled: () => {
         setIsSubmitting(false);
-        queryClient.invalidateQueries("agents"); // Invalidate the agents query to refetch
+        queryClient.invalidateQueries("agents");
       },
       onError: (error: Error) => {
         console.error("Mutation error:", error);
@@ -97,7 +97,6 @@ export const AgentConfig = () => {
         await updateAgentMutation({ agentId: activeAgent, data });
         return true;
       } catch (error) {
-        // Handle error
         return false;
       }
     }
@@ -135,13 +134,30 @@ export const AgentConfig = () => {
     });
   };
 
+  const updateAgentName = async (agentId: string, newName: string) => {
+    const agentToUpdate = agents.find((agent) => agent.agent_id === agentId);
+    if (agentToUpdate) {
+      const updatedAgent = { ...agentToUpdate, name: newName };
+      try {
+        await updateAgentMutation({ agentId, data: updatedAgent });
+      } catch (error) {
+        console.error("Failed to update agent name:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update agent name. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const { data: isMultiAgentSupported, isLoading: isCheckingSupport } =
     useQuery("checkSupportedModel", checkSupportedModel, {
       refetchOnWindowFocus: false,
       refetchOnMount: true,
       refetchOnReconnect: true,
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      cacheTime: 1000 * 60 * 10, // 10 minutes
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 10,
     });
 
   const isLoading = isLoadingAgents || isCheckingSupport || isSubmitting;
@@ -149,14 +165,14 @@ export const AgentConfig = () => {
   const handleTabChange = async (newTabValue: string) => {
     if (activeAgent && activeAgent !== newTabValue) {
       if (isSubmitting) return; // Prevent multiple submissions
-      setIsSubmitting(true); // Set loading state
-      const saveSuccess = await handleSaveChanges();
-      setIsSubmitting(false); // Reset loading state
+      setIsSubmitting(true);
+      const saveSuccess = await handleSaveChanges(); // Reset loading state
+      setIsSubmitting(false);
       if (saveSuccess) {
         setActiveAgent(newTabValue);
         // Fetch the latest data for the new active agent
-        const newAgentData = await getAgents(); // Fetch latest agents
-        setAgents(newAgentData); // Update agents state
+        const newAgentData = await getAgents();
+        setAgents(newAgentData);
       } else {
         toast({
           title: "Error",
@@ -190,7 +206,7 @@ export const AgentConfig = () => {
               activeAgent={activeAgent}
               removeAgent={removeAgent}
               addNewAgent={addNewAgent}
-              isPrimary={agents.length === 1}
+              updateAgentName={updateAgentName}
             />
           ) : null}
           {agents.map((agent) => (
@@ -199,7 +215,6 @@ export const AgentConfig = () => {
               agent={agent}
               form={form}
               handleSaveChanges={handleSaveChanges}
-              isPrimary={!isMultiAgentSupported || agents.length === 1}
             />
           ))}
         </Tabs>

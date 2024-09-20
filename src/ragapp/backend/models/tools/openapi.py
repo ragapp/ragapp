@@ -1,4 +1,4 @@
-from typing import ClassVar, Dict, Literal
+from typing import ClassVar, Dict, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -23,6 +23,7 @@ class OpenAPITool(BaseModel):
     config: OpenAPIToolConfig | None = Field(
         default=OpenAPIToolConfig(),
     )
+    custom_prompt: Optional[str] = None
     enabled: bool = False
 
     def validate_config(self) -> bool:

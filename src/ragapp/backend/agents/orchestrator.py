@@ -41,11 +41,15 @@ def get_agents(
             for tool_name, tool_config in agent_tools_config
             if tool_config.enabled
         ]
+        system_prompt = agent_config.get_system_prompt()
+        # The orchestrator uses "role" to select the right agent for a task
+        # construct a "description" from the user defined role and goal for better orchestration
+        description = f"{agent_config.role}\n and its goals are {agent_config.goal}"
         agents.append(
             FunctionCallingAgent(
                 name=agent_config.name,
-                role=agent_config.role,
-                system_prompt=agent_config.system_prompt,
+                role=description,
+                system_prompt=system_prompt,
                 tools=tools,
                 chat_history=chat_history,
                 verbose=True,
