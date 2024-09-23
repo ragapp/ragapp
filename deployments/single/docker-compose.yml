@@ -56,6 +56,7 @@ services:
       - EMBEDDING_MODEL=nomic-embed-text
       - EMBEDDING_DIM=768
       - MODEL=${MODEL:-phi3:latest}
+      - TRACKING_SCRIPT=${TRACKING_SCRIPT:-}
     depends_on:
       - setup
     networks:
