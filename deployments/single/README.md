@@ -10,7 +10,11 @@ Using the `MODEL` environment variable, you can specify which model to use, e.g.
 MODEL=llama3 docker-compose up
 ```
 
-Add tracking script:
+If you don't specify the `MODEL` variable, the default model used is `phi3`, which is less capable than `llama3` but faster to download.
+
+> _Note_: The `setup` container in the `docker-compose.yml` file will download the selected model into the [`ollama`](./ollama/) folder - this will take a few minutes.
+
+#### Add tracking script:
 To track user sessions on the chat, you can add any tracking script to the chat UI by setting the `TRACKING_SCRIPT` environment variable.  
 Example, using [Clarity](https://clarity.microsoft.com/):
 ```shell
@@ -22,10 +26,6 @@ TRACKING_SNIPPET='<script type="text/javascript">
     })(window, document, "clarity", "script", "YOUR_CLARITY_ID");
 </script>' docker-compose up
 ```
-
-If you don't specify the `MODEL` variable, the default model used is `phi3`, which is less capable than `llama3` but faster to download.
-
-> _Note_: The `setup` container in the `docker-compose.yml` file will download the selected model into the [`ollama`](./ollama/) folder - this will take a few minutes.
 
 #### Specify the Ollama host
 

@@ -25,6 +25,19 @@ The whole state of all services (RAGApps, Manager and Keycloak) will be persiste
 
 As Docker Compose doesn't work with relative paths on Windows, you'll need set the `STATE_DIR` variable in the `.env` file to the absolute path of the `data` directory.
 
+### Add tracking script:
+To track user sessions on the chat, you can add any tracking script to the chat UI by setting the `TRACKING_SCRIPT` environment variable.  
+Example, using [Clarity](https://clarity.microsoft.com/):
+```shell
+TRACKING_SNIPPET='<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "YOUR_CLARITY_ID");
+</script>' docker-compose up
+```
+
 ### Using your own domain
 
 Instead of using `localhost`, you can use your own domain with TLS. To do so, please update these variables in the [.env](./.env) file:

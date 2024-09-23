@@ -14,6 +14,7 @@ class ManagerSettings(BaseSettings):
 
     ragapp_image: str = Field(default="ragapp/ragapp:latest", env="RAGAPP_IMAGE")
     ragapp_network: str = Field(default="ragapp-network", env="RAGAPP_NETWORK")
+    tracking_snippet: str = Field(default="", env="TRACKING_SNIPPET")
     chat_request_limit_threshold: int = Field(
         default=20, env="CHAT_REQUEST_LIMIT_THRESHOLD"
     )

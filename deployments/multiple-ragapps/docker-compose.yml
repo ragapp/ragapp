@@ -80,6 +80,8 @@ services:
       - STATE_DIR=${STATE_DIR}
       # The path of the state inside of the manager container
       - STATE_DIR_LOCAL=/app/data
+      # Tracking script
+      - TRACKING_SNIPPET=${TRACKING_SNIPPET:-}
     labels:
       - traefik.enable=true
       - traefik.http.services.app.loadbalancer.server.port=8000
