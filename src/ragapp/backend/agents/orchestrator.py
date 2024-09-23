@@ -19,7 +19,7 @@ def get_tool(tool_name: str, config: dict, query_engine=None):
         description = f"{config.description or ''}\nThis is a preferred tool to use"
         return QueryEngineTool(
             query_engine=query_engine,
-            metadata=ToolMetadata(name=config.name, description=description),
+            metadata=ToolMetadata(name=tool_name, description=description),
         )
     tool_config = config.config
     if isinstance(tool_config, BaseModel):
