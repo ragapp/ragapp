@@ -23,6 +23,13 @@ else
     echo "Updated static files successfully!"
 fi
 
+# Append tracking snippet to static/index.html if TRACKING_SNIPPET is set
+if [[ -n "$TRACKING_SNIPPET" ]]; then
+    escaped_snippet=$(echo "$TRACKING_SNIPPET" | sed 's/[\/&]/\\&/g')
+    sed -i "/<\/body>/i $escaped_snippet" static/index.html
+    echo "Appended tracking snippet to static/index.html"
+fi
+
 # Copy default config to mounted volume if it is empty
 if [[ -z "$(ls -A /app/config)" ]]; then
     cp -r /app/.config/. /app/config/
