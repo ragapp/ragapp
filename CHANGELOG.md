@@ -1,5 +1,15 @@
 # ragbox
 
+## 0.1.2
+
+### Patch Changes
+
+- 9785b77: Add latest groq models and use original model name
+- 6e084a9: Support for adding a tracking script to the chat UI
+- 56858cc: Don't trigger indexing for each file (if multiple files are uploaded)
+- 947f865: Fix cannot use query engine
+- ea2af1b: Fix missing config in single deployment
+
 ## 0.1.1
 
 ### Patch Changes
