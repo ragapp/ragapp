@@ -2,4 +2,4 @@
 "ragbox": patch
 ---
 
-Enhance file upload and removal handling
+Don't trigger indexing for each file (if multiple files are uploaded)
