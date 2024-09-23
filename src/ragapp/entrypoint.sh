@@ -24,9 +24,14 @@ else
 fi
 
 # Append tracking snippet to static/index.html if TRACKING_SNIPPET is set
+# use awk to insert the snippet at the correct position and avoid escaping special characters
 if [[ -n "$TRACKING_SNIPPET" ]]; then
-    escaped_snippet=$(echo "$TRACKING_SNIPPET" | sed 's/[\/&]/\\&/g')
-    sed -i "/<\/body>/i $escaped_snippet" static/index.html
+    awk -v snippet="$TRACKING_SNIPPET" '
+    /<\/head>/ {
+        print snippet
+    }
+    { print }
+    ' static/index.html > static/index.html.tmp && mv static/index.html.tmp static/index.html
     echo "Appended tracking snippet to static/index.html"
 fi
 
