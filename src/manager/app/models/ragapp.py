@@ -19,6 +19,11 @@ class RAGAppContainerConfig(BaseModel):
     )
     volume_config: Optional[RAGAppVolumeConfig] = None
     status: Optional[str] = Field(default=None)
+    connectToExternalData: bool = Field(default=False)
+    s3BucketName: Optional[str] = Field(default=None)
+    s3AccessKey: Optional[str] = Field(default=None)
+    s3SecretKey: Optional[str] = Field(default=None)
+    s3Url: Optional[str] = Field(default=None)
 
     class Config:
         # example
