@@ -94,4 +94,5 @@ def _get_default_app_environment(app_name: str) -> Dict[str, str]:
         "EMBEDDING_DIM": "1024",
         "CHAT_REQUEST_LIMIT_THRESHOLD": settings.chat_request_limit_threshold,
         "DB_URI": "sqlite:///storage/db.sqlite",
+        "TRACKING_SNIPPET": settings.tracking_snippet,
     }
