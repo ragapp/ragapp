@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, Form
 from fastapi.responses import JSONResponse
 
 from backend.controllers.files import FileHandler, UnsupportedFileExtensionError
@@ -16,11 +16,11 @@ def fetch_files() -> list[File]:
 
 
 @r.post("")
-async def add_file(file: UploadFile):
+async def add_file(file: UploadFile, fileIndex: str= Form(), totalFiles: str= Form()):
     """
     Upload a new file.
     """
-    res = await FileHandler.upload_file(file, str(file.filename))
+    res = await FileHandler.upload_file(file, str(file.filename), fileIndex, totalFiles)
     if isinstance(res, UnsupportedFileExtensionError):
         # Return 400 response with message if the file extension is not supported
         return JSONResponse(
