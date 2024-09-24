@@ -67,6 +67,7 @@ def create_agent(
                 status_code=400,
                 detail="Agent mode requires a model supporting function calling but your current model does not support it. Please change to a different model or update your model config.",
             )
+        agent_manager.validate_agent_data(agent_data)
         return agent_manager.create_agent(agent_data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -82,6 +83,7 @@ def update_agent(
     Update an existing agent.
     """
     try:
+        agent_manager.validate_agent_data(agent_data)
         return agent_manager.update_agent(agent_id, agent_data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

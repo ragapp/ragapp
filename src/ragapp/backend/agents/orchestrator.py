@@ -1,3 +1,4 @@
+import re
 from typing import List, Optional
 
 from app.engine.tools import ToolFactory
@@ -45,9 +46,13 @@ def get_agents(
         # The orchestrator uses "role" to select the right agent for a task
         # construct a "description" from the user defined role and goal for better orchestration
         description = f"{agent_config.role}\n and its goals are {agent_config.goal}"
+        # OpenAI only allows agent names to match the pattern '^[a-zA-Z0-9_-]+$'."
+        # Remove special characters from the agent name
+        agent_name = re.sub(r"[^a-zA-Z0-9_-]", "", agent_config.name)
+
         agents.append(
             FunctionCallingAgent(
-                name=agent_config.name,
+                name=agent_name,
                 role=description,
                 system_prompt=system_prompt,
                 tools=tools,
