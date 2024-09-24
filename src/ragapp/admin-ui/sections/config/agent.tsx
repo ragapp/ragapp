@@ -144,8 +144,9 @@ export const AgentConfig = () => {
         console.error("Failed to update agent name:", error);
         toast({
           title: "Error",
-          description: "Failed to update agent name. Please try again.",
+          description: `Failed to update agent name. ${error}`,
           variant: "destructive",
+          duration: 10000,
         });
       }
     }
