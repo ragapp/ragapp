@@ -1,7 +1,6 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from asyncio import Task
 from typing import AsyncGenerator, List
 
 from aiostream import stream
@@ -145,13 +144,13 @@ class WorkflowVercelStreamResponse(BaseVercelStreamResponse):
         self,
         request: Request,
         chat_data: ChatData,
-        task: Task[AgentRunResult | AsyncGenerator],
+        event_handler: AgentRunResult | AsyncGenerator,
         events: AsyncGenerator[AgentRunEvent, None],
         verbose: bool = True,
     ):
         # Yield the text response
         async def _chat_response_generator():
-            result = await task
+            result = await event_handler
             final_response = ""
 
             if isinstance(result, AgentRunResult):
