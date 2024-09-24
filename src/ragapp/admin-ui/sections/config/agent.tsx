@@ -104,7 +104,7 @@ export const AgentConfig = () => {
   };
 
   const addNewAgent = () => {
-    const newAgentName = `Unnamed Agent ${agents.length + 1}`;
+    const newAgentName = `NoName${agents.length + 1}`;
     const newAgentConfig: AgentConfigType = {
       ...DEFAULT_AGENT_CONFIG,
       agent_id: crypto.randomUUID(),
@@ -144,8 +144,9 @@ export const AgentConfig = () => {
         console.error("Failed to update agent name:", error);
         toast({
           title: "Error",
-          description: "Failed to update agent name. Please try again.",
+          description: `Failed to update agent name. ${error}`,
           variant: "destructive",
+          duration: 10000,
         });
       }
     }

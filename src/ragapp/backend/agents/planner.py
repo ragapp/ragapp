@@ -1,5 +1,4 @@
-# Copied from: https://github.com/run-llama/create-llama/blob/578f7f9e501c279802ac48eaa3966efd9460370b/templates/types/multiagent/fastapi/app/agents/planner.py
-import asyncio
+# Copied from: https://github.com/run-llama/create-llama/blob/b31fa80326400bfb94c95de2ffff7c31a8bf9eba/templates/types/multiagent/fastapi/app/agents/planner.py
 import uuid
 from enum import Enum
 from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple, Union
@@ -126,16 +125,14 @@ class StructuredPlannerAgent(Workflow):
         is_last_tasks = ctx.data["num_sub_tasks"] == self.get_remaining_subtasks(ctx)
         # TODO: streaming only works without plan refining
         streaming = is_last_tasks and ctx.data["streaming"] and not self.refine_plan
-        task = asyncio.create_task(
-            self.executor.run(
-                input=ev.sub_task.input,
-                streaming=streaming,
-            )
+        handler = self.executor.run(
+            input=ev.sub_task.input,
+            streaming=streaming,
         )
         # bubble all events while running the executor to the planner
-        async for event in self.executor.stream_events():
+        async for event in handler.stream_events():
             ctx.write_event_to_stream(event)
-        result = await task
+        result: AgentRunResult = await handler
         if self._verbose:
             print("=== Done executing sub task ===\n")
         self.planner.state.add_completed_sub_task(ctx.data["act_plan_id"], ev.sub_task)

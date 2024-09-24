@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from typing import List
 
@@ -63,14 +62,12 @@ async def chat(
                 response=response,
             )
         else:
-            task = asyncio.create_task(
-                chat_engine.run(input=last_message_content, streaming=True)
-            )
+            event_handler = chat_engine.run(input=last_message_content, streaming=True)
             return WorkflowVercelStreamResponse(
                 request=request,
                 chat_data=data,
-                task=task,
-                events=chat_engine.stream_events(),  # Call the method to get the generator
+                event_handler=event_handler,
+                events=chat_engine.stream_events(),
             )
     except Exception as e:
         logger.exception("Error in chat engine", exc_info=True)
