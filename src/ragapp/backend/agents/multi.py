@@ -1,5 +1,4 @@
-# Copied from: https://github.com/run-llama/create-llama/blob/578f7f9e501c279802ac48eaa3966efd9460370b/templates/types/multiagent/fastapi/app/agents/multi.py
-import asyncio
+# Copied from: https://github.com/run-llama/create-llama/blob/b31fa80326400bfb94c95de2ffff7c31a8bf9eba/templates/types/multiagent/fastapi/app/agents/multi.py
 from typing import Any, List
 
 from llama_index.core.tools.types import ToolMetadata, ToolOutput
@@ -35,11 +34,11 @@ class AgentCallTool(ContextAwareTool):
 
     # overload the acall function with the ctx argument as it's needed for bubbling the events
     async def acall(self, ctx: Context, input: str) -> ToolOutput:
-        task = asyncio.create_task(self.agent.run(input=input))
+        handler = self.agent.run(input=input)
         # bubble all events while running the agent to the calling agent
-        async for ev in self.agent.stream_events():
+        async for ev in handler.stream_events():
             ctx.write_event_to_stream(ev)
-        ret: AgentRunResult = await task
+        ret: AgentRunResult = await handler
         response = ret.response.message.content
         return ToolOutput(
             content=str(response),
