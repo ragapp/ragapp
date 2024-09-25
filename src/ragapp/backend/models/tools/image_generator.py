@@ -20,7 +20,7 @@ class ImageGeneratorTool(BaseModel):
         default=ImageGeneratorToolConfig(),
     )
     custom_prompt: Optional[str] = (
-        """The output link of the generated image must start with '/api/files/output/tool/<image>'"""
+        """The output link of the generated image must start with '/api/files/output/tool/<image>'. It must be a relative path, don't try adding the domain name or protocol"""
     )
     enabled: bool = False
 

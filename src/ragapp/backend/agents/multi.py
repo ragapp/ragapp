@@ -4,6 +4,7 @@ from typing import Any, List
 from llama_index.core.tools.types import ToolMetadata, ToolOutput
 from llama_index.core.tools.utils import create_schema_from_function
 from llama_index.core.workflow import Context, Workflow
+from llama_index.core.workflow.events import StopEvent
 
 from backend.agents.planner import StructuredPlannerAgent
 from backend.agents.single import (
@@ -37,7 +38,8 @@ class AgentCallTool(ContextAwareTool):
         handler = self.agent.run(input=input)
         # bubble all events while running the agent to the calling agent
         async for ev in handler.stream_events():
-            ctx.write_event_to_stream(ev)
+            if type(ev) is not StopEvent:
+                ctx.write_event_to_stream(ev)
         ret: AgentRunResult = await handler
         response = ret.response.message.content
         return ToolOutput(
@@ -46,6 +48,17 @@ class AgentCallTool(ContextAwareTool):
             raw_input={"args": input, "kwargs": {}},
             raw_output=response,
         )
+
+    async def astream_response(self, ctx: Context, input: str) -> AgentRunResult:
+        handler = self.agent.run(
+            input=input,
+            streaming=True,
+        )
+        async for ev in handler.stream_events():
+            if type(ev) is not StopEvent:
+                ctx.write_event_to_stream(ev)
+        result = await handler
+        return result
 
 
 class AgentOrchestrator(StructuredPlannerAgent):
