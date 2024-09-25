@@ -41,7 +41,7 @@ class AgentRunEvent(Event):
 
 
 class AgentRunResult(BaseModel):
-    response: ChatResponse
+    response: ChatResponse | str
     sources: list[ToolOutput]
 
 
@@ -64,6 +64,7 @@ class FunctionCallingAgent(Workflow):
         name: str,
         write_events: bool = True,
         role: Optional[str] = None,
+        return_tool_output: bool = False,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, verbose=verbose, timeout=timeout, **kwargs)
@@ -71,6 +72,7 @@ class FunctionCallingAgent(Workflow):
         self.name = name
         self.role = role
         self.write_events = write_events
+        self.return_tool_output = return_tool_output
 
         if llm is None:
             llm = Settings.llm
@@ -133,6 +135,8 @@ class FunctionCallingAgent(Workflow):
                 ctx.write_event_to_stream(
                     AgentRunEvent(name=self.name, msg="Finished task")
                 )
+            if self.return_tool_output:
+                response = self.memory.get()[-1].content
             return StopEvent(
                 result=AgentRunResult(response=response, sources=[*self.sources])
             )
@@ -191,7 +195,9 @@ class FunctionCallingAgent(Workflow):
         return StopEvent(result=generator)
 
     @step()
-    async def handle_tool_calls(self, ctx: Context, ev: ToolCallEvent) -> InputEvent:
+    async def handle_tool_calls(
+        self, ctx: Context, ev: ToolCallEvent
+    ) -> InputEvent | StopEvent:
         tool_calls = ev.tool_calls
         tools_by_name = {tool.metadata.get_name(): tool for tool in self.tools}
 
@@ -240,5 +246,11 @@ class FunctionCallingAgent(Workflow):
         for msg in tool_msgs:
             self.memory.put(msg)
 
-        chat_history = self.memory.get()
-        return InputEvent(input=chat_history)
+        if ctx.data["streaming"] and self.return_tool_output:
+            last_message = self.memory.get()[-1].content
+            return StopEvent(
+                result=AgentRunResult(response=last_message, sources=[*self.sources])
+            )
+        else:
+            chat_history = self.memory.get()
+            return InputEvent(input=chat_history)

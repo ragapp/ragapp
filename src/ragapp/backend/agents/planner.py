@@ -80,6 +80,7 @@ class StructuredPlannerAgent(Workflow):
             write_events=False,
             # it's important to instruct to just return the tool call, otherwise the executor will interpret and change the result
             system_prompt="You are an expert in completing given tasks by calling the right tool for the task. Just return the result of the tool call. Don't add any information yourself",
+            return_tool_output=True,
         )
         self.add_workflows(executor=self.executor)
 
