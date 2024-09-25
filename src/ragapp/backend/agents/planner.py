@@ -128,11 +128,14 @@ class StructuredPlannerAgent(Workflow):
         handler = self.executor.run(
             input=ev.sub_task.input,
             streaming=streaming,
+            return_tool_output=True,
         )
         # bubble all events while running the executor to the planner
         async for event in handler.stream_events():
-            ctx.write_event_to_stream(event)
-        result: AgentRunResult = await handler
+            # Don't write StopEvent to stream
+            if type(event) is not StopEvent:
+                ctx.write_event_to_stream(event)
+        result = await handler
         if self._verbose:
             print("=== Done executing sub task ===\n")
         self.planner.state.add_completed_sub_task(ctx.data["act_plan_id"], ev.sub_task)
