@@ -1,4 +1,5 @@
-import threading  # Import threading
+import re
+import threading
 from functools import lru_cache
 from typing import Dict, List, Tuple
 
@@ -234,6 +235,14 @@ class AgentManager:
                 return False
 
         return llm.metadata.is_function_calling_model
+
+    @staticmethod
+    def validate_agent_data(agent_data: Dict):
+        # Validate is agent name valid
+        if not re.match(r"^[a-zA-Z0-9_-]+$", agent_data["name"]):
+            raise ValueError(
+                "Agent name must only contain letters, numbers, underscores, and hyphens"
+            )
 
 
 def agent_manager():
