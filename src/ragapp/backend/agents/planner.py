@@ -131,7 +131,9 @@ class StructuredPlannerAgent(Workflow):
         )
         # bubble all events while running the executor to the planner
         async for event in handler.stream_events():
-            ctx.write_event_to_stream(event)
+            # Don't write StopEvent to stream
+            if type(event) is not StopEvent:
+                ctx.write_event_to_stream(event)
         result: AgentRunResult = await handler
         if self._verbose:
             print("=== Done executing sub task ===\n")
