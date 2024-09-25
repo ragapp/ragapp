@@ -227,6 +227,9 @@ class FunctionCallingAgent(Workflow):
                         input=tool_call.tool_kwargs["input"],
                         streaming=True,
                     )
+                    async for ev in handler.stream_events():
+                        if type(ev) is not StopEvent:
+                            ctx.write_event_to_stream(ev)
                     result = await handler
                     return StopEvent(result=result)
 
