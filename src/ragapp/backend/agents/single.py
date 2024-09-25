@@ -221,16 +221,10 @@ class FunctionCallingAgent(Workflow):
 
             try:
                 if ctx.data["streaming"] and ctx.data["return_tool_output"]:
-                    # Call agent directly instead of through a tool
-                    agent = tool.agent
-                    handler = agent.run(
-                        input=tool_call.tool_kwargs["input"],
-                        streaming=True,
+                    # Complete the workflow using the result from the last agent
+                    result = await tool.astream_response(
+                        ctx=ctx, input=tool_call.tool_kwargs["input"]
                     )
-                    async for ev in handler.stream_events():
-                        if type(ev) is not StopEvent:
-                            ctx.write_event_to_stream(ev)
-                    result = await handler
                     return StopEvent(result=result)
 
                 if isinstance(tool, ContextAwareTool):

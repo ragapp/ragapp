@@ -49,6 +49,17 @@ class AgentCallTool(ContextAwareTool):
             raw_output=response,
         )
 
+    async def astream_response(self, ctx: Context, input: str) -> AgentRunResult:
+        handler = self.agent.run(
+            input=input,
+            streaming=True,
+        )
+        async for ev in handler.stream_events():
+            if type(ev) is not StopEvent:
+                ctx.write_event_to_stream(ev)
+        result = await handler
+        return result
+
 
 class AgentOrchestrator(StructuredPlannerAgent):
     def __init__(
