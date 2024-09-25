@@ -9,6 +9,7 @@ from backend.controllers.providers import AIProvider
 from backend.models.chat_config import ChatConfig
 from backend.models.model_config import ModelConfig
 from backend.tasks.indexing import reset_index
+from backend.models.s3_config import S3Config, get_s3_config
 
 config_router = r = APIRouter()
 
@@ -65,7 +66,8 @@ def update_model_config(
     # 2. Reset the index
 
     if new_config.model_provider != config.model_provider:
-        # If multi-agent mode is enabled, and the new model is not a function calling model
+        # If multi-agent mode is enabled, and the new model is not a 
+        # function calling model
         # raise an error
         if (
             agent_manager.is_using_multi_agents_mode()
@@ -75,7 +77,11 @@ def update_model_config(
         ):
             raise HTTPException(
                 status_code=400,
-                detail="You are using multi-agent mode, please select a model supporting function calling. Or remove the multi-agent mode by deleting agents.",
+                detail=(
+                    "You are using multi-agent mode, please select a model "
+                    "supporting function calling. Or remove the multi-agent "
+                    "mode by deleting agents."
+                ),
             )
 
     EnvConfigManager.update(config, new_config, rollback_on_failure=True)
@@ -103,11 +109,36 @@ def update_model_config(
 def get_available_models(
     provider: Optional[str] = Query(
         None,
-        description="The provider to fetch the models from. Default is the configured provider.",
+        description="The provider to fetch the models from. "
+                    "Default is the configured provider.",
     ),
     provider_url: Optional[str] = Query(
         None,
-        description="The provider URL to fetch the models from. Default is the configured provider URL.",
+        description="The provider URL to fetch the models from. "
+        "Default is the configured provider URL.",
     ),
 ) -> List[str]:
     return AIProvider.fetch_available_models(provider, provider_url)
+
+
+@r.get("/s3", tags=["S3 config"])
+def get_s3_configiguration(
+    config: S3Config = Depends(get_s3_config),
+) -> str:
+    return JSONResponse(
+        config.to_api_response(),
+    )
+
+
+@r.put("/s3", tags=["S3 config"])
+def update_s3_configiguration(
+    new_config: S3Config,
+    config: S3Config = Depends(get_s3_config),
+) -> str:
+    EnvConfigManager.update(config, new_config, rollback_on_failure=True)
+    return JSONResponse(
+        {
+            "message": "Config updated successfully.",
+            "data": new_config.to_api_response(),
+        }
+    )

@@ -41,6 +41,21 @@ if [[ -z "$(ls -A /app/config)" ]]; then
     echo "Config folder is empty, use default configuration!"
 fi
 
+if [[ "${S3,,}" == "true" ]]; then
+    # Install s3fs package
+    apt-get update && apt-get install -y s3fs
+
+    # Ensure /app/s3 directory exists
+    mkdir -p /app/s3
+
+    # Mount the S3 bucket to /app/s3
+    echo "$S3_ACCESS_KEY:$S3_SECRET_KEY" > /root/.passwd-s3fs
+    chmod 600 /root/.passwd-s3fs
+    s3fs $S3_BUCKET_NAME /app/s3 -o url=$S3_URL -o use_path_request_style -o passwd_file=/root/.passwd-s3fs -o allow_other
+
+    echo "Mounted S3 bucket to /app/s3"
+fi
+
 echo "Running application..."
 
 exec "$@"

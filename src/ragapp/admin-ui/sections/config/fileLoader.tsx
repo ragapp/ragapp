@@ -32,6 +32,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { RerankerConfig } from "./reranker";
+import { S3Config } from "./s3Config";
 
 const SUPPORTED_FILE_EXTENSIONS = ["txt", "pdf", "csv"];
 
@@ -191,6 +192,7 @@ export const KnowledgeFileSection = () => {
       <div className="border-b mb-2 border-gray-300 pt-4 pb-4"></div>
       <FileLoaderConfig />
       <RerankerConfig />
+      <S3Config />
     </div>
   );
 };
