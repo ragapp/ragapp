@@ -154,13 +154,9 @@ class WorkflowVercelStreamResponse(BaseVercelStreamResponse):
             final_response = ""
 
             if isinstance(result, AgentRunResult):
-                if isinstance(result.response, str):
-                    yield self.convert_text(str(result.response))
-                    final_response = result.response
-                else:
-                    for token in result.response.message.content:
-                        final_response += token
-                        yield self.convert_text(token)
+                for token in result.response.message.content:
+                    final_response += token
+                    yield self.convert_text(token)
 
             if isinstance(result, AsyncGenerator):
                 async for token in result:

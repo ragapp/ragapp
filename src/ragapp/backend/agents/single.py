@@ -64,7 +64,6 @@ class FunctionCallingAgent(Workflow):
         name: str,
         write_events: bool = True,
         role: Optional[str] = None,
-        return_tool_output: bool = False,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, verbose=verbose, timeout=timeout, **kwargs)
@@ -72,7 +71,6 @@ class FunctionCallingAgent(Workflow):
         self.name = name
         self.role = role
         self.write_events = write_events
-        self.return_tool_output = return_tool_output
 
         if llm is None:
             llm = Settings.llm
@@ -98,6 +96,7 @@ class FunctionCallingAgent(Workflow):
 
         # set streaming
         ctx.data["streaming"] = getattr(ev, "streaming", False)
+        ctx.data["return_tool_output"] = getattr(ev, "return_tool_output", False)
 
         # get user input
         user_input = ev.input
@@ -135,7 +134,7 @@ class FunctionCallingAgent(Workflow):
                 ctx.write_event_to_stream(
                     AgentRunEvent(name=self.name, msg="Finished task")
                 )
-            if self.return_tool_output:
+            if ctx.data["return_tool_output"]:
                 response = self.memory.get()[-1].content
             return StopEvent(
                 result=AgentRunResult(response=response, sources=[*self.sources])
@@ -221,6 +220,16 @@ class FunctionCallingAgent(Workflow):
                 continue
 
             try:
+                if ctx.data["streaming"] and ctx.data["return_tool_output"]:
+                    # Call agent directly instead of through a tool
+                    agent = tool.agent
+                    handler = agent.run(
+                        input=tool_call.tool_kwargs["input"],
+                        streaming=True,
+                    )
+                    result = await handler
+                    return StopEvent(result=result)
+
                 if isinstance(tool, ContextAwareTool):
                     # inject context for calling an context aware tool
                     tool_output = await tool.acall(ctx=ctx, **tool_call.tool_kwargs)
@@ -235,6 +244,7 @@ class FunctionCallingAgent(Workflow):
                     )
                 )
             except Exception as e:
+                print(e)
                 tool_msgs.append(
                     ChatMessage(
                         role="tool",
@@ -246,11 +256,5 @@ class FunctionCallingAgent(Workflow):
         for msg in tool_msgs:
             self.memory.put(msg)
 
-        if ctx.data["streaming"] and self.return_tool_output:
-            last_message = self.memory.get()[-1].content
-            return StopEvent(
-                result=AgentRunResult(response=last_message, sources=[*self.sources])
-            )
-        else:
-            chat_history = self.memory.get()
-            return InputEvent(input=chat_history)
+        chat_history = self.memory.get()
+        return InputEvent(input=chat_history)
