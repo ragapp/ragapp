@@ -221,7 +221,7 @@ class FunctionCallingAgent(Workflow):
 
             try:
                 if ctx.data["streaming"] and ctx.data["return_tool_output"]:
-                    # Complete the workflow using the result from the last agent
+                    # Complete the workflow using the result from the last tool
                     result = await tool.astream_response(
                         ctx=ctx, input=tool_call.tool_kwargs["input"]
                     )
@@ -241,7 +241,6 @@ class FunctionCallingAgent(Workflow):
                     )
                 )
             except Exception as e:
-                print(e)
                 tool_msgs.append(
                     ChatMessage(
                         role="tool",

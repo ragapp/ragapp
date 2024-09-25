@@ -9,7 +9,6 @@ from app.api.routers.models import ChatData, Message, SourceNodes
 from app.api.services.suggestion import NextQuestionSuggestion
 from fastapi import Request
 from fastapi.responses import StreamingResponse
-from llama_index.core.base.llms.types import ChatResponse
 from llama_index.core.chat_engine.types import StreamingAgentChatResponse
 
 from backend.agents.single import AgentRunEvent, AgentRunResult
@@ -161,12 +160,8 @@ class WorkflowVercelStreamResponse(BaseVercelStreamResponse):
 
             if isinstance(result, AsyncGenerator):
                 async for token in result:
-                    if isinstance(token, AgentRunEvent):
-                        final_response += token.msg
-                        yield self.convert_text(token.msg)
-                    elif isinstance(token, ChatResponse):
-                        final_response += token.delta
-                        yield self.convert_text(token.delta)
+                    final_response += token.delta
+                    yield self.convert_text(token.delta)
 
             # Generate next questions if next question prompt is configured
             question_data = await self._generate_next_questions(
