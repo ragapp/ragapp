@@ -1,6 +1,6 @@
 import os
 import logging
-from typing import Dict
+from typing import Dict, Optional, Callable
 from llama_parse import LlamaParse
 from pydantic import BaseModel
 
@@ -36,7 +36,10 @@ def llama_parse_extractor() -> Dict[str, LlamaParse]:
     return {file_type: parser for file_type in SUPPORTED_FILE_TYPES}
 
 
-def get_file_documents(config: FileLoaderConfig):
+def get_file_documents(
+        config: FileLoaderConfig,
+        fileMetadata: Optional[Callable[[str], Dict]] = None):
+
     from llama_index.core.readers import SimpleDirectoryReader
 
     try:
@@ -50,14 +53,13 @@ def get_file_documents(config: FileLoaderConfig):
 
             file_extractor = llama_parse_extractor()
 
-        print(f"config: {config}")
-
         reader = SimpleDirectoryReader(
             config.data_dir,
             recursive=True,
             filename_as_id=True,
             raise_on_error=True,
             file_extractor=file_extractor,
+            file_metadata=fileMetadata
         )
         return reader.load_data()
     except Exception as e:
@@ -70,7 +72,8 @@ def get_file_documents(config: FileLoaderConfig):
         function_name = traceback.extract_tb(exc_traceback)[-1].name
         if function_name == "_add_files":
             logger.warning(
-                f"Failed to load file documents, error message: {e} . Return as empty document list."
+                f"Failed to load file documents, error message: {e} ."
+                "Return as empty document list."
             )
             return []
         else:

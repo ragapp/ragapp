@@ -1,0 +1,123 @@
+# flake8: noqa: E402
+from typing import Dict, Optional
+from dotenv import load_dotenv
+import fsspec
+
+load_dotenv()
+
+import logging
+import os
+from fsspec.implementations.local import LocalFileSystem
+
+from app.engine.loaders import get_documents
+from app.engine.vectordb import get_vector_store
+from app.settings import init_settings
+from llama_index.core.ingestion import IngestionPipeline
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.settings import Settings
+from llama_index.core.storage import StorageContext
+from llama_index.core.storage.docstore import SimpleDocumentStore
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
+
+STORAGE_DIR = os.getenv("STORAGE_DIR", "storage")
+
+
+def get_doc_store():
+    # If the storage directory is there, load the document store from it.
+    # If not, set up an in-memory document store since we can't load from a directory that doesn't exist.
+    if os.path.exists(STORAGE_DIR):
+        return SimpleDocumentStore.from_persist_dir(STORAGE_DIR)
+    else:
+        return SimpleDocumentStore()
+
+
+def run_pipeline(docstore, vector_store, documents):
+    pipeline = IngestionPipeline(
+        transformations=[
+            SentenceSplitter(
+                chunk_size=Settings.chunk_size,
+                chunk_overlap=Settings.chunk_overlap,
+            ),
+            Settings.embed_model,
+        ],
+        docstore=docstore,
+        docstore_strategy="upserts_and_delete",
+        vector_store=vector_store,
+    )
+
+    # Run the ingestion pipeline and store the results
+    nodes = pipeline.run(show_progress=True, documents=documents)
+
+    return nodes
+
+
+def persist_storage(docstore, vector_store):
+    storage_context = StorageContext.from_defaults(
+        docstore=docstore,
+        vector_store=vector_store,
+    )
+    storage_context.persist(STORAGE_DIR)
+
+def default_file_metadata_func(
+    file_path: str, fs: Optional[fsspec.AbstractFileSystem] = None
+) -> Dict:
+    """
+    Get some handy metadata from filesystem.
+
+    Args:
+        file_path: str: file path in str
+    """
+    # fs = fs or LocalFileSystem 
+    # stat_result = fs.stat(file_path)
+    print(file_path)
+    return {}
+    try:
+        file_name = os.path.basename(str(stat_result["name"]))
+    except Exception as e:
+        file_name = os.path.basename(file_path)
+
+    # # creation_date = _format_file_timestamp(stat_result.get("created"))
+    # # last_modified_date = _format_file_timestamp(stat_result.get("mtime"))
+    # # last_accessed_date = _format_file_timestamp(stat_result.get("atime"))
+    # default_meta = {
+    #     "file_path": file_path,
+    #     "file_name": file_name,
+    #     "file_type": mimetypes.guess_type(file_path)[0],
+    #     "file_size": stat_result.get("size"),
+    #     "creation_date": creation_date,
+    #     "last_modified_date": last_modified_date,
+    #     "last_accessed_date": last_accessed_date,
+    # }
+
+    # Return not null value
+    return {
+        # meta_key: meta_value
+        # for meta_key, meta_value in default_meta.items()
+        # if meta_value is not None
+    }
+
+def generate_datasource():
+    init_settings()
+    logger.info("Generate index for the provided data")
+
+    # Get the stores and documents or create new ones
+    documents = get_documents(default_file_metadata_func)
+    # Set private=false to mark the document as public (required for filtering)
+    for doc in documents:
+        doc.metadata["private"] = "false"
+    docstore = get_doc_store()
+    vector_store = get_vector_store()
+
+    # Run the ingestion pipeline
+    _ = run_pipeline(docstore, vector_store, documents)
+
+    # Build the index and persist storage
+    persist_storage(docstore, vector_store)
+
+    logger.info("Finished generating the index")
+
+
+if __name__ == "__main__":
+    generate_datasource()
