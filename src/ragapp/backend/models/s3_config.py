@@ -11,6 +11,27 @@ class S3Config(BaseEnvConfig):
         ),
         env="S3_PATH",
     )
+    s3_enabled: bool | None = Field(
+        default=False,
+        description=(
+            "If S3 is enabled."
+        ),
+        env="S3",
+    )
+    s3_bucket: str | None = Field(
+        default="",
+        description=(
+            "The bucket name of the S3 bucket where the documents are stored."
+        ),
+        env="S3_BUCKET_NAME",
+    )
+    s3_url: str | None = Field(
+        default="",
+        description=(
+            "The URL of the S3 bucket where the documents are stored."
+        ),
+        env="S3_URL",
+    )
 
 
 def get_s3_config():

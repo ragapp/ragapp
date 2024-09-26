@@ -37,7 +37,7 @@ export const S3Config = () => {
     } catch (e) {
       console.error(e);
       toast({
-        title: "Failed to update reranker configuration",
+        title: "Failed to update S3 configuration",
         variant: "destructive",
       });
     }
@@ -50,33 +50,28 @@ export const S3Config = () => {
           className="space-y-4 mb-4"
           onBlur={form.handleSubmit(submitS3ConfigForm)}
         >
-          {process.env.S3?.toLowerCase() !== "true" && (
-            <>
-              <FormField
-                control={form.control}
-                name="s3_path"
-                render={({ field }) => (
-                  <FormItem className="ml-6">
-                    <FormLabel>S3 Path</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Specify the path to the S3 bucket where the documents are
-                      stored. You can enter multiple paths separated by commas.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="ml-6">
+          <FormField
+            control={form.control}
+            name="s3_path"
+            render={({ field }) => (
+              <FormItem className="ml-6">
+                <FormLabel>S3 Path</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
                 <FormDescription>
-                  Connected to S3 bucket: {process.env.S3_BUCKET_NAME} at{" "}
-                  {process.env.S3_URL}
+                  Specify the path to the S3 bucket where the documents are
+                  stored.
                 </FormDescription>
-              </div>
-            </>
-          )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="ml-6">
+            <FormDescription>
+              Connected to S3 bucket: {config?.s3_bucket} at {config?.s3_url}
+            </FormDescription>
+          </div>
         </form>
       </Form>
     </>

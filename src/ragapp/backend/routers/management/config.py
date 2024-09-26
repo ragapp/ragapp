@@ -1,4 +1,6 @@
-from typing import Annotated, List, Optional
+import os
+
+from typing import Annotated, List, Optional, Union
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
@@ -10,6 +12,8 @@ from backend.models.chat_config import ChatConfig
 from backend.models.model_config import ModelConfig
 from backend.tasks.indexing import reset_index
 from backend.models.s3_config import S3Config, get_s3_config
+from backend.controllers.loader import LoaderManager, loader_manager
+from backend.models.loader import FileLoader
 
 config_router = r = APIRouter()
 
@@ -125,6 +129,7 @@ def get_available_models(
 def get_s3_configiguration(
     config: S3Config = Depends(get_s3_config),
 ) -> str:
+    os.environ["S3_PATH"] = config.s3_path
     return JSONResponse(
         config.to_api_response(),
     )
@@ -133,9 +138,14 @@ def get_s3_configiguration(
 @r.put("/s3", tags=["S3 config"])
 def update_s3_configiguration(
     new_config: S3Config,
+    loader_manager: LoaderManager = Depends(loader_manager),
     config: S3Config = Depends(get_s3_config),
 ) -> str:
     EnvConfigManager.update(config, new_config, rollback_on_failure=True)
+    oldLoader = loader_manager.get_loader("file")
+    oldLoader['data_dir'] = new_config.s3_path
+    fileLoader = FileLoader(**oldLoader)
+    loader_manager.update_loader(fileLoader)
     return JSONResponse(
         {
             "message": "Config updated successfully.",
