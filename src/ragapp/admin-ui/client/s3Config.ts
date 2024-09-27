@@ -3,6 +3,7 @@ import { getBaseURL } from "./utils";
 
 export const S3ConfigSchema = z.object({
   s3_path: z.string().trim().optional(),
+  s3_path_meta_files: z.string().trim().optional(),
   s3_enabled: z.boolean().optional(),
   s3_bucket: z.string().trim().optional(),
   s3_url: z.string().trim().optional(),

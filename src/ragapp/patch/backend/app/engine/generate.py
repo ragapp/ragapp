@@ -1,4 +1,7 @@
 # flake8: noqa: E402
+from datetime import datetime
+import json
+import mimetypes
 from typing import Dict, Optional
 from dotenv import load_dotenv
 import fsspec
@@ -60,7 +63,7 @@ def persist_storage(docstore, vector_store):
     )
     storage_context.persist(STORAGE_DIR)
 
-def default_file_metadata_func(
+def extract_file_metadata_func(
     file_path: str, fs: Optional[fsspec.AbstractFileSystem] = None
 ) -> Dict:
     """
@@ -69,33 +72,58 @@ def default_file_metadata_func(
     Args:
         file_path: str: file path in str
     """
-    # fs = fs or LocalFileSystem 
-    # stat_result = fs.stat(file_path)
-    print(file_path)
-    return {}
+    fs = fs or LocalFileSystem()
+    stat_result = fs.stat(file_path)
+    
     try:
         file_name = os.path.basename(str(stat_result["name"]))
     except Exception as e:
         file_name = os.path.basename(file_path)
 
-    # # creation_date = _format_file_timestamp(stat_result.get("created"))
-    # # last_modified_date = _format_file_timestamp(stat_result.get("mtime"))
-    # # last_accessed_date = _format_file_timestamp(stat_result.get("atime"))
-    # default_meta = {
-    #     "file_path": file_path,
-    #     "file_name": file_name,
-    #     "file_type": mimetypes.guess_type(file_path)[0],
-    #     "file_size": stat_result.get("size"),
-    #     "creation_date": creation_date,
-    #     "last_modified_date": last_modified_date,
-    #     "last_accessed_date": last_accessed_date,
-    # }
+    creation_date = datetime.fromtimestamp(stat_result.get("created")).strftime("%Y-%m-%d")
+    last_modified_date = datetime.fromtimestamp(stat_result.get("mtime")).strftime("%Y-%m-%d")
+    atime = stat_result.get("atime")
+    if atime is None or atime == 0:
+        atime = stat_result.get("mtime")
+    last_accessed_date = datetime.fromtimestamp(atime).strftime("%Y-%m-%d")
+    
+    default_meta = {
+        "file_path": file_path,
+        "file_name": file_name,
+        "file_type": mimetypes.guess_type(file_path)[0],
+        "file_size": stat_result.get("size"),
+        "creation_date": creation_date,
+        "last_modified_date": last_modified_date,
+        "last_accessed_date": last_accessed_date,
+    }
+    load_dotenv()
+    S3_PATH = os.getenv("s3_path_meta_files")
+
+    print(f"S3_PATH: {S3_PATH}")
+    if S3_PATH:
+        dir_path = os.path.dirname(S3_PATH)
+        parts = dir_path.split(os.sep)
+        parts[-1] = "meta_files"
+
+        meta_files_path = os.path.join(parts)
+        print(f"meta_files_path:{meta_files_path}")
+        json_file_path = os.path.join(meta_files_path, f"{file_name}.json")
+        if os.path.exists(json_file_path):
+            with open(json_file_path, 'r') as json_file:
+                json_data = json.load(json_file)
+                default_meta.update(json_data)
+    res = {
+        meta_key: meta_value
+        for meta_key, meta_value in default_meta.items()
+        if meta_value is not None
+    }
+    logger.info(f"File: {res}")
 
     # Return not null value
     return {
-        # meta_key: meta_value
-        # for meta_key, meta_value in default_meta.items()
-        # if meta_value is not None
+        meta_key: meta_value
+        for meta_key, meta_value in default_meta.items()
+        if meta_value is not None
     }
 
 def generate_datasource():
@@ -103,7 +131,7 @@ def generate_datasource():
     logger.info("Generate index for the provided data")
 
     # Get the stores and documents or create new ones
-    documents = get_documents(default_file_metadata_func)
+    documents = get_documents(extract_file_metadata_func)
     # Set private=false to mark the document as public (required for filtering)
     for doc in documents:
         doc.metadata["private"] = "false"

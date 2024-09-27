@@ -32,6 +32,13 @@ class S3Config(BaseEnvConfig):
         ),
         env="S3_URL",
     )
+    s3_path_meta_files: str | None = Field(
+        default="",
+        description=(
+            "The URL of the S3 bucket where the documents are stored."
+        ),
+        env="s3_path_meta_files",
+    )
 
 
 def get_s3_config():

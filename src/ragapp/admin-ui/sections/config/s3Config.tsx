@@ -67,6 +67,23 @@ export const S3Config = () => {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="s3_path_meta_files"
+            render={({ field }) => (
+              <FormItem className="ml-6">
+                <FormLabel>S3 Meta Files Path</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormDescription>
+                  Specify the path to the S3 bucket where the documents&apos;
+                  meta information are stored.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="ml-6">
             <FormDescription>
               Connected to S3 bucket: {config?.s3_bucket} at {config?.s3_url}

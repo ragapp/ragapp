@@ -51,7 +51,8 @@ install:
 
 run:
 	poetry run python main.py
-
+copy-patch:
+	cp -r ./patch/* ./create_llama/
 dev:
 # Start the backend and frontend servers
 # Kill both servers if a stop signal is received
