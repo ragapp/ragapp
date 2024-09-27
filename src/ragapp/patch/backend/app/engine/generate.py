@@ -97,21 +97,18 @@ def extract_file_metadata_func(
         "last_accessed_date": last_accessed_date,
     }
     load_dotenv()
-    S3_PATH = os.getenv("s3_path_meta_files")
+    s3_path_meta_files = os.getenv("s3_path_meta_files")
 
-    print(f"S3_PATH: {S3_PATH}")
-    if S3_PATH:
-        dir_path = os.path.dirname(S3_PATH)
-        parts = dir_path.split(os.sep)
-        parts[-1] = "meta_files"
-
-        meta_files_path = os.path.join(parts)
-        print(f"meta_files_path:{meta_files_path}")
-        json_file_path = os.path.join(meta_files_path, f"{file_name}.json")
+    logger.info(f"s3_path_meta_files: {s3_path_meta_files}")
+    if s3_path_meta_files:
+        json_file_path = os.path.join(s3_path_meta_files, 
+                                      f"{os.path.splitext(file_name)[0]}.json")
         if os.path.exists(json_file_path):
             with open(json_file_path, 'r') as json_file:
                 json_data = json.load(json_file)
                 default_meta.update(json_data)
+        else:
+            logger.warning("No extra meta file for:", json_file_path)
     res = {
         meta_key: meta_value
         for meta_key, meta_value in default_meta.items()
