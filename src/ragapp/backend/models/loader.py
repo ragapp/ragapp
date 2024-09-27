@@ -16,7 +16,11 @@ class FileLoader(BaseModel):
     )
     llama_cloud_api_key: str | None = Field(
         default=None,
-        description="API key for LlamaParse.",
+        description="API key for LlamaParse.", 
+    )
+    data_dir: str = Field(
+        default="data",
+        description="The directory of the data.",
     )
 
     def __init__(self, **data):
@@ -30,7 +34,7 @@ class FileLoader(BaseModel):
         Update the environment variable for the API key.
         """
         import dotenv
-
+        print(f"Updating environment variable for {self.llama_cloud_api_key}")
         if self.llama_cloud_api_key:
             # Update runtime environment variable
             os.environ["LLAMA_CLOUD_API_KEY"] = self.llama_cloud_api_key
@@ -45,6 +49,7 @@ class FileLoader(BaseModel):
         """
         return {
             "use_llama_parse": self.use_llama_parse,
+            "data_dir": self.data_dir,
         }
 
 

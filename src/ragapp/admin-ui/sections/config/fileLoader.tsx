@@ -4,6 +4,8 @@ import {
   fetchFileLoader,
   updateFileLoader,
 } from "@/client/loader";
+import { reIndexAllFiles } from "@/client/reindexFiles";
+import { getS3Config } from "@/client/s3Config";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -32,6 +34,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { RerankerConfig } from "./reranker";
+import { S3Config } from "./s3Config";
 
 const SUPPORTED_FILE_EXTENSIONS = ["txt", "pdf", "csv"];
 
@@ -39,6 +42,10 @@ export const KnowledgeFileSection = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  const { data: configS3 } = useQuery("s3Config", getS3Config, {
+    refetchOnWindowFocus: true,
+  });
 
   async function handleRemoveFiles(toRemoveFiles: File[], setSubmit?: boolean) {
     console.log("Removing files:", toRemoveFiles);
@@ -177,20 +184,44 @@ export const KnowledgeFileSection = () => {
     handleFetchFiles();
   }, [toast]);
 
+  const handleReIndex = async () => {
+    try {
+      await reIndexAllFiles(); // Call the reindex API
+      toast({
+        title: "Re indexing initiated successfully.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Failed to initiate reindexing.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div>
-      <div className="border-b mb-4 border-gray-300 pt-4 pb-4"></div>
-      <div className="space-y-4">
-        <UploadFile processUpload={processUpload} isSubmitting={isSubmitting} />
-        <ListFiles
-          files={files}
-          handleRemoveFiles={handleRemoveFiles}
-          isSubmitting={isSubmitting}
-        />
-      </div>
+      {!configS3?.s3_enabled && (
+        <>
+          <div className="border-b mb-4 border-gray-300 pt-4 pb-4"></div>
+          <div className="space-y-4">
+            <UploadFile
+              processUpload={processUpload}
+              isSubmitting={isSubmitting}
+            />
+            <ListFiles
+              files={files}
+              handleRemoveFiles={handleRemoveFiles}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+        </>
+      )}
       <div className="border-b mb-2 border-gray-300 pt-4 pb-4"></div>
-      <FileLoaderConfig />
+      {!configS3?.s3_enabled && <FileLoaderConfig />}
       <RerankerConfig />
+      {configS3?.s3_enabled && <S3Config />}
+      <Button onClick={handleReIndex}>ReIndex</Button>{" "}
     </div>
   );
 };

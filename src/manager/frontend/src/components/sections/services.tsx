@@ -104,7 +104,10 @@ function StartStopButton({
   async function handleRecreateService() {
     if (service.app_name !== null) {
       setIsHandling(true);
-      await createRAGAppService({ name: service.app_name });
+      await createRAGAppService({
+        name: service.app_name,
+        connectToExternalData: false,
+      });
       refetch();
       setIsHandling(false);
     }

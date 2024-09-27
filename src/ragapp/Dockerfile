@@ -12,6 +12,7 @@ WORKDIR /app
 COPY Makefile .
 COPY admin-ui ./admin-ui
 COPY patch/frontend ./patch/frontend
+COPY patch/backend ./patch/backend
 
 # Build static files for the Chat UI
 RUN make build-frontends
@@ -23,6 +24,9 @@ WORKDIR /app
 
 # Add create_llama/backend to PYTHONPATH
 ENV PYTHONPATH=/app:/app/create_llama/backend
+
+# Install necessary packages including FUSE to support S3FS
+RUN apt-get update && apt-get install -y fuse && apt-get clean
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
