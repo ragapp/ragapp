@@ -10,3 +10,5 @@
 deployments/**/data/
 !deployments/multiple-ragapps/data/traefik
 deployments/**/ollama/
+
+.DS_Store
