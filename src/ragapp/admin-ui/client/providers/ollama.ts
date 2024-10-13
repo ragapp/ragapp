@@ -6,7 +6,7 @@ export const OllamaConfigSchema = BaseConfigSchema.extend({
   ollama_base_url: z
     .string()
     .trim()
-    .default("http://host.docker.internal:11434")
+    .default("http://localhost:11434")
     .optional()
     .refine(
       (value) => {
@@ -34,9 +34,9 @@ export const OllamaConfigSchema = BaseConfigSchema.extend({
 
 export const DEFAULT_OLLAMA_CONFIG: z.input<typeof OllamaConfigSchema> = {
   model_provider: "ollama",
-  model: "phi3:latest",
+  model: "lamma3.2:latest",
   embedding_model: "nomic-embed-text",
   embedding_dim: 768,
-  ollama_base_url: "http://host.docker.internal:11434",
+  ollama_base_url: "http://localhost:11434",
   ollama_request_timeout: 120.0,
 };

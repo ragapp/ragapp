@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from pydantic import Field
 
-SUPPORTED_FILE_EXTENSIONS = ["txt", "pdf", "csv"]
+SUPPORTED_FILE_EXTENSIONS = ["txt", "pdf", "csv","pcapng"]
 
 
 class FileStatus:

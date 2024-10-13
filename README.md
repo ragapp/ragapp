@@ -2,7 +2,7 @@
 
 <p align="center"><strong>The easiest way to use Agentic RAG in any enterprise.</strong></p>
 
-<p align="center">As simple to configure as <a href="https://openai.com/index/introducing-gpts" target="_blank">OpenAI's custom GPTs</a>, but deployable in your own cloud infrastructure using Docker. Built using <a href="https://github.com/run-llama/llama_index">LlamaIndex</a>.</p>
+<p align="center"> As simple to configure as <a href="https://openai.com/index/introducing-gpts" target="_blank">OpenAI's custom GPTs</a>, but deployable in your own cloud infrastructure using Docker. Built using <a href="https://github.com/run-llama/llama_index">LlamaIndex</a>.</p>
 
 <p align="center">
   <a href="#get-started"><strong>Get Started</strong></a> ·
@@ -13,6 +13,13 @@
 
 <br/>
 <img alt="Screenshot" src="docs/screenshot.png">
+
+# The easiest way to use Agentic RAG now for security logs ingestions
+
+## Motivation
+
+As a software developer, I often find myself navigating the complexities of interpreting suspicious activities in security logs. The need for a straightforward, efficient tool to manage this task is essential. Agentic RAG for security logs empowers developers like me to easily configure and deploy powerful systems that can process and analyze security data effectively. By leveraging this technology, we can enhance our ability to detect anomalies, respond to potential threats, and ultimately secure our applications with greater confidence.
+
 
 ## Get Started
 

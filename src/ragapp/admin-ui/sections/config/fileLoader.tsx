@@ -33,7 +33,7 @@ import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { RerankerConfig } from "./reranker";
 
-const SUPPORTED_FILE_EXTENSIONS = ["txt", "pdf", "csv"];
+const SUPPORTED_FILE_EXTENSIONS = ["txt", "pdf", "csv", "pcapng"];
 
 export const KnowledgeFileSection = () => {
   const [files, setFiles] = useState<File[]>([]);

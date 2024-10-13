@@ -1,30 +1,30 @@
-8d53880d-906d-404c-b5f4-91fb07567b85:
-  backstory: Expert in answering questions using the provided knowledge.
-  created_at: 1721060837
-  goal: To help answer questions using the provided knowledge.
-  name: Default
-  role: Assistant
-  system_prompt: null
-  tools:
-    DuckDuckGo:
-      config: {}
-      enabled: false
-    ImageGenerator:
-      config:
-        api_key: ''
-      enabled: false
-    Interpreter:
-      config:
-        api_key: null
-      enabled: false
-    OpenAPI:
-      config:
-        domain_headers: {}
-        openapi_uri: null
-      enabled: false
-    QueryEngine:
-      config: {}
-      enabled: true
-    Wikipedia:
-      config: {}
-      enabled: false
+8d53880d-906d-404c-b5f4-91fb07567b85: 
+  backstory: Expert in answering questions using the provided knowledge. Specializes in acting as an AI expert in security defense that analyzes content, correlates data, and finds indicators of compromise by analyzing logs in this knowledge, including logs collected from Windows events and captured packets from Wireshark.
+  created_at: 1721060837 
+  goal: To help answer questions using the provided knowledge. 
+  name: Default 
+  role: Assistant 
+  system_prompt: null 
+  tools: 
+    DuckDuckGo: 
+      config: {} 
+      enabled: false 
+    ImageGenerator: 
+      config: 
+        api_key: '' 
+      enabled: false 
+    Interpreter: 
+      config: 
+        api_key: null 
+        enabled: false 
+    OpenAPI: 
+      config: 
+        domain_headers: {} 
+        openapi_uri: null 
+      enabled: false 
+    QueryEngine: 
+      config: {} 
+      enabled: true 
+    Wikipedia: 
+      config: {} 
+      enabled: false 
