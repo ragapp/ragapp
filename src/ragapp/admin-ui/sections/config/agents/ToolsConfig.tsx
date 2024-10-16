@@ -15,14 +15,18 @@ import { UseFormReturn } from "react-hook-form";
 import { ImageGeneratorConfig } from "./tools/image_generator";
 import { E2BInterpreterConfig } from "./tools/interpreter";
 import { OpenAPIConfig } from "./tools/openapi";
+import { CodeGeneratorConfig } from "./tools/code_generator";
+import { DEFAULT_DOCUMENT_GENERATOR_TOOL_CONFIG } from "@/client/tools/document_generator";
 
 export const TOOL_ORDER = [
   "QueryEngine",
   "DuckDuckGo",
   "Wikipedia",
+  "DocumentGenerator",
+  "ImageGenerator",
   "OpenAPI",
   "Interpreter",
-  "ImageGenerator",
+  "CodeGenerator",
 ];
 
 interface ToolConfigProps {
@@ -82,6 +86,13 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
             handleSaveChanges={handleSaveChanges}
           />
         );
+      case "CodeGenerator":
+        return (
+          <CodeGeneratorConfig
+            form={form}
+            handleSaveChanges={handleSaveChanges}
+          />
+        );
       case "OpenAPI":
         return (
           <OpenAPIConfig form={form} handleSaveChanges={handleSaveChanges} />
@@ -110,6 +121,15 @@ export const ToolsConfig: React.FC<ToolConfigProps> = ({
             form={form}
             toolName={toolId}
             toolConfig={DEFAULT_QUERY_ENGINE_TOOL_CONFIG}
+            handleSaveChanges={handleSaveChanges}
+          />
+        );
+      case "DocumentGenerator":
+        return (
+          <SimpleSelection
+            form={form}
+            toolName={toolId}
+            toolConfig={DEFAULT_DOCUMENT_GENERATOR_TOOL_CONFIG}
             handleSaveChanges={handleSaveChanges}
           />
         );

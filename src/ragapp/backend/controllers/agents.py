@@ -8,6 +8,8 @@ import yaml
 from backend.constants import AGENT_CONFIG_FILE
 from backend.models.agent import AgentConfig
 from backend.models.tools import (
+    CodeGeneratorTool,
+    DocumentGeneratorTool,
     DuckDuckGoTool,
     E2BInterpreterTool,
     ImageGeneratorTool,
@@ -37,6 +39,8 @@ class AgentManager:
                 "Wikipedia": WikipediaTool,
                 "OpenAPI": OpenAPITool,
                 "Interpreter": E2BInterpreterTool,
+                "CodeGenerator": CodeGeneratorTool,
+                "DocumentGenerator": DocumentGeneratorTool,
                 "ImageGenerator": ImageGeneratorTool,
                 "QueryEngine": QueryEngineTool,
             }

@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from .code_generator import CodeGeneratorTool
+from .document_generator import DocumentGeneratorTool
 from .duckduckgo import DuckDuckGoTool
 from .image_generator import ImageGeneratorTool
 from .interpreter import E2BInterpreterTool
@@ -14,6 +16,8 @@ __all__ = [
     "OpenAPITool",
     "QueryEngineTool",
     "WikipediaTool",
+    "DocumentGeneratorTool",
+    "CodeGeneratorTool",
 ]
 
 
@@ -24,6 +28,8 @@ TOOL_MAP = {
     "OpenAPI": OpenAPITool,
     "QueryEngine": QueryEngineTool,
     "Wikipedia": WikipediaTool,
+    "DocumentGenerator": DocumentGeneratorTool,
+    "CodeGenerator": CodeGeneratorTool,
 }
 
 

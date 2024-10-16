@@ -7,6 +7,7 @@ export NEXT_PUBLIC_API_URL=/api/chat
 create-llama-app:
 	@echo "\nCreating Llama App..."
 	rm -rf create_llama
+	# Note: Include `--tools artifact` to include sandbox api code
 	create-llama \
 		create_llama \
 		--pro \
@@ -20,6 +21,7 @@ create-llama-app:
 		--tools none \
 		--post-install-action none \
 		--no-files \
+		--tools artifact \
 		--vector-db chroma
 	# We don't need the example data and default .env files
 	rm -rf create_llama/backend/data/*
