@@ -6,8 +6,13 @@ if [[ -n "$BASE_URL" ]]; then
 
     # Add BASE_URL to logo and avatar
     # TODO: find a way that is independent of assets used
-    find static -type f -name "*.*" -exec sed -i 's|"/logo.png|"'$BASE_URL'/logo.png|g' {} +
-    find static -type f -name "*.*" -exec sed -i 's|"/llama.png|"'$BASE_URL'/llama.png|g' {} +
+    if [[ -n "$BRAND" ]]; then
+        find static -type f -name "*.*" -exec sed -i 's|"/logo-'$BRAND'.png|"'$BASE_URL'/logo.png|g' {} +
+        find static -type f -name "*.*" -exec sed -i 's|"/llama-'$BRAND'.png|"'$BASE_URL'/llama.png|g' {} +
+    else
+        find static -type f -name "*.*" -exec sed -i 's|"/logo.png|"'$BASE_URL'/logo.png|g' {} +
+        find static -type f -name "*.*" -exec sed -i 's|"/llama.png|"'$BASE_URL'/llama.png|g' {} +
+    fi
 
     # Replace static files of admin app
     find static/admin -type f -name "*.*" -exec sed -i 's|"/admin/_next/static|"'$BASE_URL'/admin/_next/static|g' {} +
