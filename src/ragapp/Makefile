@@ -8,7 +8,7 @@ create-llama-app:
 	@echo "\nCreating Llama App..."
 	rm -rf create_llama
 	# Note: Include `--tools artifact` to include sandbox api code
-	create-llama \
+	npx -y create-llama@${CREATE_LLAMA_VERSION} \
 		create_llama \
 		--pro \
 	    --use-pnpm \

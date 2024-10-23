@@ -1,6 +1,5 @@
 import { AgentConfigType } from "@/client/agent";
 import { DEFAULT_CODE_GENERATOR_TOOL_CONFIG } from "@/client/tools/code_generator";
-import { DEFAULT_E2B_INTERPRETER_TOOL_CONFIG } from "@/client/tools/interpreter";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,

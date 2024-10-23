@@ -1,4 +1,5 @@
 import { AgentConfigType } from "@/client/agent";
+import { DEFAULT_DOCUMENT_GENERATOR_TOOL_CONFIG } from "@/client/tools/document_generator";
 import { DEFAULT_DUCKDUCKGO_TOOL_CONFIG } from "@/client/tools/duckduckgo";
 import { DEFAULT_QUERY_ENGINE_TOOL_CONFIG } from "@/client/tools/query_engine";
 import { DEFAULT_WIKIPEDIA_TOOL_CONFIG } from "@/client/tools/wikipedia";
@@ -12,11 +13,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
+import { CodeGeneratorConfig } from "./tools/code_generator";
 import { ImageGeneratorConfig } from "./tools/image_generator";
 import { E2BInterpreterConfig } from "./tools/interpreter";
 import { OpenAPIConfig } from "./tools/openapi";
-import { CodeGeneratorConfig } from "./tools/code_generator";
-import { DEFAULT_DOCUMENT_GENERATOR_TOOL_CONFIG } from "@/client/tools/document_generator";
 
 export const TOOL_ORDER = [
   "QueryEngine",
