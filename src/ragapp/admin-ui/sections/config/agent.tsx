@@ -216,7 +216,10 @@ export const AgentConfig = () => {
         </div>
       ) : (
         <>
-          <Tabs value={activeAgent || undefined} onValueChange={handleTabChange}>
+          <Tabs
+            value={activeAgent || undefined}
+            onValueChange={handleTabChange}
+          >
             {isMultiAgentSupported ? (
               <AgentTabList
                 agents={agents}
