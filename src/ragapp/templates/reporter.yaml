@@ -1,0 +1,9 @@
+name: Reporter
+role: Reporter
+backstory: Expert in writing reports based on the provided data for the user request, able to generate document files for the report.
+goal: To write or generate a report based on the provided data for the user request.
+system_prompt: null
+tools:
+  DocumentGenerator:
+    config: {}
+    enabled: true

@@ -4,7 +4,12 @@ from typing import Annotated, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from backend.controllers.agents import AgentManager, agent_manager
+from backend.controllers.agents import (
+    AgentManager,
+    AgentTemplateManager,
+    agent_manager,
+    agent_template_manager,
+)
 from backend.models.agent import AgentConfig, ToolConfig
 
 agents_router = r = APIRouter()
@@ -71,6 +76,18 @@ def create_agent(
         return agent_manager.create_agent(agent_data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@r.get("/templates")
+def get_templates(
+    agent_template_manager: Annotated[
+        AgentTemplateManager, Depends(agent_template_manager)
+    ],
+) -> List[AgentConfig]:
+    """
+    Get all agent templates.
+    """
+    return agent_template_manager.get_templates()
 
 
 @r.put("/{agent_id}")

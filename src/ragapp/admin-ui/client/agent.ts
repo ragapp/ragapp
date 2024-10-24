@@ -157,3 +157,11 @@ export const checkSupportedModel = async (): Promise<boolean> => {
   }
   return res.json();
 };
+
+export async function getAgentTemplates(): Promise<AgentConfigType[]> {
+  const res = await fetch(`${getBaseURL()}/api/management/agents/templates`);
+  if (!res.ok) {
+    throw new Error("Failed to get agent templates");
+  }
+  return await res.json();
+}
