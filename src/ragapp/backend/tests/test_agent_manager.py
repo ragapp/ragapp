@@ -28,6 +28,8 @@ def sample_config():
                 "Interpreter": ToolConfig().dict(),
                 "ImageGenerator": ToolConfig().dict(),
                 "QueryEngine": ToolConfig().dict(),
+                "CodeGenerator": ToolConfig().dict(),
+                "DocumentGenerator": ToolConfig().dict(),
             },
             "created_at": 1721060837,
         },
@@ -45,6 +47,8 @@ def sample_config():
                 "Interpreter": ToolConfig().dict(),
                 "ImageGenerator": ToolConfig().dict(),
                 "QueryEngine": ToolConfig().dict(),
+                "CodeGenerator": ToolConfig().dict(),
+                "DocumentGenerator": ToolConfig().dict(),
             },
             "created_at": 1721060838,
         },
@@ -69,7 +73,10 @@ def test_get_agents(agent_manager):
     assert isinstance(agents[0], AgentConfig)
     assert agents[0].name == "Agent 1"
     assert agents[0].role == "Assistant"
-    assert agents[0].backstory == "You are an AI assistant created to help with various tasks."
+    assert (
+        agents[0].backstory
+        == "You are an AI assistant created to help with various tasks."
+    )
     assert agents[0].goal == "To assist users with their queries and tasks efficiently."
     assert agents[1].name == "Agent 2"
     assert agents[1].role == "Researcher"
@@ -88,9 +95,17 @@ def test_update_agent(agent_manager):
 
     assert agent_manager.config["agent1"]["name"] == "Updated Agent 1"
     assert agent_manager.config["agent1"]["role"] == "Specialist"
-    assert agent_manager.config["agent1"]["backstory"] == "You are a specialized AI assistant."
-    assert agent_manager.config["agent1"]["goal"] == "To provide expert assistance in specific domains."
-    assert agent_manager.config["agent1"]["system_prompt"] == "You are the updated Agent 1"
+    assert (
+        agent_manager.config["agent1"]["backstory"]
+        == "You are a specialized AI assistant."
+    )
+    assert (
+        agent_manager.config["agent1"]["goal"]
+        == "To provide expert assistance in specific domains."
+    )
+    assert (
+        agent_manager.config["agent1"]["system_prompt"] == "You are the updated Agent 1"
+    )
 
 
 def test_delete_agent(agent_manager):
@@ -145,7 +160,10 @@ def test_create_agent(agent_manager):
     assert new_agent.agent_id == "new_agent"
     assert new_agent.name == "New Agent"
     assert new_agent.role == "Analyst"
-    assert new_agent.backstory == "You are an AI analyst specializing in data interpretation."
+    assert (
+        new_agent.backstory
+        == "You are an AI analyst specializing in data interpretation."
+    )
     assert new_agent.goal == "To provide insightful analysis of complex datasets."
     assert new_agent.system_prompt == "You are a new agent"
     assert "new_agent" in agent_manager.config
