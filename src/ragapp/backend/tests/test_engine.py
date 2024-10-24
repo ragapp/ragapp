@@ -4,10 +4,10 @@ import pytest
 from llama_index.core.agent import AgentRunner
 from llama_index.core.chat_engine import CondensePlusContextChatEngine
 
-from backend.agents.multi import AgentOrchestrator
 from backend.controllers.agents import AgentManager
 from backend.engine.engine import get_chat_engine
 from backend.models.agent import AgentConfig
+from backend.workflows.multi import AgentOrchestrator
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def mock_openai_key(monkeypatch):
 
 @pytest.fixture
 def mock_load_tools():
-    with patch("backend.agents.orchestrator.ToolFactory.load_tools") as mock:
+    with patch("backend.workflows.orchestrator.ToolFactory.load_tools") as mock:
         mock.return_value = [MagicMock()]
         yield mock
 
