@@ -2,4 +2,4 @@
 "ragbox": patch
 ---
 
-Add agent templates
+Add agent templates and new tools (DocumentGenerator and CodeGenerator)

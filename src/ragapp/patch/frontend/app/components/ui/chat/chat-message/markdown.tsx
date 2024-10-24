@@ -135,7 +135,9 @@ export default function Markdown({
               return (
                 <DocumentInfo
                   document={{
-                    url: new URL(decodeURIComponent(href), window.location.origin).href,
+                    url: backend
+                      ? new URL(decodeURIComponent(href)).href
+                      : href,
                     sources: [],
                   }}
                   className="mb-2 mt-2"
