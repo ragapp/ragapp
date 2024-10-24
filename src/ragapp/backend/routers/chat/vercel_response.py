@@ -2,15 +2,16 @@ import asyncio
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import AsyncGenerator, List
+from typing import AsyncGenerator, Awaitable, List
 
 from aiostream import stream
 from app.api.routers.events import EventCallbackHandler
 from app.api.routers.models import ChatData, Message, SourceNodes
 from app.api.services.suggestion import NextQuestionSuggestion
-from fastapi import Request
+from fastapi import BackgroundTasks, Request
 from fastapi.responses import StreamingResponse
 from llama_index.core.chat_engine.types import StreamingAgentChatResponse
+from llama_index.core.schema import NodeWithScore
 
 from backend.workflows.single import AgentRunEvent, AgentRunResult
 
@@ -114,12 +115,30 @@ class ChatEngineVercelStreamResponse(BaseVercelStreamResponse):
         request: Request,
         chat_data: ChatData,
         event_handler: EventCallbackHandler,
-        response: StreamingAgentChatResponse,
+        response: Awaitable[StreamingAgentChatResponse],
+        background_tasks: BackgroundTasks,
     ):
+        # Yield the events from the event handler
+        async def _event_generator():
+            async for event in event_handler.async_event_gen():
+                event_response = event.to_response()
+                if event_response is not None:
+                    yield self.convert_data(event_response)
+
         # Yield the text response
         async def _chat_response_generator():
+            # Wait for the response from the chat engine
+            result = await response
+
+            # Once we got a source node, start a background task to download the files (if needed)
+            source_nodes = result.source_nodes
+            self._process_response_nodes(source_nodes, background_tasks)
+
+            # Yield the source nodes
+            yield self.convert_data(self._source_nodes_to_response(source_nodes))
+
             final_response = ""
-            async for token in response.async_response_gen():
+            async for token in result.async_response_gen():
                 final_response += token
                 yield self.convert_text(token)
 
@@ -132,18 +151,6 @@ class ChatEngineVercelStreamResponse(BaseVercelStreamResponse):
 
             # the text_generator is the leading stream, once it's finished, also finish the event stream
             event_handler.is_done = True
-
-            # Yield the source nodes
-            yield self.convert_data(
-                self._source_nodes_to_response(response.source_nodes)
-            )
-
-        # Yield the events from the event handler
-        async def _event_generator():
-            async for event in event_handler.async_event_gen():
-                event_response = event.to_response()
-                if event_response is not None:
-                    yield self.convert_data(event_response)
 
         combine = stream.merge(_chat_response_generator(), _event_generator())
         return combine
@@ -159,6 +166,24 @@ class ChatEngineVercelStreamResponse(BaseVercelStreamResponse):
                 ]
             },
         }
+
+    @staticmethod
+    def _process_response_nodes(
+        source_nodes: List[NodeWithScore],
+        background_tasks: BackgroundTasks,
+    ):
+        try:
+            # Start background tasks to download documents from LlamaCloud if needed
+            from app.engine.service import LLamaCloudFileService  # type: ignore
+
+            LLamaCloudFileService.download_files_from_nodes(
+                source_nodes, background_tasks
+            )
+        except ImportError:
+            logger.debug(
+                "LlamaCloud is not configured. Skipping post processing of nodes"
+            )
+            pass
 
 
 class WorkflowVercelStreamResponse(BaseVercelStreamResponse):
