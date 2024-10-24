@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from abc import ABC, abstractmethod
@@ -11,7 +12,7 @@ from fastapi import Request
 from fastapi.responses import StreamingResponse
 from llama_index.core.chat_engine.types import StreamingAgentChatResponse
 
-from backend.agents.single import AgentRunEvent, AgentRunResult
+from backend.workflows.single import AgentRunEvent, AgentRunResult
 
 logger = logging.getLogger("uvicorn")
 
@@ -24,16 +25,31 @@ class BaseVercelStreamResponse(StreamingResponse, ABC):
     TEXT_PREFIX = "0:"
     DATA_PREFIX = "8:"
 
-    def __init__(self, request: Request, chat_data: ChatData, *args, **kwargs):
+    def __init__(
+        self,
+        request: Request,
+        chat_data: ChatData,
+        event_handler: EventCallbackHandler,
+        *args,
+        **kwargs,
+    ):
         self.request = request
+        self.event_handler = event_handler
 
-        stream = self._create_stream(request, chat_data, *args, **kwargs)
+        stream = self._create_stream(request, chat_data, event_handler, *args, **kwargs)
         content = self.content_generator(stream)
 
         super().__init__(content=content)
 
     @abstractmethod
-    def _create_stream(self, request: Request, chat_data: ChatData, *args, **kwargs):
+    def _create_stream(
+        self,
+        request: Request,
+        chat_data: ChatData,
+        event_handler: EventCallbackHandler,
+        *args,
+        **kwargs,
+    ):
         """
         Create the stream that will be used to generate the response.
         """
@@ -42,17 +58,27 @@ class BaseVercelStreamResponse(StreamingResponse, ABC):
     async def content_generator(self, stream):
         is_stream_started = False
 
-        async with stream.stream() as streamer:
-            async for output in streamer:
-                if not is_stream_started:
-                    is_stream_started = True
-                    # Stream a blank message to start the stream
-                    yield self.convert_text("")
+        try:
+            async with stream.stream() as streamer:
+                async for output in streamer:
+                    if not is_stream_started:
+                        is_stream_started = True
+                        # Stream a blank message to start the stream
+                        yield self.convert_text("")
 
-                yield output
+                    yield output
 
-                if await self.request.is_disconnected():
-                    break
+                    if await self.request.is_disconnected():
+                        break
+        except asyncio.CancelledError:
+            logger.info("Stopping workflow")
+            await self.event_handler.cancel_run()
+        except Exception as e:
+            logger.error(
+                f"Unexpected error in content_generator: {str(e)}", exc_info=True
+            )
+        finally:
+            logger.info("The stream has been stopped!")
 
     @classmethod
     def convert_text(cls, token: str):

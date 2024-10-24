@@ -16,7 +16,7 @@ def fetch_files() -> list[File]:
 
 
 @r.post("")
-async def add_file(file: UploadFile, fileIndex: str= Form(), totalFiles: str= Form()):
+async def add_file(file: UploadFile, fileIndex: str = Form(), totalFiles: str = Form()):
     """
     Upload a new file.
     """

@@ -6,15 +6,12 @@ from llama_index.core.chat_engine.types import ChatMessage
 from llama_index.core.tools.query_engine import QueryEngineTool, ToolMetadata
 from pydantic import BaseModel
 
-from backend.agents.multi import AgentOrchestrator
-from backend.agents.single import FunctionCallingAgent
 from backend.controllers.agents import AgentManager
+from backend.workflows.multi import AgentOrchestrator
+from backend.workflows.single import FunctionCallingAgent
 
 
 def get_tool(tool_name: str, config: dict, query_engine=None):
-    """
-    Note: this function does not create query engine tools
-    """
     if tool_name == "QueryEngine":
         # Improve tool usage by setting priority for query engine
         description = f"{config.description or ''}\nThis is a preferred tool to use"
@@ -53,7 +50,7 @@ def get_agents(
         agents.append(
             FunctionCallingAgent(
                 name=agent_name,
-                role=description,
+                description=description,
                 system_prompt=system_prompt,
                 tools=tools,
                 chat_history=chat_history,

@@ -50,6 +50,8 @@ llama-index-tools-requests = "^0.2.0"
 # others
 llama-index-indices-managed-llama-cloud = "^0.3.0"
 llama-index-postprocessor-cohere-rerank = "^0.2.0"
+markdown = "^3.7"
+xhtml2pdf = "^0.2.16"
 
 
 

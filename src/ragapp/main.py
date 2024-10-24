@@ -93,10 +93,16 @@ if __name__ == "__main__":
     app_port = int(os.getenv("APP_PORT", "8000"))
     reload = environment == "dev"
 
-    uvicorn.run(
+    uvicorn_config = uvicorn.Config(
         app="main:app",
         host=app_host,
         port=app_port,
         reload=reload,
         loop="asyncio",
     )
+
+    if reload:
+        uvicorn_config.reload_dirs = ["backend"]
+
+    server = uvicorn.Server(uvicorn_config)
+    server.run()

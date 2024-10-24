@@ -1,4 +1,4 @@
-# Copied from: https://github.com/run-llama/create-llama/blob/578f7f9e501c279802ac48eaa3966efd9460370b/templates/types/multiagent/fastapi/app/agents/single.py
+# Copied from: https://github.com/run-llama/create-llama/blob/c5559d8e593426e080d847b158e0b49d770473e2/templates/components/multiagent/python/app/workflows/single.py
 from abc import abstractmethod
 from typing import Any, AsyncGenerator, List, Optional
 
@@ -41,7 +41,7 @@ class AgentRunEvent(Event):
 
 
 class AgentRunResult(BaseModel):
-    response: ChatResponse | str
+    response: ChatResponse
     sources: list[ToolOutput]
 
 
@@ -63,19 +63,19 @@ class FunctionCallingAgent(Workflow):
         timeout: float = 360.0,
         name: str,
         write_events: bool = True,
-        role: Optional[str] = None,
+        description: str | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, verbose=verbose, timeout=timeout, **kwargs)
         self.tools = tools or []
         self.name = name
-        self.role = role
         self.write_events = write_events
+        self.description = description
 
         if llm is None:
             llm = Settings.llm
         self.llm = llm
-        # assert self.llm.metadata.is_function_calling_model
+        assert self.llm.metadata.is_function_calling_model
 
         self.system_prompt = system_prompt
 
@@ -96,7 +96,6 @@ class FunctionCallingAgent(Workflow):
 
         # set streaming
         ctx.data["streaming"] = getattr(ev, "streaming", False)
-        ctx.data["return_tool_output"] = getattr(ev, "return_tool_output", False)
 
         # get user input
         user_input = ev.input
@@ -134,8 +133,6 @@ class FunctionCallingAgent(Workflow):
                 ctx.write_event_to_stream(
                     AgentRunEvent(name=self.name, msg="Finished task")
                 )
-            if ctx.data["return_tool_output"]:
-                response = self.memory.get()[-1].content
             return StopEvent(
                 result=AgentRunResult(response=response, sources=[*self.sources])
             )
@@ -194,9 +191,7 @@ class FunctionCallingAgent(Workflow):
         return StopEvent(result=generator)
 
     @step()
-    async def handle_tool_calls(
-        self, ctx: Context, ev: ToolCallEvent
-    ) -> InputEvent | StopEvent:
+    async def handle_tool_calls(self, ctx: Context, ev: ToolCallEvent) -> InputEvent:
         tool_calls = ev.tool_calls
         tools_by_name = {tool.metadata.get_name(): tool for tool in self.tools}
 
@@ -220,13 +215,6 @@ class FunctionCallingAgent(Workflow):
                 continue
 
             try:
-                if ctx.data["streaming"] and ctx.data["return_tool_output"]:
-                    # Complete the workflow using the result from the last tool
-                    result = await tool.astream_response(
-                        ctx=ctx, input=tool_call.tool_kwargs["input"]
-                    )
-                    return StopEvent(result=result)
-
                 if isinstance(tool, ContextAwareTool):
                     # inject context for calling an context aware tool
                     tool_output = await tool.acall(ctx=ctx, **tool_call.tool_kwargs)

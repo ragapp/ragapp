@@ -9,6 +9,8 @@ class DocumentGeneratorTool(BaseModel):
     tool_type: Literal["local"] = "local"
     label: Literal["Document Generator"] = "Document Generator"
     description: str = "Generate a document file (PDF, HTML)"
-    custom_prompt: Optional[str] = None
+    custom_prompt: Optional[str] = (
+        """If user request for a report or a post, use document generator tool to create a file and reply with the link to the file."""
+    )
     config: Dict = {}
     enabled: bool = False

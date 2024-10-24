@@ -1,4 +1,4 @@
-# Copied from: https://github.com/run-llama/create-llama/blob/b31fa80326400bfb94c95de2ffff7c31a8bf9eba/templates/types/multiagent/fastapi/app/agents/multi.py
+# Copied from: https://github.com/run-llama/create-llama/blob/c5559d8e593426e080d847b158e0b49d770473e2/templates/components/multiagent/python/app/workflows/multi.py
 from typing import Any, List
 
 from llama_index.core.tools.types import ToolMetadata, ToolOutput
@@ -6,8 +6,8 @@ from llama_index.core.tools.utils import create_schema_from_function
 from llama_index.core.workflow import Context, Workflow
 from llama_index.core.workflow.events import StopEvent
 
-from backend.agents.planner import StructuredPlannerAgent
-from backend.agents.single import (
+from backend.workflows.planner import StructuredPlannerAgent
+from backend.workflows.single import (
     AgentRunResult,
     ContextAwareTool,
     FunctionCallingAgent,
@@ -28,7 +28,11 @@ class AgentCallTool(ContextAwareTool):
             name=name,
             description=(
                 f"Use this tool to delegate a sub task to the {agent.name} agent."
-                + (f" The agent is an {agent.role}." if agent.role else "")
+                + (
+                    f" The agent is an {agent.description}."
+                    if agent.description
+                    else ""
+                )
             ),
             fn_schema=fn_schema,
         )
@@ -48,17 +52,6 @@ class AgentCallTool(ContextAwareTool):
             raw_input={"args": input, "kwargs": {}},
             raw_output=response,
         )
-
-    async def astream_response(self, ctx: Context, input: str) -> AgentRunResult:
-        handler = self.agent.run(
-            input=input,
-            streaming=True,
-        )
-        async for ev in handler.stream_events():
-            if type(ev) is not StopEvent:
-                ctx.write_event_to_stream(ev)
-        result = await handler
-        return result
 
 
 class AgentOrchestrator(StructuredPlannerAgent):
