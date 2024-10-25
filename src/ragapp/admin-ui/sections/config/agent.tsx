@@ -18,12 +18,14 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AgentTabContent } from "./agents/AgentTabContent";
 import { AgentTabList } from "./agents/AgentTabList";
+import { CreateAgentPopup } from "./agents/CreateAgentPopup";
 
 export const AgentConfig = () => {
   const queryClient = useQueryClient();
   const [activeAgent, setActiveAgent] = useState<string | null>(null);
   const [agents, setAgents] = useState<AgentConfigType[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreateAgentPopupOpen, setIsCreateAgentPopupOpen] = useState(false);
 
   const { data: fetchedAgents = [], isLoading: isLoadingAgents } = useQuery(
     "agents",
@@ -103,14 +105,27 @@ export const AgentConfig = () => {
     return false;
   };
 
-  const addNewAgent = () => {
-    const newAgentName = `NoName${agents.length + 1}`;
+  const addNewAgent = (templateAgent: AgentConfigType) => {
+    let agentName = templateAgent.name;
+    const agentNameExists = agents.some((agent) => agentName === agent.name);
+    if (agentNameExists) {
+      agentName = `${templateAgent.name}_${agents.length + 1}`;
+    } else {
+      agentName = templateAgent.name;
+    }
     const newAgentConfig: AgentConfigType = {
-      ...DEFAULT_AGENT_CONFIG,
+      ...templateAgent,
       agent_id: crypto.randomUUID(),
-      name: newAgentName,
+      name: agentName,
+      created_at: Math.floor(Date.now() / 1000),
     };
-    createAgentMutation(newAgentConfig);
+    createAgentMutation(newAgentConfig, {
+      onSuccess: (newAgent) => {
+        setActiveAgent(newAgent.agent_id);
+        queryClient.invalidateQueries("agents");
+      },
+    });
+    setIsCreateAgentPopupOpen(false);
   };
 
   const removeAgent = (agentId: string) => {
@@ -200,25 +215,35 @@ export const AgentConfig = () => {
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : (
-        <Tabs value={activeAgent || undefined} onValueChange={handleTabChange}>
-          {isMultiAgentSupported ? (
-            <AgentTabList
-              agents={agents}
-              activeAgent={activeAgent}
-              removeAgent={removeAgent}
-              addNewAgent={addNewAgent}
-              updateAgentName={updateAgentName}
-            />
-          ) : null}
-          {agents.map((agent) => (
-            <AgentTabContent
-              key={agent.agent_id}
-              agent={agent}
-              form={form}
-              handleSaveChanges={handleSaveChanges}
-            />
-          ))}
-        </Tabs>
+        <>
+          <Tabs
+            value={activeAgent || undefined}
+            onValueChange={handleTabChange}
+          >
+            {isMultiAgentSupported ? (
+              <AgentTabList
+                agents={agents}
+                activeAgent={activeAgent}
+                removeAgent={removeAgent}
+                addNewAgent={() => setIsCreateAgentPopupOpen(true)}
+                updateAgentName={updateAgentName}
+              />
+            ) : null}
+            {agents.map((agent) => (
+              <AgentTabContent
+                key={agent.agent_id}
+                agent={agent}
+                form={form}
+                handleSaveChanges={handleSaveChanges}
+              />
+            ))}
+          </Tabs>
+          <CreateAgentPopup
+            isOpen={isCreateAgentPopupOpen}
+            onClose={() => setIsCreateAgentPopupOpen(false)}
+            onCreateAgent={addNewAgent}
+          />
+        </>
       )}
     </ExpandableSection>
   );

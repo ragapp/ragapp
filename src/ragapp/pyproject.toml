@@ -15,13 +15,13 @@ python-multipart = "^0.0.9"
 aiostream = "^0.5.2"
 chromadb = "0.5.1"
 ollama = "^0.3.0"
-e2b-code-interpreter = "^0.0.10"
+e2b-code-interpreter = "0.0.11b38"
 sqlmodel = "^0.0.21"
 jsonschema = "^4.22.0"
 cachetools = "^5.3.3"
 
 # llama-index packages
-llama-index = "0.11.11"
+llama-index = "0.11.17"
 # llms
 llama-index-llms-openai = "^0.2.0"
 llama-index-llms-openai-like = "^0.2.0"
@@ -50,6 +50,8 @@ llama-index-tools-requests = "^0.2.0"
 # others
 llama-index-indices-managed-llama-cloud = "^0.3.0"
 llama-index-postprocessor-cohere-rerank = "^0.2.0"
+markdown = "^3.7"
+xhtml2pdf = "^0.2.16"
 
 
 

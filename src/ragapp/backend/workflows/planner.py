@@ -1,4 +1,4 @@
-# Copied from: https://github.com/run-llama/create-llama/blob/b31fa80326400bfb94c95de2ffff7c31a8bf9eba/templates/types/multiagent/fastapi/app/agents/planner.py
+# Copied from: https://github.com/run-llama/create-llama/blob/c5559d8e593426e080d847b158e0b49d770473e2/templates/components/multiagent/python/app/workflows/planner.py
 import uuid
 from enum import Enum
 from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple, Union
@@ -11,6 +11,7 @@ from llama_index.core.agent.runner.planner import (
     SubTask,
 )
 from llama_index.core.bridge.pydantic import ValidationError
+from llama_index.core.chat_engine.types import ChatMessage
 from llama_index.core.llms.function_calling import FunctionCallingLLM
 from llama_index.core.prompts import PromptTemplate
 from llama_index.core.settings import Settings
@@ -24,7 +25,19 @@ from llama_index.core.workflow import (
     step,
 )
 
-from backend.agents.single import AgentRunEvent, AgentRunResult, FunctionCallingAgent
+from backend.workflows.single import AgentRunEvent, AgentRunResult, FunctionCallingAgent
+
+INITIAL_PLANNER_PROMPT = """\
+Think step-by-step. Given a conversation, set of tools and a user request. Your responsibility is to create a plan to complete the task.
+The plan must adapt with the user request and the conversation.
+
+The tools available are:
+{tools_str}
+
+Conversation: {chat_history}
+
+Overall Task: {task}
+"""
 
 
 class ExecutePlanEvent(Event):
@@ -64,14 +77,21 @@ class StructuredPlannerAgent(Workflow):
         tools: List[BaseTool] | None = None,
         timeout: float = 360.0,
         refine_plan: bool = False,
+        chat_history: Optional[List[ChatMessage]] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, timeout=timeout, **kwargs)
         self.name = name
         self.refine_plan = refine_plan
+        self.chat_history = chat_history
 
         self.tools = tools or []
-        self.planner = Planner(llm=llm, tools=self.tools, verbose=self._verbose)
+        self.planner = Planner(
+            llm=llm,
+            tools=self.tools,
+            initial_plan_prompt=INITIAL_PLANNER_PROMPT,
+            verbose=self._verbose,
+        )
         # The executor is keeping the memory of all tool calls and decides to call the right tool for the task
         self.executor = FunctionCallingAgent(
             name="executor",
@@ -91,7 +111,9 @@ class StructuredPlannerAgent(Workflow):
         ctx.data["streaming"] = getattr(ev, "streaming", False)
         ctx.data["task"] = ev.input
 
-        plan_id, plan = await self.planner.create_plan(input=ev.input)
+        plan_id, plan = await self.planner.create_plan(
+            input=ev.input, chat_history=self.chat_history
+        )
         ctx.data["act_plan_id"] = plan_id
 
         # inform about the new plan
@@ -108,11 +130,12 @@ class StructuredPlannerAgent(Workflow):
             ctx.data["act_plan_id"]
         )
 
-        ctx.data["num_sub_tasks"] = len(upcoming_sub_tasks)
-        # send an event per sub task
-        events = [SubTaskEvent(sub_task=sub_task) for sub_task in upcoming_sub_tasks]
-        for event in events:
-            ctx.send_event(event)
+        if upcoming_sub_tasks:
+            # Execute only the first sub-task
+            # otherwise the executor will get over-lapping messages
+            # alternatively, we could use one executor for all sub tasks
+            next_sub_task = upcoming_sub_tasks[0]
+            return SubTaskEvent(sub_task=next_sub_task)
 
         return None
 
@@ -122,20 +145,19 @@ class StructuredPlannerAgent(Workflow):
     ) -> SubTaskResultEvent:
         if self._verbose:
             print(f"=== Executing sub task: {ev.sub_task.name} ===")
-        is_last_tasks = ctx.data["num_sub_tasks"] == self.get_remaining_subtasks(ctx)
+        is_last_tasks = self.get_remaining_subtasks(ctx) == 1
         # TODO: streaming only works without plan refining
         streaming = is_last_tasks and ctx.data["streaming"] and not self.refine_plan
         handler = self.executor.run(
             input=ev.sub_task.input,
             streaming=streaming,
-            return_tool_output=True,
         )
         # bubble all events while running the executor to the planner
         async for event in handler.stream_events():
-            # Don't write StopEvent to stream
+            # Don't write the StopEvent from sub task to the stream
             if type(event) is not StopEvent:
                 ctx.write_event_to_stream(event)
-        result = await handler
+        result: AgentRunResult = await handler
         if self._verbose:
             print("=== Done executing sub task ===\n")
         self.planner.state.add_completed_sub_task(ctx.data["act_plan_id"], ev.sub_task)
@@ -145,22 +167,17 @@ class StructuredPlannerAgent(Workflow):
     async def gather_results(
         self, ctx: Context, ev: SubTaskResultEvent
     ) -> ExecutePlanEvent | StopEvent:
-        # wait for all sub tasks to finish
-        num_sub_tasks = ctx.data["num_sub_tasks"]
-        results = ctx.collect_events(ev, [SubTaskResultEvent] * num_sub_tasks)
-        if results is None:
-            return None
+        result = ev
 
         upcoming_sub_tasks = self.get_upcoming_sub_tasks(ctx)
         # if no more tasks to do, stop workflow and send result of last step
         if upcoming_sub_tasks == 0:
-            return StopEvent(result=results[-1].result)
+            return StopEvent(result=result.result)
 
         if self.refine_plan:
-            # store all results for refining the plan
+            # store the result for refining the plan
             ctx.data["results"] = ctx.data.get("results", {})
-            for result in results:
-                ctx.data["results"][result.sub_task.name] = result.result
+            ctx.data["results"][result.sub_task.name] = result.result
 
             new_plan = await self.planner.refine_plan(
                 ctx.data["task"], ctx.data["act_plan_id"], ctx.data["results"]
@@ -202,7 +219,7 @@ class Planner:
         if llm is None:
             llm = Settings.llm
         self.llm = llm
-        # assert self.llm.metadata.is_function_calling_model
+        assert self.llm.metadata.is_function_calling_model
 
         self.tools = tools or []
         self.state = PlannerAgentState()
@@ -216,7 +233,9 @@ class Planner:
             plan_refine_prompt = PromptTemplate(plan_refine_prompt)
         self.plan_refine_prompt = plan_refine_prompt
 
-    async def create_plan(self, input: str) -> Tuple[str, Plan]:
+    async def create_plan(
+        self, input: str, chat_history: Optional[List[ChatMessage]] = None
+    ) -> Tuple[str, Plan]:
         tools = self.tools
         tools_str = ""
         for tool in tools:
@@ -228,6 +247,7 @@ class Planner:
                 self.initial_plan_prompt,
                 tools_str=tools_str,
                 task=input,
+                chat_history=chat_history,
             )
         except (ValueError, ValidationError):
             if self.verbose:

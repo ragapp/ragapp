@@ -1,13 +1,17 @@
+import logging
+import os
 import re
 import threading
 from functools import lru_cache
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import yaml
 
 from backend.constants import AGENT_CONFIG_FILE
 from backend.models.agent import AgentConfig
 from backend.models.tools import (
+    CodeGeneratorTool,
+    DocumentGeneratorTool,
     DuckDuckGoTool,
     E2BInterpreterTool,
     ImageGeneratorTool,
@@ -15,6 +19,8 @@ from backend.models.tools import (
     QueryEngineTool,
     WikipediaTool,
 )
+
+logger = logging.getLogger("uvicorn")
 
 
 class AgentManager:
@@ -37,6 +43,8 @@ class AgentManager:
                 "Wikipedia": WikipediaTool,
                 "OpenAPI": OpenAPITool,
                 "Interpreter": E2BInterpreterTool,
+                "CodeGenerator": CodeGeneratorTool,
+                "DocumentGenerator": DocumentGeneratorTool,
                 "ImageGenerator": ImageGeneratorTool,
                 "QueryEngine": QueryEngineTool,
             }
@@ -245,5 +253,56 @@ class AgentManager:
             )
 
 
+class AgentTemplateManager:
+    _templates_folder = "templates"
+
+    @classmethod
+    def get_templates(cls, ignore_broken_templates: bool = True) -> List[AgentConfig]:
+        """
+        Get all agent templates from the `templates` folder.
+        """
+        agent_configs: List[AgentConfig] = [cls._default_template_config()]
+        for file in os.listdir(cls._templates_folder):
+            if file.endswith(".yaml"):
+                agent_config = cls._load_agent_config(file, ignore_broken_templates)
+                if agent_config:
+                    agent_configs.append(agent_config)
+        return agent_configs
+
+    @classmethod
+    def _default_template_config(cls) -> AgentConfig:
+        """
+        Get the default agent template config.
+        """
+
+        return AgentConfig(
+            name="Default",
+            role="Assistant",
+            goal="To help answer questions.",
+        )
+
+    @classmethod
+    def _load_agent_config(
+        cls, file: str, ignore_broken_templates: bool
+    ) -> Optional[AgentConfig]:
+        """
+        Load an agent config from a file.
+        """
+        try:
+            with open(os.path.join(cls._templates_folder, file), "r") as f:
+                template = yaml.safe_load(f)
+            return AgentConfig(**template)
+        except Exception as e:
+            if ignore_broken_templates:
+                logger.warning(f"Could not load agent template: {file}. Error: {e}")
+                return None
+            else:
+                raise ValueError(f"Could not load agent template: {file}") from e
+
+
 def agent_manager():
     return AgentManager()
+
+
+def agent_template_manager():
+    return AgentTemplateManager()

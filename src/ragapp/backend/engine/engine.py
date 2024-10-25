@@ -10,11 +10,11 @@ from llama_index.core.chat_engine import CondensePlusContextChatEngine
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.settings import Settings
 
-from backend.agents.multi import AgentOrchestrator
-from backend.agents.orchestrator import get_agents
-from backend.agents.single import FunctionCallingAgent
 from backend.engine.constants import DEFAULT_MAX_TOP_K, DEFAULT_TOP_K
 from backend.engine.postprocessors import NodeCitationProcessor, get_reranker
+from backend.workflows.multi import AgentOrchestrator
+from backend.workflows.orchestrator import get_agents
+from backend.workflows.single import FunctionCallingAgent
 
 logger = logging.getLogger("uvicorn")
 

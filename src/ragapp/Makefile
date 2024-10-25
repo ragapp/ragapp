@@ -1,27 +1,28 @@
 .PHONY: create-llama-app patch-chat build-chat build-admin build-frontends run dev
 
 export PYTHONPATH := ${PYTHONPATH}:./create_llama/backend
-export CREATE_LLAMA_VERSION=0.2.7
+export CREATE_LLAMA_VERSION=0.3.6
 export NEXT_PUBLIC_API_URL=/api/chat
 
 create-llama-app:
 	@echo "\nCreating Llama App..."
 	rm -rf create_llama
+	# Note: Include `--tools artifact` to include sandbox api code
 	npx -y create-llama@${CREATE_LLAMA_VERSION} \
+		create_llama \
+		--pro \
 	    --use-pnpm \
 		--framework fastapi \
 		--template streaming \
-		--engine context \
 		--frontend \
 		--ui shadcn \
 		--observability none \
 		--open-ai-key none \
 		--tools none \
 		--post-install-action none \
-		--no-llama-parse \
 		--no-files \
-		--vector-db chroma \
-		-- create_llama
+		--tools artifact \
+		--vector-db chroma
 	# We don't need the example data and default .env files
 	rm -rf create_llama/backend/data/*
 	rm -rf create_llama/backend/.env

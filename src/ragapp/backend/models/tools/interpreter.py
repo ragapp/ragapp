@@ -23,7 +23,11 @@ class E2BInterpreterTool(BaseModel):
 - It's okay to make multiple calls to interpreter tool. If you get an error or the result is not what you expected, you can call the tool again. Don't give up too soon!
 - Plot visualizations using matplotlib or any other visualization library directly in the notebook.
 - You can install any pip package (if it exists) by running a cell with pip install.
-- Use absolute url from result to display images or any other media."""
+- Use absolute url from result to display images or any other media.
+
+# IMPORTANT
+- If the user provides files, always pass the file path to the interpreter tool.
+- Always remove the "sandbox:" prefix from the link before replying to the user."""
     description: str = "Execute Python code in a sandbox environment."
     config: E2BInterpreterToolConfig | None = Field(
         default=E2BInterpreterToolConfig(),

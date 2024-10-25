@@ -6,6 +6,13 @@
   role: Assistant
   system_prompt: null
   tools:
+    CodeGenerator:
+      config:
+        api_key: null
+      enabled: false
+    DocumentGenerator:
+      config: {}
+      enabled: false
     DuckDuckGo:
       config: {}
       enabled: false

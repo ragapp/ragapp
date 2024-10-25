@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from create_llama.backend.app.settings import init_settings
 from create_llama.backend.app.api.routers.upload import file_upload_router
 from create_llama.backend.app.api.routers.chat_config import config_router
+from create_llama.backend.app.api.routers.sandbox import sandbox_router
 from backend.models.model_config import ModelConfig
 from backend.routers.chat.index import chat_router
 from backend.routers.management import management_router
@@ -47,6 +48,7 @@ app.include_router(
     dependencies=[Depends(request_limit_middleware)],
 )
 app.include_router(config_router, prefix="/api/chat/config", tags=["Chat"])
+app.include_router(sandbox_router, prefix="/api/sandbox", tags=["Sandbox"])
 # RAGapp routers
 app.include_router(
     chat_router,
@@ -91,10 +93,16 @@ if __name__ == "__main__":
     app_port = int(os.getenv("APP_PORT", "8000"))
     reload = environment == "dev"
 
-    uvicorn.run(
+    uvicorn_config = uvicorn.Config(
         app="main:app",
         host=app_host,
         port=app_port,
         reload=reload,
         loop="asyncio",
     )
+
+    if reload:
+        uvicorn_config.reload_dirs = ["backend"]
+
+    server = uvicorn.Server(uvicorn_config)
+    server.run()

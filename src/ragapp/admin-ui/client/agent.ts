@@ -1,5 +1,13 @@
 import { z } from "zod";
 import {
+  CodeGeneratorToolConfig,
+  DEFAULT_CODE_GENERATOR_TOOL_CONFIG,
+} from "./tools/code_generator";
+import {
+  DEFAULT_DOCUMENT_GENERATOR_TOOL_CONFIG,
+  DocumentGeneratorToolConfig,
+} from "./tools/document_generator";
+import {
   DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
   DuckDuckGoToolConfig,
 } from "./tools/duckduckgo";
@@ -33,6 +41,8 @@ export const ToolsSchema = z.object({
   DuckDuckGo: DuckDuckGoToolConfig,
   Wikipedia: WikipediaToolConfig,
   QueryEngine: QueryEngineToolConfig,
+  CodeGenerator: CodeGeneratorToolConfig,
+  DocumentGenerator: DocumentGeneratorToolConfig,
 });
 
 // Define the agent config schema
@@ -65,6 +75,8 @@ export const DEFAULT_TOOL_CONFIG: z.infer<typeof ToolsSchema> = {
   DuckDuckGo: DEFAULT_DUCKDUCKGO_TOOL_CONFIG,
   Wikipedia: DEFAULT_WIKIPEDIA_TOOL_CONFIG,
   QueryEngine: DEFAULT_QUERY_ENGINE_TOOL_CONFIG,
+  CodeGenerator: DEFAULT_CODE_GENERATOR_TOOL_CONFIG,
+  DocumentGenerator: DEFAULT_DOCUMENT_GENERATOR_TOOL_CONFIG,
 };
 
 export const DEFAULT_AGENT_CONFIG_SYSTEM_PROMPT_TEMPLATE =
@@ -145,3 +157,11 @@ export const checkSupportedModel = async (): Promise<boolean> => {
   }
   return res.json();
 };
+
+export async function getAgentTemplates(): Promise<AgentConfigType[]> {
+  const res = await fetch(`${getBaseURL()}/api/management/agents/templates`);
+  if (!res.ok) {
+    throw new Error("Failed to get agent templates");
+  }
+  return await res.json();
+}
