@@ -68,6 +68,8 @@ It's easy to deploy RAGapp in your own cloud infrastructure. Customized K8S depl
 
 ### RAGApp:
 
+> _Important_: Parts of this project's source code is dynamically retrieved from the [create-llama](https://github.com/run-llama/create-llama) project. Before committing changes, make sure to update the source code by calling `make build-frontends`.
+
 Move to [src/ragapp](src/ragapp) directory and start with these commands:
 
 ```shell
