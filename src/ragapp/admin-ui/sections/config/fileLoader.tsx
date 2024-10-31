@@ -368,7 +368,8 @@ const UploadFile = ({
           </Button>
         </Label>
         <span className="font-medium text-sm">
-          Supported file types: {SUPPORTED_FILE_EXTENSIONS.join(", ")}
+          Supported file types: {SUPPORTED_FILE_EXTENSIONS.join(", ")}. Use
+          LlamaParse to upload more file types.
         </span>
       </div>
     </div>

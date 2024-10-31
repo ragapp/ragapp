@@ -29,7 +29,7 @@ class LoaderManager:
         else:
             raise ValueError("Unsupported loader configuration!")
 
-    def get_loader(self, loader_name: str = None) -> Dict:
+    def get_loader(self, loader_name: str = None):
         """
         Get the loader configuration.
         """
@@ -38,7 +38,7 @@ class LoaderManager:
         else:
             if loader_name == "file":
                 config = self.config.get(loader_name)
-                return FileLoader(loader_name=loader_name, **config).dict()
+                return FileLoader(loader_name=loader_name, **config)
             else:
                 raise ValueError(f"Unsupported loader {loader_name}!")
 
