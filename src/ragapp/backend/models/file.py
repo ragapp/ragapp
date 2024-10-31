@@ -1,7 +1,6 @@
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
 
-SUPPORTED_FILE_EXTENSIONS = ["txt", "pdf", "csv"]
+
 
 
 class FileStatus:

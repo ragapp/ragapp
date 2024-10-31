@@ -1,9 +1,12 @@
 import os
-from typing import Literal, Union
+from typing import List, Literal, Union
 
+from llama_parse.utils import SUPPORTED_FILE_TYPES as LLAMA_PARSE_SUPPORTED_FILE_TYPES
 from pydantic import BaseModel, Field
 
 from backend.constants import ENV_FILE_PATH
+
+DEFAULT_SUPPORTED_FILE_TYPES = [".txt", ".pdf", ".csv"]
 
 
 class FileLoader(BaseModel):
@@ -46,6 +49,14 @@ class FileLoader(BaseModel):
         return {
             "use_llama_parse": self.use_llama_parse,
         }
+
+    def get_supported_file_extensions(self) -> List[str]:
+        """
+        Get the supported file extensions.
+        """
+        if self.use_llama_parse:
+            return LLAMA_PARSE_SUPPORTED_FILE_TYPES
+        return DEFAULT_SUPPORTED_FILE_TYPES
 
 
 LoaderConfig = Union[FileLoader]

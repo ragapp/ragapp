@@ -1,6 +1,8 @@
 import os
 
-from backend.models.file import SUPPORTED_FILE_EXTENSIONS, File, FileStatus
+from backend.controllers.loader import LoaderManager
+from backend.models.file import File, FileStatus
+from backend.models.loader import FileLoader
 from backend.tasks.indexing import index_all
 
 
@@ -35,10 +37,8 @@ class FileHandler:
         Upload a file to the data folder.
         """
         # Check if the file extension is supported
-        if file_name.split(".")[-1] not in SUPPORTED_FILE_EXTENSIONS:
-            return UnsupportedFileExtensionError(
-                f"File {file_name} with extension {file_name.split('.')[-1]} is not supported."
-            )
+        cls.validate_file_extension(file_name)
+
         # Create data folder if it does not exist
         if not os.path.exists("data"):
             os.makedirs("data")
@@ -59,3 +59,16 @@ class FileHandler:
         os.remove(f"data/{file_name}")
         # Re-index the data
         index_all()
+
+    @classmethod
+    def validate_file_extension(cls, file_name: str):
+        """
+        Validate the file extension.
+        """
+        file_ext = os.path.splitext(file_name)[1]
+        file_loader: FileLoader = LoaderManager().get_loader("file")
+        supported_file_extensions = file_loader.get_supported_file_extensions()
+        if file_ext not in supported_file_extensions:
+            raise UnsupportedFileExtensionError(
+                f"File {file_name} with extension {file_ext} is not supported. Supported file extensions: {supported_file_extensions}"
+            )

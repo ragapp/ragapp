@@ -20,7 +20,8 @@ def loader_config(
     Get the current loader configuration.
     """
     try:
-        return loader_manager.get_loader(loader_name)
+        loader = loader_manager.get_loader(loader_name)
+        return loader.dict()
     except Exception as e:
         logger.exception(e, exc_info=True)
         raise HTTPException(
