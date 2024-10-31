@@ -19,6 +19,11 @@ class RAGAppContainerConfig(BaseModel):
     )
     volume_config: Optional[RAGAppVolumeConfig] = None
     status: Optional[str] = Field(default=None)
+    connectToExternalData: bool = Field(default=False)
+    s3BucketName: Optional[str] = Field(default=None)
+    s3AccessKey: Optional[str] = Field(default=None)
+    s3SecretKey: Optional[str] = Field(default=None)
+    s3Url: Optional[str] = Field(default=None)
 
     class Config:
         # example
@@ -37,7 +42,9 @@ class RAGAppContainerConfig(BaseModel):
         if "environment" not in data:
             data["environment"] = _get_default_app_environment(data["name"])
         else:
-            data["environment"].update(_get_default_app_environment(data["name"]))
+            data["environment"].update(
+                _get_default_app_environment(data["name"])
+            )
         super().__init__(**data)
         self.volume_config = RAGAppVolumeConfig(name=self.name)
 
@@ -55,7 +62,7 @@ class RAGAppContainerConfig(BaseModel):
         return settings.app_name_template.format(app_name=self.name)
 
     def to_docker_create_kwargs(self) -> dict:
-        return {
+        kwargs = {
             "name": self.container_name,
             "image": self.image,
             "command": self.command,
@@ -65,6 +72,29 @@ class RAGAppContainerConfig(BaseModel):
             "volumes": self.volume_config.to_container_create_kwargs(),
         }
 
+        if self.connectToExternalData:
+            kwargs.update({
+                "cap_add": ['SYS_ADMIN'],  # Add SYS_ADMIN capability
+                "devices": ['/dev/fuse'],  # Allow access to /dev/fuse
+                "detach": True,            # Run in detached mode
+                "tty": True,               # Allocate a pseudo-TTY
+                "stdin_open": True,        # Keep STDIN open
+                "privileged": True,
+            })
+
+        self._add_s3_environment_variables()
+        return kwargs
+
+    def _add_s3_environment_variables(self):
+        self.environment["S3"] = self.connectToExternalData
+        if self.connectToExternalData:
+            self.environment.update({
+                "S3_BUCKET_NAME": self.s3BucketName,
+                "S3_ACCESS_KEY": self.s3AccessKey,
+                "S3_SECRET_KEY": self.s3SecretKey,
+                "S3_URL": self.s3Url,
+            })
+
 
 def _get_default_app_labels(app_name: str) -> Dict[str, str]:
     return {
@@ -73,13 +103,20 @@ def _get_default_app_labels(app_name: str) -> Dict[str, str]:
         "com.docker.compose.service": f"ragapp-{app_name}",
         # Traefik configs
         "traefik.enable": "true",
-        f"traefik.http.services.ragapp-{app_name}.loadbalancer.server.port": "8000",
-        f"traefik.http.routers.ragapp-{app_name}.rule": f"PathPrefix(`/a/{app_name}`)",
-        f"traefik.http.routers.ragapp-{app_name}-admin.rule": f"PathRegexp(`/a/{app_name}/admin`)",
-        f"traefik.http.routers.ragapp-{app_name}-management-api.rule": f"PathPrefix(`/a/{app_name}/api/management`)",
-        f"traefik.http.routers.ragapp-{app_name}.middlewares": "ragapp-keycloakopenid",
-        f"traefik.http.routers.ragapp-{app_name}-admin.middlewares": "ragapp-keycloakopenid,admin-auth",
-        f"traefik.http.routers.ragapp-{app_name}-management-api.middlewares": "ragapp-keycloakopenid,admin-auth",
+        f"traefik.http.services.ragapp-{app_name}.loadbalancer.server.port":
+            "8000",
+        f"traefik.http.routers.ragapp-{app_name}.rule":
+            f"PathPrefix(`/a/{app_name}`)",
+        f"traefik.http.routers.ragapp-{app_name}-admin.rule":
+            f"PathRegexp(`/a/{app_name}/admin`)",
+        f"traefik.http.routers.ragapp-{app_name}-management-api.rule":
+            f"PathPrefix(`/a/{app_name}/api/management`)",
+        f"traefik.http.routers.ragapp-{app_name}.middlewares":
+            "ragapp-keycloakopenid",
+        f"traefik.http.routers.ragapp-{app_name}-admin.middlewares":
+            "ragapp-keycloakopenid,admin-auth",
+        f"traefik.http.routers.ragapp-{app_name}-management-api.middlewares":
+            "ragapp-keycloakopenid,admin-auth",
     }
 
 

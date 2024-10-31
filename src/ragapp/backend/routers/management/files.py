@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 from backend.controllers.files import FileHandler, UnsupportedFileExtensionError
 from backend.models.file import File
+from backend.tasks.indexing import index_all
 
 files_router = r = APIRouter()
 
@@ -13,6 +14,18 @@ def fetch_files() -> list[File]:
     Get the current files.
     """
     return FileHandler.get_current_files()
+
+
+@r.post("/reindex")
+async def reindex_files():
+    """
+    Reindex knowledge base files.
+    """
+    index_all()
+    return JSONResponse(
+        status_code=200,
+        content={"message": "Knowledge base reindexed successfully."},
+    )
 
 
 @r.post("")

@@ -6,8 +6,13 @@ if [[ -n "$BASE_URL" ]]; then
 
     # Add BASE_URL to logo and avatar
     # TODO: find a way that is independent of assets used
-    find static -type f -name "*.*" -exec sed -i 's|"/logo.png|"'$BASE_URL'/logo.png|g' {} +
-    find static -type f -name "*.*" -exec sed -i 's|"/llama.png|"'$BASE_URL'/llama.png|g' {} +
+    if [[ -n "$BRAND" ]]; then
+        find static -type f -name "*.*" -exec sed -i 's|"/logo-'$BRAND'.png|"'$BASE_URL'/logo.png|g' {} +
+        find static -type f -name "*.*" -exec sed -i 's|"/llama-'$BRAND'.png|"'$BASE_URL'/llama.png|g' {} +
+    else
+        find static -type f -name "*.*" -exec sed -i 's|"/logo.png|"'$BASE_URL'/logo.png|g' {} +
+        find static -type f -name "*.*" -exec sed -i 's|"/llama.png|"'$BASE_URL'/llama.png|g' {} +
+    fi
 
     # Replace static files of admin app
     find static/admin -type f -name "*.*" -exec sed -i 's|"/admin/_next/static|"'$BASE_URL'/admin/_next/static|g' {} +
@@ -39,6 +44,48 @@ fi
 if [[ -z "$(ls -A /app/config)" ]]; then
     cp -r /app/.config/. /app/config/
     echo "Config folder is empty, use default configuration!"
+fi
+
+# Check if /app/config/.env file has the required S3 keys, if not add them
+if ! grep -q "s3_enabled" /app/config/.env; then
+    echo "" >> /app/config/.env
+    echo "s3_enabled=${S3}" >> /app/config/.env
+fi
+
+if ! grep -q "s3_bucket" /app/config/.env; then
+    echo "" >> /app/config/.env
+    echo "s3_bucket=${S3_BUCKET_NAME}" >> /app/config/.env
+fi
+
+if ! grep -q "s3_url" /app/config/.env; then
+    echo "" >> /app/config/.env
+    echo "s3_url=${S3_URL}" >> /app/config/.env
+fi
+
+if ! grep -q "s3_access_key" /app/config/.env; then
+    echo "" >> /app/config/.env
+    echo "s3_access_key=${S3_ACCESS_KEY}" >> /app/config/.env
+fi
+
+if ! grep -q "s3_secret_key" /app/config/.env; then
+    echo "" >> /app/config/.env
+    echo "s3_secret_key=${S3_SECRET_KEY}" >> /app/config/.env
+fi
+
+
+if [[ "${S3,,}" == "true" ]]; then
+    # Install s3fs package
+    apt-get update && apt-get install -y s3fs
+
+    # Ensure /app/s3 directory exists
+    mkdir -p /app/s3
+
+    # Mount the S3 bucket to /app/s3
+    echo "$S3_ACCESS_KEY:$S3_SECRET_KEY" > /root/.passwd-s3fs
+    chmod 600 /root/.passwd-s3fs
+    s3fs $S3_BUCKET_NAME /app/s3 -o url=$S3_URL -o use_path_request_style -o passwd_file=/root/.passwd-s3fs -o allow_other
+
+    echo "Mounted S3 bucket to /app/s3"
 fi
 
 echo "Running application..."
