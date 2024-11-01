@@ -1,5 +1,12 @@
 # ragbox
 
+## 0.1.4
+
+### Patch Changes
+
+- 3af2d6e: Fix cannot show document files in multiple deployments mode
+- 3af2d6e: Support uploading with more file formats with LlamaParse
+
 ## 0.1.3
 
 ### Patch Changes
