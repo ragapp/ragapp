@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from backend.constants import ENV_FILE_PATH
 
-load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False, override=True)
+load_dotenv(dotenv_path=ENV_FILE_PATH, verbose=False, override=False)
 
 # flake8: noqa
 import logging
