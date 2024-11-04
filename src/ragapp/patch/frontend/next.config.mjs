@@ -8,6 +8,9 @@ import webpack from "./webpack.config.mjs";
 
 const nextConfig = JSON.parse(fs.readFileSync("./next.config.json", "utf-8"));
 
+// Add transpilePackages configuration
+nextConfig.transpilePackages = ["highlight.js"];
+
 process.env.ENVIRONMENT === "dev"
   ? (nextConfig.assetPrefix = undefined)
   : // This prefix will be rewritten by BASE_URL when deployed, see entrypoint.sh
