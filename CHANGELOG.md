@@ -1,5 +1,11 @@
 # ragbox
 
+## 0.1.5
+
+### Patch Changes
+
+- 7b9c24e: Fix the UI crash when displaying the code block
+
 ## 0.1.4
 
 ### Patch Changes
