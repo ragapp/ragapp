@@ -14,7 +14,7 @@ services:
       - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakURL=http${TLS:+s}://${DOMAIN}/auth
       - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientID=ragapp
       # Secret from the example ragapp keycloak realm
-      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientSecret=jh4yDlJ5QsBSafVNaqqLxEG3vKcYyNgD  # Predefined secret for the example realm
+      - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.ClientSecret=sNfRtplPJ1BLHUBUaPjKufNqLp1A6Re2  # Predefined secret for the example realm
       - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.KeycloakRealm=ragapp # Example realm
       - traefik.http.middlewares.ragapp-keycloakopenid.plugin.keycloakopenid.Scope=openid
       # Admin authentication middleware
