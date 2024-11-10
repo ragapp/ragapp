@@ -81,10 +81,3 @@ Then, to check out the admin UI, go to http://localhost:3000/admin.
 
 > _Note_: Make sure you have [Poetry](https://python-poetry.org/) installed.
 
-## Contact
-
-Questions, feature requests or found a bug? [Open an issue](https://github.com/ragapp/ragapp/issues/new/choose) or reach out to [marcusschiesser](https://github.com/marcusschiesser).
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=ragapp/ragapp&type=Date)](https://star-history.com/#ragapp/ragapp&Date)

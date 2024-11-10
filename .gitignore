@@ -14,3 +14,7 @@ deployments/**/ollama/
 .DS_Store
 
 **/.strapi
+
+# Docker
+.docker/
+docker-compose.override.yml

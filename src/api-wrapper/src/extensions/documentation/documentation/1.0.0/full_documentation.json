@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2024-11-02T15:23:30.699Z"
+    "x-generation-date": "2024-11-10T14:44:36.388Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -5570,8 +5570,7 @@
                   "type": "string",
                   "enum": [
                     "OpenAI",
-                    "Gemini",
-                    "Grok"
+                    "Gemini"
                   ]
                 },
                 "assistantId": {
@@ -5677,6 +5676,9 @@
                   }
                 },
                 "metaData": {},
+                "configured": {
+                  "type": "boolean"
+                },
                 "createdAt": {
                   "type": "string",
                   "format": "date-time"
@@ -5804,7 +5806,8 @@
           "data": {
             "required": [
               "name",
-              "assistantType"
+              "assistantType",
+              "configured"
             ],
             "type": "object",
             "properties": {
@@ -5818,8 +5821,7 @@
                 "type": "string",
                 "enum": [
                   "OpenAI",
-                  "Gemini",
-                  "Grok"
+                  "Gemini"
                 ]
               },
               "assistantId": {
@@ -5834,6 +5836,9 @@
                 "example": "string or id"
               },
               "metaData": {},
+              "configured": {
+                "type": "boolean"
+              },
               "locale": {
                 "type": "string"
               },
@@ -5894,7 +5899,8 @@
         "type": "object",
         "required": [
           "name",
-          "assistantType"
+          "assistantType",
+          "configured"
         ],
         "properties": {
           "id": {
@@ -5913,8 +5919,7 @@
             "type": "string",
             "enum": [
               "OpenAI",
-              "Gemini",
-              "Grok"
+              "Gemini"
             ]
           },
           "assistantId": {
@@ -6342,8 +6347,7 @@
                       "type": "string",
                       "enum": [
                         "OpenAI",
-                        "Gemini",
-                        "Grok"
+                        "Gemini"
                       ]
                     },
                     "assistantId": {
@@ -6358,6 +6362,9 @@
                       }
                     },
                     "metaData": {},
+                    "configured": {
+                      "type": "boolean"
+                    },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
@@ -6466,6 +6473,9 @@
             }
           },
           "metaData": {},
+          "configured": {
+            "type": "boolean"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"

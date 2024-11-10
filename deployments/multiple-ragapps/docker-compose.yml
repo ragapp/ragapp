@@ -94,6 +94,23 @@ services:
       - traefik
       - keycloak
 
+  api-wrapper:
+    image: ${API_WRAPPER_IMAGE:-rag-api-wrapper:latest}
+    build: ../../src/api-wrapper
+    env_file:
+      - ./.env
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.api-wrapper.loadbalancer.server.port=1337
+      # Use separate domain for API wrapper
+      - traefik.http.routers.api-wrapper.rule=Host(`${WRAPPER_DOMAIN}`)
+      # TLS configuration
+      - traefik.http.routers.api-wrapper.tls.certresolver=letsencrypt
+    networks:
+      - ragapp-network
+    depends_on:
+      - traefik
+
 networks:
   ragapp-network:
     name: ragapp-network
