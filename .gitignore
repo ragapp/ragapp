@@ -13,4 +13,4 @@ deployments/**/ollama/
 
 .DS_Store
 
-**/.strapi/
+**/.strapi

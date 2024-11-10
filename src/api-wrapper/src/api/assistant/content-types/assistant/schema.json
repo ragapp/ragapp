@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "assistants",
+  "info": {
+    "singularName": "assistant",
+    "pluralName": "assistants",
+    "displayName": "assistants",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "metaData": {
+      "type": "json",
+      "required": true
+    },
+    "provinceId": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::province.province"
+    },
+    "serviceCategoryId": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::service-category.service-category"
+    },
+    "containerIds": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::container.container",
+      "mappedBy": "assistantId"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "containers",
+  "info": {
+    "singularName": "container",
+    "pluralName": "containers",
+    "displayName": "containers",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "assistantType": {
+      "type": "enumeration",
+      "enum": [
+        "OpenAI",
+        "Gemini"
+      ],
+      "required": true
+    },
+    "assistantId": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::assistant.assistant",
+      "inversedBy": "containerIds"
+    },
+    "metaData": {
+      "type": "json"
+    },
+    "configured": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    }
+  }
+}

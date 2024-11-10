@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "rag_files",
+  "info": {
+    "singularName": "rag-file",
+    "pluralName": "rag-files",
+    "displayName": "ragFiles"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "mimeType": {
+      "type": "enumeration",
+      "enum": [
+        "pdf"
+      ],
+      "required": true
+    },
+    "size": {
+      "type": "biginteger"
+    },
+    "sourceType": {
+      "type": "enumeration",
+      "enum": [
+        "rag",
+        "userUploaded"
+      ],
+      "required": true
+    },
+    "uploadedBy": {
+      "type": "biginteger"
+    }
+  }
+}
