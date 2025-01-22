@@ -16,19 +16,20 @@ import { DemoChat } from "@/sections/demoChat";
 import { Footer } from "@/sections/footer";
 import { Knowledge } from "@/sections/knowledge";
 import { StatusBar } from "@/sections/statusBar";
-import { useRouter } from "next/router";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [showWelcome, setShowWelcome] = useState(false);
   const [configured, setConfigured] = useState<boolean>();
 
   useEffect(() => {
-    if (router.asPath.split("#")[1] === "new") {
+    if (pathname.split("#")[1] === "new") {
       setShowWelcome(true);
     }
-  }, [router.asPath]);
+  }, [pathname]);
 
   useEffect(() => {
     if (configured === undefined) {

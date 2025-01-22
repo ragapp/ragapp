@@ -1,13 +1,13 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+"use client";
+
 import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient();
 
-export default function App({ Component, pageProps }: AppProps) {
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      {children}
     </QueryClientProvider>
   );
 }

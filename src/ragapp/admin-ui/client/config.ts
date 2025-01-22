@@ -1,11 +1,6 @@
 import { getBaseURL } from "./utils";
 
-export async function fetchIsAppConfigured() {
-  const res = await fetch(
-    `${getBaseURL()}/api/management/config/is_configured`,
-  );
-  if (!res.ok) {
-    throw new Error("Failed to fetch app configuration");
-  }
-  return res.json();
+export async function fetchIsAppConfigured(): Promise<boolean> {
+  const response = await fetch(`${getBaseURL()}/api/management/config/is_configured`);
+  return response.json();
 }
