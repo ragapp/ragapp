@@ -3,6 +3,7 @@ import { getBaseURL } from "../utils";
 import { AzureOpenAIConfigSchema, DEFAULT_AZURE_OPENAI_CONFIG } from "./azure";
 import { DEFAULT_GEMINI_CONFIG, GeminiConfigSchema } from "./gemini";
 import { DEFAULT_GROQ_CONFIG, GroqConfigSchema } from "./groq";
+import { DEFAULT_MINIMAX_CONFIG, MiniMaxConfigSchema } from "./minimax";
 import { DEFAULT_MISTRAL_CONFIG, MistralConfigSchema } from "./mistral";
 import { DEFAULT_OLLAMA_CONFIG, OllamaConfigSchema } from "./ollama";
 import { DEFAULT_OPENAI_CONFIG, OpenAIConfigSchema } from "./openai";
@@ -17,6 +18,7 @@ export const ModelConfigSchema = z
     TSystemsConfigSchema,
     MistralConfigSchema,
     GroqConfigSchema,
+    MiniMaxConfigSchema,
   ])
   .refine((data) => {
     switch (data.model_provider) {
@@ -34,6 +36,8 @@ export const ModelConfigSchema = z
         return MistralConfigSchema.parse(data);
       case "groq":
         return GroqConfigSchema.parse(data);
+      case "minimax":
+        return MiniMaxConfigSchema.parse(data);
       default:
         return true;
     }
@@ -70,6 +74,10 @@ export const supportedProviders = [
     name: "Groq",
     value: "groq",
   },
+  {
+    name: "MiniMax",
+    value: "minimax",
+  },
 ];
 
 export const getDefaultProviderConfig = (provider: string) => {
@@ -88,6 +96,8 @@ export const getDefaultProviderConfig = (provider: string) => {
       return DEFAULT_MISTRAL_CONFIG;
     case "groq":
       return DEFAULT_GROQ_CONFIG;
+    case "minimax":
+      return DEFAULT_MINIMAX_CONFIG;
     default:
       throw new Error(`Provider ${provider} not supported`);
   }
