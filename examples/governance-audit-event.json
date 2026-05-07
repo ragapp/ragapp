@@ -1,0 +1,73 @@
+{
+  "event_id": "rag_evt_20260507_001",
+  "conversation_id": "conv_enterprise_demo",
+  "timestamp": "2026-05-07T00:00:00Z",
+  "actor": {
+    "type": "user",
+    "id_hash": "user_hash_123"
+  },
+  "retrieval": {
+    "query": "summarize policy coverage for customer data retention",
+    "sources": [
+      {
+        "source_id": "src_001",
+        "document_id": "policy-retention-v3",
+        "chunk_id": "chunk_12",
+        "score": 0.87,
+        "metadata": {
+          "classification": "internal",
+          "owner": "security"
+        }
+      },
+      {
+        "source_id": "src_002",
+        "document_id": "customer-data-handbook",
+        "chunk_id": "chunk_04",
+        "score": 0.79,
+        "metadata": {
+          "classification": "restricted",
+          "owner": "legal"
+        }
+      }
+    ]
+  },
+  "generation": {
+    "model": "configured-rag-model",
+    "answer_hash": "sha256:example-answer-fingerprint",
+    "citations": [
+      "src_001",
+      "src_002"
+    ]
+  },
+  "policy_checks": [
+    {
+      "check_id": "citations_in_retrieval_set",
+      "status": "pass",
+      "details": "All cited source ids were present in retrieval.sources."
+    },
+    {
+      "check_id": "restricted_source_review",
+      "status": "needs_review",
+      "details": "src_002 is marked restricted and requires human approval."
+    },
+    {
+      "check_id": "private_data_redaction",
+      "status": "pass",
+      "details": "User id and answer content are stored as hashes."
+    }
+  ],
+  "decision": "needs_review",
+  "review": {
+    "required": true,
+    "reason": "restricted_source_review",
+    "approved_by": null,
+    "approved_at": null
+  },
+  "redaction": {
+    "strategy": "hash_private_fields",
+    "fields": [
+      "actor.id",
+      "generation.answer"
+    ]
+  }
+}

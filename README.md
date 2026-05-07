@@ -51,6 +51,13 @@ For a pure Docker Compose environment, you can look at our [RAGapp with manageme
 
 Later versions of RAGapp will support restricting access based on access tokens forwarded from an API Gateway or similar.
 
+### Governance audit trails
+
+Enterprise RAG deployments may also need a reviewable trail for retrieved
+sources, generated answers, policy checks, and human approval. See
+[`docs/governance-audit-trails.md`](docs/governance-audit-trails.md) for a
+starter event contract and example audit record.
+
 ## Deployment
 
 ### Using Docker Compose
