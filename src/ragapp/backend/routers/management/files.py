@@ -1,7 +1,11 @@
 from fastapi import APIRouter, UploadFile, Form
 from fastapi.responses import JSONResponse
 
-from backend.controllers.files import FileHandler, UnsupportedFileExtensionError
+from backend.controllers.files import (
+    FileHandler,
+    InvalidFileNameError,
+    UnsupportedFileExtensionError,
+)
 from backend.models.file import File
 
 files_router = r = APIRouter()
@@ -20,14 +24,25 @@ async def add_file(file: UploadFile, fileIndex: str = Form(), totalFiles: str = 
     """
     Upload a new file.
     """
-    res = await FileHandler.upload_file(file, str(file.filename), fileIndex, totalFiles)
-    if isinstance(res, UnsupportedFileExtensionError):
+    try:
+        res = await FileHandler.upload_file(
+            file, str(file.filename), fileIndex, totalFiles
+        )
+    except UnsupportedFileExtensionError as e:
         # Return 400 response with message if the file extension is not supported
         return JSONResponse(
             status_code=400,
             content={
                 "error": "UnsupportedFileExtensionError",
-                "message": str(res),
+                "message": str(e),
+            },
+        )
+    except InvalidFileNameError as e:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "InvalidFileNameError",
+                "message": str(e),
             },
         )
     return res
@@ -40,6 +55,14 @@ def remove_file(file_name: str):
     """
     try:
         FileHandler.remove_file(file_name)
+    except InvalidFileNameError as e:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "InvalidFileNameError",
+                "message": str(e),
+            },
+        )
     except FileNotFoundError:
         # Ignore the error if the file is not found
         # This is to ensure that the file is removed even if it is not found

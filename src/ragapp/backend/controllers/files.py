@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from backend.controllers.loader import LoaderManager
 from backend.models.file import File, FileStatus
@@ -10,20 +11,26 @@ class UnsupportedFileExtensionError(Exception):
     pass
 
 
+class InvalidFileNameError(Exception):
+    pass
+
+
 class FileNotFoundError(Exception):
     pass
 
 
 class FileHandler:
+    DATA_DIR = Path("data")
+
     @classmethod
     def get_current_files(cls):
         """
         Construct the list files by all the files in the data folder.
         """
-        if not os.path.exists("data"):
+        if not cls.DATA_DIR.exists():
             return []
         # Get all files in the data folder
-        file_names = os.listdir("data")
+        file_names = os.listdir(cls.DATA_DIR)
         # Construct list[File]
         return [
             File(name=file_name, status=FileStatus.UPLOADED) for file_name in file_names
@@ -36,14 +43,14 @@ class FileHandler:
         """
         Upload a file to the data folder.
         """
+        file_path = cls.get_data_file_path(file_name)
         # Check if the file extension is supported
         cls.validate_file_extension(file_name)
 
         # Create data folder if it does not exist
-        if not os.path.exists("data"):
-            os.makedirs("data")
+        cls.DATA_DIR.mkdir(exist_ok=True)
 
-        with open(f"data/{file_name}", "wb") as f:
+        with file_path.open("wb") as f:
             f.write(await file.read())
         # Index the data
         # Index the data only when it is the last file to upload
@@ -56,7 +63,7 @@ class FileHandler:
         """
         Remove a file from the data folder.
         """
-        os.remove(f"data/{file_name}")
+        os.remove(cls.get_data_file_path(file_name))
         # Re-index the data
         index_all()
 
@@ -72,3 +79,25 @@ class FileHandler:
             raise UnsupportedFileExtensionError(
                 f"File {file_name} with extension {file_ext} is not supported. Supported file extensions: {supported_file_extensions}"
             )
+
+    @classmethod
+    def get_data_file_path(cls, file_name: str) -> Path:
+        """
+        Return a safe path inside the data directory for a client-supplied file name.
+        """
+        file_path = Path(file_name)
+        if (
+            not file_name
+            or file_path.name != file_name
+            or file_path.is_absolute()
+            or "/" in file_name
+            or "\\" in file_name
+            or "\x00" in file_name
+        ):
+            raise InvalidFileNameError(f"Invalid file name: {file_name}")
+
+        data_dir = cls.DATA_DIR.resolve()
+        resolved_path = (data_dir / file_name).resolve()
+        if data_dir != resolved_path.parent:
+            raise InvalidFileNameError(f"Invalid file name: {file_name}")
+        return resolved_path
