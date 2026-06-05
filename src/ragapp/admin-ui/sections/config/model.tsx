@@ -29,6 +29,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AzureOpenAIForm } from "./providers/azureOpenai";
 import { GeminiForm } from "./providers/gemini";
 import { GroqForm } from "./providers/groq";
+import { MiniMaxForm } from "./providers/minimax";
 import { MistralForm } from "./providers/mistral";
 import { OllamaForm } from "./providers/ollama";
 import { OpenAIForm } from "./providers/openai";
@@ -118,6 +119,8 @@ export const ModelConfig = ({
         return <MistralForm form={form} defaultValues={defaultValues} />;
       case "groq":
         return <GroqForm form={form} defaultValues={defaultValues} />;
+      case "minimax":
+        return <MiniMaxForm form={form} defaultValues={defaultValues} />;
       default:
         return null;
     }
@@ -173,7 +176,7 @@ export const ModelConfig = ({
                     </Select>
                   </FormControl>
                   <FormDescription>
-                    * Note: Only OpenAI, Groq, Azure-OpenAI support
+                    * Note: Only OpenAI, Groq, Azure-OpenAI, MiniMax support
                     multi-agents.
                   </FormDescription>
                 </FormItem>

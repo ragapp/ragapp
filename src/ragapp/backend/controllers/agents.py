@@ -239,6 +239,9 @@ class AgentManager:
                 from llama_index.llms.mistralai import MistralAI
 
                 llm = MistralAI(model=model)
+            case "minimax":
+                # MiniMax models support function calling via OpenAI-compatible API
+                return True
             case _:
                 return False
 
