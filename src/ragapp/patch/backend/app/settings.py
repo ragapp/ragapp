@@ -219,7 +219,7 @@ def init_minimax():
     temperature = max(0.01, min(temperature, 1.0))
 
     Settings.llm = OpenAILike(
-        model=os.getenv("MODEL", "MiniMax-M2.7"),
+        model=os.getenv("MODEL", "MiniMax-M3"),
         api_key=api_key,
         api_base="https://api.minimax.io/v1",
         temperature=temperature,

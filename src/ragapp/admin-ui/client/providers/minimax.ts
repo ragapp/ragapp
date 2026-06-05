@@ -15,7 +15,7 @@ export const MiniMaxConfigSchema = BaseConfigSchema.extend({
 
 export const DEFAULT_MINIMAX_CONFIG: z.input<typeof MiniMaxConfigSchema> = {
   model_provider: "minimax",
-  model: "MiniMax-M2.7",
+  model: "MiniMax-M3",
   embedding_model: "all-MiniLM-L6-v2",
   embedding_dim: 384,
   minimax_api_key: "",

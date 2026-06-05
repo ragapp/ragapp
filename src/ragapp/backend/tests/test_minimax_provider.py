@@ -35,11 +35,11 @@ class TestModelConfigWithMiniMax:
         config = ModelConfig(
             model_provider="minimax",
             minimax_api_key="test-key",
-            model="MiniMax-M2.7",
+            model="MiniMax-M3",
         )
         assert config.minimax_api_key == "test-key"
         assert config.model_provider == "minimax"
-        assert config.model == "MiniMax-M2.7"
+        assert config.model == "MiniMax-M3"
 
     def test_minimax_configured_with_key(self):
         """ModelConfig.configured returns True when MiniMax API key is set."""
@@ -77,11 +77,29 @@ class TestModelConfigWithMiniMax:
         config = ModelConfig(
             model_provider="minimax",
             minimax_api_key="test-key",
-            model="MiniMax-M2.7",
+            model="MiniMax-M3",
             embedding_model="all-MiniLM-L6-v2",
         )
-        assert config.model == "MiniMax-M2.7"
+        assert config.model == "MiniMax-M3"
         assert config.embedding_model == "all-MiniLM-L6-v2"
+
+    def test_minimax_m3_model(self):
+        """ModelConfig correctly stores MiniMax-M3 model."""
+        config = ModelConfig(
+            model_provider="minimax",
+            minimax_api_key="test-key",
+            model="MiniMax-M3",
+        )
+        assert config.model == "MiniMax-M3"
+
+    def test_minimax_m27_model(self):
+        """ModelConfig correctly stores MiniMax-M2.7 model."""
+        config = ModelConfig(
+            model_provider="minimax",
+            minimax_api_key="test-key",
+            model="MiniMax-M2.7",
+        )
+        assert config.model == "MiniMax-M2.7"
 
     def test_minimax_m27_highspeed_model(self):
         """ModelConfig correctly stores MiniMax-M2.7-highspeed model."""
@@ -92,24 +110,6 @@ class TestModelConfigWithMiniMax:
         )
         assert config.model == "MiniMax-M2.7-highspeed"
 
-    def test_minimax_m25_model(self):
-        """ModelConfig correctly stores MiniMax-M2.5 model."""
-        config = ModelConfig(
-            model_provider="minimax",
-            minimax_api_key="test-key",
-            model="MiniMax-M2.5",
-        )
-        assert config.model == "MiniMax-M2.5"
-
-    def test_minimax_m25_highspeed_model(self):
-        """ModelConfig correctly stores MiniMax-M2.5-highspeed model."""
-        config = ModelConfig(
-            model_provider="minimax",
-            minimax_api_key="test-key",
-            model="MiniMax-M2.5-highspeed",
-        )
-        assert config.model == "MiniMax-M2.5-highspeed"
-
 
 class TestMiniMaxMultiAgentSupport:
     """Tests for MiniMax in the multi-agent model check."""
@@ -119,6 +119,14 @@ class TestMiniMaxMultiAgentSupport:
         from backend.controllers.agents import AgentManager
 
         # Clear the lru_cache to avoid stale results
+        AgentManager.check_supported_multi_agents_model.cache_clear()
+        result = AgentManager.check_supported_multi_agents_model("minimax", "MiniMax-M3")
+        assert result is True
+
+    def test_minimax_m27_supports_multi_agents(self):
+        """MiniMax-M2.7 also supports multi-agent mode."""
+        from backend.controllers.agents import AgentManager
+
         AgentManager.check_supported_multi_agents_model.cache_clear()
         result = AgentManager.check_supported_multi_agents_model("minimax", "MiniMax-M2.7")
         assert result is True
@@ -177,7 +185,7 @@ class TestMiniMaxSettingsPatch:
 
         with patch.dict(os.environ, {
             "MINIMAX_API_KEY": "test-key-123",
-            "MODEL": "MiniMax-M2.7",
+            "MODEL": "MiniMax-M3",
             "EMBEDDING_MODEL": "all-MiniLM-L6-v2",
         }):
             with patch.dict("sys.modules", {
@@ -192,7 +200,7 @@ class TestMiniMaxSettingsPatch:
                 # Verify OpenAILike was called with correct params
                 mock_openai_like.assert_called_once()
                 call_kwargs = mock_openai_like.call_args
-                assert call_kwargs.kwargs["model"] == "MiniMax-M2.7"
+                assert call_kwargs.kwargs["model"] == "MiniMax-M3"
                 assert call_kwargs.kwargs["api_key"] == "test-key-123"
                 assert call_kwargs.kwargs["api_base"] == "https://api.minimax.io/v1"
                 assert call_kwargs.kwargs["is_chat_model"] is True
@@ -244,7 +252,7 @@ class TestMiniMaxTemperatureClamping:
 
         with patch.dict(os.environ, {
             "MINIMAX_API_KEY": "test-key",
-            "MODEL": "MiniMax-M2.7",
+            "MODEL": "MiniMax-M3",
             "EMBEDDING_MODEL": "all-MiniLM-L6-v2",
             "LLM_TEMPERATURE": "0.0",
         }):
@@ -278,7 +286,7 @@ class TestMiniMaxTemperatureClamping:
 
         with patch.dict(os.environ, {
             "MINIMAX_API_KEY": "test-key",
-            "MODEL": "MiniMax-M2.7",
+            "MODEL": "MiniMax-M3",
             "EMBEDDING_MODEL": "all-MiniLM-L6-v2",
             "LLM_TEMPERATURE": "2.0",
         }):
@@ -310,13 +318,13 @@ class TestMiniMaxIntegration:
         config = ModelConfig(
             model_provider="minimax",
             minimax_api_key=minimax_api_key,
-            model="MiniMax-M2.7",
+            model="MiniMax-M3",
             embedding_model="all-MiniLM-L6-v2",
         )
         assert config.configured is True
         api_response = config.to_api_response()
         assert api_response["model_provider"] == "minimax"
-        assert api_response["model"] == "MiniMax-M2.7"
+        assert api_response["model"] == "MiniMax-M3"
         assert api_response["minimax_api_key"] == minimax_api_key
 
     def test_minimax_env_roundtrip(self, minimax_api_key):
@@ -324,7 +332,7 @@ class TestMiniMaxIntegration:
         config = ModelConfig(
             model_provider="minimax",
             minimax_api_key=minimax_api_key,
-            model="MiniMax-M2.7",
+            model="MiniMax-M3",
             embedding_model="all-MiniLM-L6-v2",
         )
         # Verify to_runtime_env sets correct env vars
@@ -333,7 +341,7 @@ class TestMiniMaxIntegration:
             config.to_runtime_env()
             assert os.environ.get("MODEL_PROVIDER") == "minimax"
             assert os.environ.get("MINIMAX_API_KEY") == minimax_api_key
-            assert os.environ.get("MODEL") == "MiniMax-M2.7"
+            assert os.environ.get("MODEL") == "MiniMax-M3"
         finally:
             # Restore original environment
             os.environ.clear()
@@ -347,10 +355,10 @@ class TestMiniMaxIntegration:
             pytest.skip("llama-index-llms-openai-like not installed")
 
         llm = OpenAILike(
-            model="MiniMax-M2.7",
+            model="MiniMax-M3",
             api_key=minimax_api_key,
             api_base="https://api.minimax.io/v1",
             is_chat_model=True,
             is_function_calling_model=True,
         )
-        assert llm.model == "MiniMax-M2.7"
+        assert llm.model == "MiniMax-M3"
