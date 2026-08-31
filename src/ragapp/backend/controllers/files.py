@@ -3,11 +3,24 @@ import os
 from backend.controllers.loader import LoaderManager
 from backend.models.file import File, FileStatus
 from backend.models.loader import FileLoader
+from backend.services.document_verification import is_blocked, verification_block
 from backend.tasks.indexing import index_all
 
 
 class UnsupportedFileExtensionError(Exception):
     pass
+
+
+class DocumentVerificationBlockedError(Exception):
+    """Raised when the optional Stipple trust gate blocks a document from indexing."""
+
+    def __init__(self, file_name: str, verification: dict):
+        band = (verification.get("authenticity") or {}).get("risk_band", "?")
+        warrant = (verification.get("authenticity") or {}).get("warrant_id", "?")
+        super().__init__(
+            f"Document {file_name} blocked by trust gate (risk_band={band}, warrant={warrant})"
+        )
+        self.verification = verification
 
 
 class FileNotFoundError(Exception):
@@ -45,11 +58,25 @@ class FileHandler:
 
         with open(f"data/{file_name}", "wb") as f:
             f.write(await file.read())
+
+        # Optional pre-indexing trust gate (off by default).
+        # Enable with STIPPLE_VERIFIER_ENABLED=1. In enforcing mode
+        # (STIPPLE_VERIFIER_ENFORCE=1) high-risk documents raise
+        # DocumentVerificationBlockedError instead of being indexed.
+        verification = None
+        if os.getenv("STIPPLE_VERIFIER_ENABLED", "").lower() in ("1", "true", "yes"):
+            verification = verification_block(f"data/{file_name}")
+            if verification and is_blocked(verification) and os.getenv(
+                "STIPPLE_VERIFIER_ENFORCE", ""
+            ).lower() in ("1", "true", "yes"):
+                os.remove(f"data/{file_name}")
+                raise DocumentVerificationBlockedError(file_name, verification)
+
         # Index the data
         # Index the data only when it is the last file to upload
         if fileIndex == totalFiles:
             index_all()
-        return File(name=file_name, status=FileStatus.UPLOADED)
+        return File(name=file_name, status=FileStatus.UPLOADED, verification=verification)
 
     @classmethod
     def remove_file(cls, file_name: str) -> None:
