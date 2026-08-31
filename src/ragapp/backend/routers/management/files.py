@@ -1,7 +1,11 @@
 from fastapi import APIRouter, UploadFile, Form
 from fastapi.responses import JSONResponse
 
-from backend.controllers.files import FileHandler, UnsupportedFileExtensionError
+from backend.controllers.files import (
+    DocumentVerificationBlockedError,
+    FileHandler,
+    UnsupportedFileExtensionError,
+)
 from backend.models.file import File
 
 files_router = r = APIRouter()
@@ -28,6 +32,16 @@ async def add_file(file: UploadFile, fileIndex: str = Form(), totalFiles: str = 
             content={
                 "error": "UnsupportedFileExtensionError",
                 "message": str(res),
+            },
+        )
+    if isinstance(res, DocumentVerificationBlockedError):
+        # Return 422 response when the optional trust gate blocks the document
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": "DocumentVerificationBlockedError",
+                "message": str(res),
+                "verification": res.verification,
             },
         )
     return res
