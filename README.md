@@ -28,6 +28,8 @@ You can use hosted AI models from OpenAI or Gemini, and local models using [Olla
 
 > _Note_: To avoid [running into any errors](https://github.com/ragapp/ragapp/issues/22), we recommend using the latest version of Docker and (if needed) Docker Compose.
 
+To collect web search excerpts as a knowledge file, see the [Parallel web research example](examples/parallel-search).
+
 ## Endpoints
 
 The docker container exposes the following endpoints:
